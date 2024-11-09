@@ -65,6 +65,8 @@ void setup_tile_setup( void ) {
         setup_tile_num[ tiles ] = mainbar_add_tile( 1 + tiles , 1, "setup tile", ws_get_mainbar_style() );
 #elif defined( LILYGO_WATCH_2021 )
         setup_tile_num[ tiles ] = mainbar_add_tile( 1 + tiles , 1, "setup tile", ws_get_mainbar_style() );
+#elif defined( CKGPRO )
+        setup_tile_num[ tiles ] = mainbar_add_tile( 0, 2 + tiles, "setup tile", ws_get_mainbar_style() );
 #else
     #error "no setup tiles set"
 #endif

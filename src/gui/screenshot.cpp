@@ -20,7 +20,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "config.h"
-#include <endian.h>
+#if defined(__APPLE__)
+    #include <machine/endian.h>
+#else
+    #include <endian.h>
+#endif
 #include "screenshot.h"
 #include "utils/alloc.h"
 #include "utils/filepath_convert.h"

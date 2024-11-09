@@ -31,6 +31,9 @@
     #elif defined( LILYGO_WATCH_2021 )
         #define LV_HOR_RES_MAX          (240)
         #define LV_VER_RES_MAX          (240)
+    #elif define ( CKGPRO )
+        #define LV_HOR_RES_MAX          (320)
+        #define LV_VER_RES_MAX          (480)
     #endif
 #endif
 
@@ -52,6 +55,8 @@
         #define LV_COLOR_16_SWAP   0
     #elif defined( LILYGO_WATCH_2021 )
         #define LV_COLOR_16_SWAP   1
+    #elif define ( CKGPRO )
+        #define LV_COLOR_16_SWAP   0
     #endif
 #endif
 

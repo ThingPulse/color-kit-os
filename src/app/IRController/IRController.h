@@ -25,7 +25,7 @@
     #ifdef NATIVE_64BIT
         void IRController_setup( void );
     #else
-        #if defined( M5PAPER ) || defined( M5CORE2 ) || defined( LILYGO_WATCH_2021 )    
+        #if defined( M5PAPER ) || defined( M5CORE2 ) || defined( LILYGO_WATCH_2021 ) || defind ( CKGPRO ) 
             void IRController_setup( void );
         #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
             enum IRControlSettingsAction {

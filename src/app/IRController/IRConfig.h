@@ -7,7 +7,7 @@
 
     #ifdef NATIVE_64BIT
     #else
-        #if defined( M5PAPER ) || defined( M5CORE2 ) || defined( LILYGO_WATCH_2021 )  
+        #if defined( M5PAPER ) || defined( M5CORE2 ) || defined( LILYGO_WATCH_2021 )  || defined ( CKGPRO )
 
         #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
             #define IR_BUTTONS_START 16

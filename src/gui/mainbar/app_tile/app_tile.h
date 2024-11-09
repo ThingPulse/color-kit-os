@@ -43,6 +43,12 @@
         #define APP_ICON_X_CLEARENCE    8
         #define APP_ICON_Y_CLEARENCE    36
         #define MAX_APPS_TILES          6
+    #elif defined ( CKGPRO )
+        #define MAX_APPS_ICON_HORZ      3
+        #define MAX_APPS_ICON_VERT      4
+        #define APP_ICON_X_CLEARENCE    8
+        #define APP_ICON_Y_CLEARENCE    36
+        #define MAX_APPS_TILES          4
     #else
         #define MAX_APPS_ICON_HORZ      3
         #define MAX_APPS_ICON_VERT      2

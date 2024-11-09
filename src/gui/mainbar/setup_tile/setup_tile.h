@@ -43,6 +43,12 @@
         #define SETUP_ICON_X_CLEARENCE      8
         #define SETUP_ICON_Y_CLEARENCE      36
         #define MAX_SETUP_TILES             6
+    #elif defined ( CKGPRO )
+        #define MAX_SETUP_ICON_HORZ         4
+        #define MAX_SETUP_ICON_VERT         5
+        #define SETUP_ICON_X_CLEARENCE      8
+        #define SETUP_ICON_Y_CLEARENCE      36
+        #define MAX_SETUP_TILES             4
     #else
         #error "no setup tiles set"
     #endif

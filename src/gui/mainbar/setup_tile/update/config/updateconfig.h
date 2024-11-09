@@ -39,6 +39,9 @@
         #define FIRMWARE_UPDATE_URL            "http://www.neo-guerillaz.de/ttgo-t-watch2021.version.json"
     #elif defined( M5CORE2 )
         #define FIRMWARE_UPDATE_URL            "http://www.neo-guerillaz.de/m5stack-core2.version.json"
+    #elif defined( CKGPRO )
+        // TODO add correct url
+        #define FIRMWARE_UPDATE_URL            "http://www.neo-guerillaz.de/m5stack-fire.version.json"
     #endif
 
     #if !defined( FIRMWARE_UPDATE_URL )

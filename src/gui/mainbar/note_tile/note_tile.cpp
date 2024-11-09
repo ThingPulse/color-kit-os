@@ -67,6 +67,9 @@ void note_tile_setup( void ) {
     #elif defined( LILYGO_WATCH_2021 )
         note_tile_num = mainbar_add_tile( 0, 1, "note tile", ws_get_mainbar_style() );
         note_cont = mainbar_get_tile_obj( note_tile_num );
+    #elif defined ( CKGPRO )
+        note_tile_num = mainbar_add_tile( 0, 3, "note tile", ws_get_mainbar_style() );
+        note_cont = mainbar_get_tile_obj( note_tile_num );
     #else
         #error "no note tiles setup"  
     #endif 
