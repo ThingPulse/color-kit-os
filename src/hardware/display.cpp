@@ -38,6 +38,7 @@
     #elif defined( LILYGO_WATCH_2021 )
         #include <twatch2021_config.h>
     #elif defined( WT32_SC01 )
+    #elif defined( CKGPRO )
     #else
         #error "no hardware driver for display, please setup minimal drivers ( display/framebuffer/touch )"
     #endif
@@ -82,6 +83,11 @@ void display_setup( void ) {
             ledcAttachPin(TFT_LED, 0);
             ledcWrite(0, 0XFF);
         #elif defined( WT32_SC01 )
+            pinMode(TFT_LED, OUTPUT);
+            ledcSetup(0, 4000, 8);
+            ledcAttachPin(TFT_LED, 0);
+            ledcWrite(0, 0x0 );
+        #elif defined ( CKGPRO )
             pinMode(TFT_LED, OUTPUT);
             ledcSetup(0, 4000, 8);
             ledcAttachPin(TFT_LED, 0);
@@ -200,7 +206,7 @@ static bool display_powermgm_loop_cb( EventBits_t event, void *arg ) {
             }
 
             retval = true;
-        #elif defined( WT32_SC01 )
+        #elif defined( WT32_SC01 ) || defined( CKGPRO )
             /**
              * check if backlight adjust has change
              */
@@ -227,6 +233,7 @@ static bool display_powermgm_loop_cb( EventBits_t event, void *arg ) {
             }
 
             retval = true;
+        
         #else
             #error "no display init function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif
@@ -272,7 +279,7 @@ static void display_standby( void ) {
             #endif
         #elif defined( LILYGO_WATCH_2021 )   
             ledcWrite( 0, 0 );
-        #elif defined( WT32_SC01 )
+        #elif defined( WT32_SC01 ) || defined( CKGPRO )
             ledcWrite( 0, 0 );
         #else
             #error "no display statndby function implemented, please setup minimal drivers ( display/framebuffer/touch )"
@@ -312,7 +319,7 @@ static void display_wakeup( bool silence ) {
                 ledcWrite( 0, 0 );
                 brightness = 0;
                 dest_brightness = 0;
-            #elif defined( WT32_SC01 )
+            #elif defined( WT32_SC01 ) || defined( CKGPRO )
                 ledcWrite( 0, 0 );
                 brightness = 0;
                 dest_brightness = 0;
@@ -349,7 +356,7 @@ static void display_wakeup( bool silence ) {
                 ledcWrite( 0, 0 );
                 brightness = 0;
                 dest_brightness = display_get_brightness();
-            #elif defined( WT32_SC01 )
+            #elif defined( WT32_SC01 ) || defined( CKGPRO )
                 ledcWrite( 0, 0 );
                 brightness = 0;
                 dest_brightness = display_get_brightness();
@@ -432,7 +439,7 @@ void display_set_rotation( uint32_t rotation ) {
             TTGOClass *ttgo = TTGOClass::getWatch();
             display_config.rotation = rotation;
             ttgo->tft->setRotation( rotation / 90 );
-        #elif defined( WT32_SC01 )
+        #elif defined( WT32_SC01 ) || defined( CKGPRO )
         #else
             #warning "no display set rotation function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif

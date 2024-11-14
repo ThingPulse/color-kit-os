@@ -86,6 +86,7 @@
             #define HARDWARE_NAME   "CKGPRO"
             #define RES_X_MAX       320
             #define RES_Y_MAX       480
+            #define USE_PSRAM_ALLOC_LVGL
             #define ENABLE_WEBSERVER                        /** @brief To disable built-in webserver, comment this line */
             #define ENABLE_FTPSERVER                        /** @brief To disable built-in ftpserver, comment this line */
             #define NO_BLUETOOTH    
@@ -108,7 +109,7 @@
         #ifdef NATIVE_64BIT
         #else
             #ifdef M5PAPER
-            #elif defind ( CKGPRO )
+            #elif defined ( CKGPRO )
             #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
                 #include <LilyGoWatch.h>
             #endif

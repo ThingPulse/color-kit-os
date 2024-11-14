@@ -6,3 +6,4 @@ change.log
 data/tile_map.ods
 firmware_fork_list.json
 src/my-ttgo-watch.ino.cpp
+.DS_Store

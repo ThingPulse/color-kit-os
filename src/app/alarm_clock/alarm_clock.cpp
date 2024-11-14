@@ -43,7 +43,7 @@
 #else
     #ifdef M5PAPER
     #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
-    #elif defind ( CKGPRO )
+    #elif defined ( CKGPRO )
     #else // NEW_HARDWARE_TAG
     #endif
 #endif

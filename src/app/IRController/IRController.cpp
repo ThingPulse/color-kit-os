@@ -38,7 +38,7 @@ static int registed = app_autocall_function( &IRController_setup, 8 );          
         return;
     }
 #else
-    #if defined( M5PAPER ) ||  defined( M5CORE2 ) || defined( LILYGO_WATCH_2021 ) || defined( WT32_SC01 )
+    #if defined( M5PAPER ) ||  defined( M5CORE2 ) || defined( LILYGO_WATCH_2021 ) || defined( WT32_SC01 ) || defined( CKGPRO )
         void IRController_setup( void ) {
             return;
         }

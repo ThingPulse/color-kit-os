@@ -49,6 +49,7 @@
     #elif defined( LILYGO_WATCH_2021 )
         #include <twatch2021_config.h>
     #elif defined( WT32_SC01 )
+    #elif defined( CKGPRO )
 
     #else
         #warning "no hardware driver for pmu"
@@ -169,6 +170,7 @@ void pmu_setup( void ) {
         pinMode( BAT_ADC, INPUT );
         attachInterrupt( CHARGE, &pmu_irq, CHANGE );
     #elif defined( WT32_SC01 )
+    #elif defined( CKGPRO )
 
     #endif
 #endif
@@ -437,6 +439,10 @@ void pmu_loop( void ) {
             log_e("hello Mc Fly, witch PMU irq on T-Watch2021?");
         }
     #elif defined( WT32_SC01 )
+        static bool plug = false;
+        static bool charging = false;
+        static bool battery = percent > 0 ? true : false;
+    #elif defined( CKGPRO )
         static bool plug = false;
         static bool charging = false;
         static bool battery = percent > 0 ? true : false;
@@ -822,6 +828,8 @@ int32_t pmu_get_battery_percent( void ) {
                 percent = tmp_percent;
         #elif defined( WT32_SC01 )
             percent = 100;
+        #elif defined( CKGPRO )
+            percent = 100;
         #endif
     #endif
     return( percent );
@@ -897,6 +905,8 @@ float pmu_get_battery_voltage( void ) {
              */
             voltage = ( ( battery * 3300 * 2 ) / 4096 ) + 200;
         #elif defined( WT32_SC01 )
+            voltage = 3700.0;
+        #elif defined( CKGPRO )
             voltage = 3700.0;
         #endif
     #endif
@@ -1002,6 +1012,7 @@ float pmu_get_battery_charge_current( void ) {
             current = ttgo->power->getBattChargeCurrent();
         #elif defined( LILYGO_WATCH_2021 )
         #elif defined( WT32_SC01 )
+        #elif defined( CKGPRO )
         #endif
     #endif
 
@@ -1024,6 +1035,7 @@ float pmu_get_battery_discharge_current( void ) {
             current = ttgo->power->getBattDischargeCurrent();
         #elif defined( LILYGO_WATCH_2021 )
         #elif defined( WT32_SC01 )
+        #elif defined( CKGPRO )
         #endif
     #endif
 
@@ -1048,6 +1060,8 @@ float pmu_get_vbus_voltage( void ) {
         #elif defined( LILYGO_WATCH_2021 )
         #elif defined( WT32_SC01 )
             voltage = 5.0f;
+        #elif defined( CKGPRO )
+            voltage = 5.0f;
         #endif
     #endif
 
@@ -1068,6 +1082,7 @@ float pmu_get_coulumb_data( void ) {
             coulumb_data = ttgo->power->getCoulombData();
         #elif defined( LILYGO_WATCH_2021 )
         #elif defined( WT32_SC01 )
+        #elif defined( CKGPRO )
         #endif
     #endif
 
@@ -1089,6 +1104,8 @@ bool pmu_is_charging( void ) {
         #elif defined( LILYGO_WATCH_2021 )
             charging = digitalRead( CHARGE ) ? false : true;
         #elif defined( WT32_SC01 )
+            charging = true;
+        #elif defined( CKGPRO )
             charging = true;
         #endif
     #endif
@@ -1114,6 +1131,8 @@ bool pmu_is_vbus_plug( void ) {
             else
                 plug = false;
         #elif defined( WT32_SC01 )
+            plug = true;
+        #elif defined( CKGPRO )
             plug = true;
         #endif
     #endif

@@ -27,7 +27,7 @@
     #else
         #if defined( M5PAPER )
             void IRController_setup( void );
-        #elif defined( M5CORE2 )
+        #elif defined( M5CORE2 ) || defined( M5STICKC )
             void IRController_setup( void );
         #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
             enum IRControlSettingsAction {
@@ -44,6 +44,8 @@
         #elif defined( LILYGO_WATCH_2021 )
             void IRController_setup( void );
         #elif defined( WT32_SC01 )
+            void IRController_setup( void );
+        #elif defined( CKGPRO )
             void IRController_setup( void );
         #else
             /**

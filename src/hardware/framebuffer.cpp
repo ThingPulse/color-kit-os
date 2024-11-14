@@ -60,6 +60,10 @@
         #include "TFT_eSPI.h"
 
         TFT_eSPI tft = TFT_eSPI();
+    #elif defined ( CKGPRO )
+        #include "TFT_eSPI.h"
+
+        TFT_eSPI tft = TFT_eSPI();
     #else
         #error "no hardware driver for framebuffer, please setup minimal drivers ( display/framebuffer/touch )"
     #endif
@@ -129,6 +133,14 @@ void framebuffer_setup( void ) {
             tft.fillScreen( TFT_BLACK );
             tft.initDMA();
         #elif defined( WT32_SC01 )
+            framebuffer_use_dma = true;
+            tft.init();
+            tft.setSwapBytes( true );
+            tft.fillScreen( TFT_BLACK );
+            tft.initDMA();
+            tft.setRotation( 1 );
+            ledcWrite(0, 0xff );
+        #elif defined ( CKGPRO )    
             framebuffer_use_dma = true;
             tft.init();
             tft.setSwapBytes( true );
@@ -249,6 +261,7 @@ bool framebuffer_powermgm_loop_cb( EventBits_t event, void *arg ) {
         #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
         #elif defined( LILYGO_WATCH_2021 )
         #elif defined( WT32_SC01 )
+        #elif defined( CKGPRO )
         #else
             #error "no framebuffer powermgm loop event function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif
@@ -275,6 +288,7 @@ void framebuffer_refresh( void ) {
         #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
         #elif defined( LILYGO_WATCH_2021 )
         #elif defined( WT32_SC01 )
+        #elif defined( CKGPRO )
         #else
             #error "no framebuffer refresh function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif
@@ -400,7 +414,7 @@ static void framebuffer_flush_cb(lv_disp_drv_t *disp_drv, const lv_area_t *area,
                 tft.flush();
                 tft.endWrite();
             }
-        #elif defined( WT32_SC01 )
+        #elif defined( WT32_SC01 ) || defined( CKGPRO )
             /**
              * get buffer size
              */
