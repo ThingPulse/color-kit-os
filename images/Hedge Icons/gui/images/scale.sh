@@ -4,7 +4,7 @@
 #
 # get a file list with "px.png"
 #
-find | grep "px.png" > png-list.txt
+find . | grep "px.png" > png-list.txt
 #
 # read file line by line an convert files
 # to c files with online image converter
@@ -24,7 +24,7 @@ done < png-list.txt
 #
 # get a list of png file with *"96px.png"
 #
-find | grep px.c > pxc-list.txt
+find . | grep px.c > pxc-list.txt
 
 while read LINE
 do

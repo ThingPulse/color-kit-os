@@ -45,7 +45,7 @@
             void IRController_setup( void );
         #elif defined( WT32_SC01 )
             void IRController_setup( void );
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
             void IRController_setup( void );
         #else
             /**

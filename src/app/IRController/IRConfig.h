@@ -46,7 +46,7 @@
             };
         #elif defined( LILYGO_WATCH_2021 )  
         #elif defined( WT32_SC01 )
-        #elif defined ( CKGPRO )
+        #elif defined ( CKGPRO ) || defined ( CKGRANDE )
         #else
             /**
              * NEW_HARDWARE_TAG or not defined

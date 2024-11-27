@@ -45,7 +45,7 @@
         #define FIRMWARE_UPDATE_URL            "http://www.neo-guerillaz.de/m5stack-core2.version.json"
     #elif defined( WT32_SC01 )
         #define FIRMWARE_UPDATE_URL            "http://www.neo-guerillaz.de/wt32-sc01_v3_3.version.json"
-    #elif defined( CKGPRO )
+    #elif defined( CKGPRO ) || defined ( CKGRANDE )
         // TODO add correct url
         #define FIRMWARE_UPDATE_URL            "http://www.neo-guerillaz.de/m5stack-fire.version.json"
     #endif

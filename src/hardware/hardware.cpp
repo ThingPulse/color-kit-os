@@ -68,7 +68,7 @@
         #include <Wire.h>
     #elif defined( WT32_SC01 )
         #include <Wire.h>
-    #elif defined( CKGPRO )
+    #elif defined( CKGPRO ) || defined ( CKGRANDE )
         #include <Wire.h>
     #else
         #error "no hardware init"
@@ -84,7 +84,7 @@ void hardware_attach_lvgl_ticker( void ) {
         #if defined( M5PAPER )
         #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
         #elif defined( WT32_SC01 )
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
         #endif
         tickTicker->attach_ms( 5, []() {
             lv_tick_inc(5);
@@ -99,7 +99,7 @@ void hardware_attach_lvgl_ticker_slow( void ) {
         #if defined( M5PAPER )
         #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
         #elif defined( WT32_SC01 )
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
         #endif
         tickTicker->attach_ms(250, []() {
             lv_tick_inc(250);
@@ -114,7 +114,7 @@ void hardware_detach_lvgl_ticker( void ) {
         #if defined( M5PAPER )
         #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
         #elif defined( WT32_SC01 )
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
         #endif
         tickTicker->detach();
     #endif
@@ -219,7 +219,7 @@ void hardware_setup( void ) {
                 if ( Wire.endTransmission() == 0 )
                     log_i("I2C device at: 0x%02x", address );
             }
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
             /**
              * lvgl init
              */
@@ -283,11 +283,13 @@ void hardware_setup( void ) {
         }
     #endif
     splash_screen_stage_update( "init hardware", 60 );  
-
+    log_v("XXXX splash screen hardware setup done");
     pmu_setup();
     bma_setup();
     wifictl_setup();
+    log_v("XXXX wifictl setup done");
     touch_setup();
+    log_v("XXXX touch setup done");
     rtcctl_setup();
     timesync_setup();
     sensor_setup();

@@ -64,6 +64,14 @@
         #define SETUP_ICON_Y_CLEARENCE      36
         #define SETUP_ICON_X_OFFSET         0
         #define SETUP_ICON_Y_OFFSET         0
+        #define MAX_SETUP_TILES             3
+    #elif defined ( CKGRANDE )
+        #define MAX_SETUP_ICON_HORZ         4
+        #define MAX_SETUP_ICON_VERT         5
+        #define SETUP_ICON_X_CLEARENCE      8
+        #define SETUP_ICON_Y_CLEARENCE      36
+        #define SETUP_ICON_X_OFFSET         0
+        #define SETUP_ICON_Y_OFFSET         36
         #define MAX_SETUP_TILES             4
     #else
         #define MAX_SETUP_ICON_HORZ         3

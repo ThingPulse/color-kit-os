@@ -38,7 +38,7 @@
     #elif defined( LILYGO_WATCH_2021 )
         #include <twatch2021_config.h>
     #elif defined( WT32_SC01 )
-    #elif defined( CKGPRO )
+    #elif defined( CKGPRO ) || defined ( CKGRANDE )
     #else
         #error "no hardware driver for display, please setup minimal drivers ( display/framebuffer/touch )"
     #endif
@@ -87,11 +87,11 @@ void display_setup( void ) {
             ledcSetup(0, 4000, 8);
             ledcAttachPin(TFT_LED, 0);
             ledcWrite(0, 0x0 );
-        #elif defined ( CKGPRO )
-            pinMode(TFT_LED, OUTPUT);
-            ledcSetup(0, 4000, 8);
-            ledcAttachPin(TFT_LED, 0);
-            ledcWrite(0, 0x0 );
+        #elif defined ( CKGPRO ) || defined ( CKGRANDE )
+            pinMode(PIN_TFT_LED, OUTPUT);
+            ledcSetup(0, 44100, 8);
+            ledcAttachPin(PIN_TFT_LED, 0);
+            ledcWrite(0, 0xFF );
         #else
             #error "no display init function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif
@@ -206,7 +206,7 @@ static bool display_powermgm_loop_cb( EventBits_t event, void *arg ) {
             }
 
             retval = true;
-        #elif defined( WT32_SC01 ) || defined( CKGPRO )
+        #elif defined( WT32_SC01 ) 
             /**
              * check if backlight adjust has change
              */
@@ -233,7 +233,31 @@ static bool display_powermgm_loop_cb( EventBits_t event, void *arg ) {
             }
 
             retval = true;
-        
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
+                    /**
+             * check if backlight adjust has change
+             */
+            if ( dest_brightness != brightness ) {
+                if ( brightness < dest_brightness ) {
+                    brightness++;
+                    ledcWrite(0, brightness );
+                }
+                else {
+                    brightness--;
+                    ledcWrite(0, brightness );
+                }
+            }
+            /**
+             * check timeout
+             */
+            if ( display_get_timeout() != DISPLAY_MAX_TIMEOUT ) {
+                if ( lv_disp_get_inactive_time(NULL) > ( ( display_get_timeout() * 1000 ) - display_get_brightness() * 8 ) ) {
+                    dest_brightness = ( ( display_get_timeout() * 1000 ) - lv_disp_get_inactive_time( NULL ) ) / 8 ;
+                }
+                else {
+                    dest_brightness = display_get_brightness();
+                }
+            }
         #else
             #error "no display init function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif
@@ -279,7 +303,7 @@ static void display_standby( void ) {
             #endif
         #elif defined( LILYGO_WATCH_2021 )   
             ledcWrite( 0, 0 );
-        #elif defined( WT32_SC01 ) || defined( CKGPRO )
+        #elif defined( WT32_SC01 ) || defined( CKGPRO ) || defined ( CKGRANDE )
             ledcWrite( 0, 0 );
         #else
             #error "no display statndby function implemented, please setup minimal drivers ( display/framebuffer/touch )"
@@ -319,7 +343,7 @@ static void display_wakeup( bool silence ) {
                 ledcWrite( 0, 0 );
                 brightness = 0;
                 dest_brightness = 0;
-            #elif defined( WT32_SC01 ) || defined( CKGPRO )
+            #elif defined( WT32_SC01 ) || defined( CKGPRO ) || defined ( CKGRANDE )
                 ledcWrite( 0, 0 );
                 brightness = 0;
                 dest_brightness = 0;
@@ -356,7 +380,7 @@ static void display_wakeup( bool silence ) {
                 ledcWrite( 0, 0 );
                 brightness = 0;
                 dest_brightness = display_get_brightness();
-            #elif defined( WT32_SC01 ) || defined( CKGPRO )
+            #elif defined( WT32_SC01 ) || defined( CKGPRO ) || defined ( CKGRANDE )
                 ledcWrite( 0, 0 );
                 brightness = 0;
                 dest_brightness = display_get_brightness();
@@ -439,7 +463,7 @@ void display_set_rotation( uint32_t rotation ) {
             TTGOClass *ttgo = TTGOClass::getWatch();
             display_config.rotation = rotation;
             ttgo->tft->setRotation( rotation / 90 );
-        #elif defined( WT32_SC01 ) || defined( CKGPRO )
+        #elif defined( WT32_SC01 ) || defined( CKGPRO ) || defined ( CKGRANDE )
         #else
             #warning "no display set rotation function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif

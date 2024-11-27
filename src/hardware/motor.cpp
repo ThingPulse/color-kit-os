@@ -102,7 +102,7 @@
             portEXIT_CRITICAL_ISR(&timerMux);
         }
     #elif defined( WT32_SC01 )
-    #elif defined( CKGPRO )
+    #elif defined( CKGPRO ) || defined ( CKGRANDE )
 
     #else
         #warning "no hardware driver for motor/vibe"
@@ -160,7 +160,7 @@ void motor_setup( void ) {
             timerAlarmWrite(timer, 10000, true);
             timerAlarmEnable(timer);
         #elif defined( WT32_SC01 )
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
 
         #endif
     #endif
@@ -204,7 +204,7 @@ bool motor_powermgm_event_cb( EventBits_t event, void *arg ) {
                                                 break;
             }
         #elif defined( WT32_SC01 )
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
         #endif
     #endif
     return( true );

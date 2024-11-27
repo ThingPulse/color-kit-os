@@ -54,7 +54,7 @@ touch_config_t touch_config;
         #include <Adafruit_FT6206.h>
 
         Adafruit_FT6206 ctp = Adafruit_FT6206();
-    #elif defined( CKGPRO )
+    #elif defined( CKGPRO ) || defined ( CKGRANDE )
         #include <Adafruit_FT6206.h>
 
         Adafruit_FT6206 ctp = Adafruit_FT6206();
@@ -156,6 +156,9 @@ void touch_setup( void ) {
     #elif defined( CKGPRO )
         pinMode( GPIO_NUM_6, INPUT );
         ASSERT( ctp.begin(40), "Couldn't start FT6206 touchscreen controller");
+    #elif defined ( CKGRANDE )
+        pinMode( GPIO_NUM_27, INPUT );
+        ASSERT( ctp.begin(40), "Couldn't start FT6206 touchscreen controller");
     #else
         #error "no touch init implemented, please setup minimal drivers ( display/framebuffer/touch )"
     #endif
@@ -252,7 +255,7 @@ bool touch_powermgm_loop_event_cb( EventBits_t event, void *arg ) {
                     retval = true;        
                     break;
             } 
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
             retval = true;   
         #else
             #error "no touch powermgm loop event implemented, please setup minimal drivers ( display/framebuffer/touch )"
@@ -322,7 +325,7 @@ bool touch_powermgm_event_cb( EventBits_t event, void *arg ) {
                                                 retval = true;
                                                 break;
             }
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
             switch( event ) {
                 case POWERMGM_STANDBY:          log_d("go standby");
                                                 /**
@@ -493,11 +496,11 @@ bool touch_getXY( int16_t &x, int16_t &y ) {
             else {
                 return( false );
             }
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
             if ( ctp.touched() ) {
                 TS_Point p = ctp.getPoint();
-                x = TFT_WIDTH - map( p.y, 0, TFT_WIDTH, TFT_WIDTH, 0 );
-                y = map( p.x, 0, TFT_HEIGHT, TFT_HEIGHT, 0 );
+                x = TFT_WIDTH - p.x; //TFT_WIDTH - map( p.y, 0, TFT_WIDTH, TFT_WIDTH, 0 );
+                y = TFT_HEIGHT - p.y; //map( p.x, 0, TFT_HEIGHT, TFT_HEIGHT, 0 );
                 return( true );
             }
             else {
@@ -612,7 +615,7 @@ static bool touch_read(lv_indev_drv_t * drv, lv_indev_data_t*data) {
             data->state = touch_getXY( data->point.x, data->point.y ) ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
         #elif defined( WT32_SC01 )
             data->state = touch_getXY( data->point.x, data->point.y ) ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
             data->state = touch_getXY( data->point.x, data->point.y ) ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
         #else
             #error "no LVGL Input driver function implemented, please setup minimal drivers ( display/framebuffer/touch )"

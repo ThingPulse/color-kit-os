@@ -45,7 +45,7 @@
     #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
     #elif defined( LILYGO_WATCH_2021 )
     #elif defined( WT32_SC01 )
-    #elif defined ( CKGPRO )
+    #elif defined ( CKGPRO ) || defined ( CKGRANDE )
     #else
         #warning "no hardware driver for blectl"
     #endif
@@ -143,14 +143,14 @@ static bool blectl_powermgm_event_cb( EventBits_t event, void *arg );
         void onAuthenticationComplete(ble_gap_conn_desc* desc){
             if(!desc->sec_state.encrypted) {
                 if ( blectl_get_event( BLECTL_PIN_AUTH ) ) {
-                    log_d("BLECTL pairing abort, reason: %02x", cmpl.fail_reason );
+                    //log_d("BLECTL pairing abort, reason: %02x", cmpl.fail_reason );
                     blectl_clear_event( BLECTL_PIN_AUTH );
                     blectl_send_event_cb( BLECTL_PAIRING_ABORT, (void *)"abort" );
                     NimBLEDevice::getServer()->disconnect( desc->conn_handle );
                     return;
                 }
                 if ( blectl_get_event( BLECTL_AUTHWAIT | BLECTL_CONNECT ) ) {
-                    log_d("BLECTL authentication unsuccessful, client disconnected, reason: %02x", cmpl.fail_reason );
+                    //log_d("BLECTL authentication unsuccessful, client disconnected, reason: %02x", cmpl.fail_reason );
                     blectl_clear_event( BLECTL_AUTHWAIT | BLECTL_CONNECT );
                     blectl_set_event( BLECTL_DISCONNECT );
                     blectl_send_event_cb( BLECTL_DISCONNECT, (void *) "disconnected" );
@@ -518,7 +518,7 @@ void blectl_off( void ) {
     #ifdef M5PAPER
     #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
     #elif defined( WT32_SC01 )
-    #elif defined ( CKGPRO )
+    #elif defined ( CKGPRO ) || defined ( CKGRANDE )
     #endif
     NimBLEServer *blectl_get_ble_server( void ) {
         return pServer;

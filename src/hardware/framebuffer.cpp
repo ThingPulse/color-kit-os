@@ -61,9 +61,14 @@
 
         TFT_eSPI tft = TFT_eSPI();
     #elif defined ( CKGPRO )
-        #include "TFT_eSPI.h"
 
-        TFT_eSPI tft = TFT_eSPI();
+        #include "colorkitpro.h"
+        ColorKitPro tft;
+
+    #elif defined ( CKGRANDE )
+        #include "colorkitgrande.h"
+
+        ColorKitGrande tft;
     #else
         #error "no hardware driver for framebuffer, please setup minimal drivers ( display/framebuffer/touch )"
     #endif
@@ -140,14 +145,14 @@ void framebuffer_setup( void ) {
             tft.initDMA();
             tft.setRotation( 1 );
             ledcWrite(0, 0xff );
-        #elif defined ( CKGPRO )    
+        #elif defined ( CKGPRO ) || defined ( CKGRANDE )
             framebuffer_use_dma = true;
             tft.init();
             tft.setSwapBytes( true );
             tft.fillScreen( TFT_BLACK );
+
             tft.initDMA();
-            tft.setRotation( 1 );
-            ledcWrite(0, 0xff );
+            ledcWrite(0, 0xFF );
         #else
             #error "no framebuffer init function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif
@@ -261,7 +266,7 @@ bool framebuffer_powermgm_loop_cb( EventBits_t event, void *arg ) {
         #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
         #elif defined( LILYGO_WATCH_2021 )
         #elif defined( WT32_SC01 )
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
         #else
             #error "no framebuffer powermgm loop event function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif
@@ -288,7 +293,7 @@ void framebuffer_refresh( void ) {
         #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
         #elif defined( LILYGO_WATCH_2021 )
         #elif defined( WT32_SC01 )
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
         #else
             #error "no framebuffer refresh function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif
@@ -414,7 +419,7 @@ static void framebuffer_flush_cb(lv_disp_drv_t *disp_drv, const lv_area_t *area,
                 tft.flush();
                 tft.endWrite();
             }
-        #elif defined( WT32_SC01 ) || defined( CKGPRO )
+        #elif defined( WT32_SC01 )
             /**
              * get buffer size
              */
@@ -436,6 +441,31 @@ static void framebuffer_flush_cb(lv_disp_drv_t *disp_drv, const lv_area_t *area,
                 tft.flush();
                 tft.endWrite();
             }
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
+            /*if (tft.getStartCount() == 0) {   // Processing if not yet started
+                tft.startWrite();
+            }
+            tft.pushImageDMA( area->x1
+                            , area->y1
+                            , area->x2 - area->x1 + 1
+                            , area->y2 - area->y1 + 1
+                            , ( lgfx::swap565_t* )&color_p->full);
+            tft.pushImage*/
+            /*tft.startWrite();
+            tft.pushImage( area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1), ( uint16_t *)color_p );
+            tft.flush();
+            tft.endWrite();*/
+            if ( framebuffer_use_dma ) {
+                tft.endWrite();
+                tft.startWrite();
+                tft.pushImageDMA( area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1), ( uint16_t *)color_p );
+            } else {
+                tft.startWrite();
+                tft.pushImage( area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1), ( uint16_t *)color_p );
+                tft.flush();
+                tft.endWrite();
+            }
+
         #else
             #error "no LVGL display driver function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif

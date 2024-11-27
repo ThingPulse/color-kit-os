@@ -100,16 +100,16 @@
     const lv_img_dsc_t bg1 = bg1_480px;
     const lv_img_dsc_t bg2 = bg2_480px;
     const lv_img_dsc_t bg3 = bg3_480px;
-#elif defined ( CKGPRO )
-    LV_IMG_DECLARE( bg_480px );
-    LV_IMG_DECLARE( bg1_480px );
-    LV_IMG_DECLARE( bg2_480px );
-    LV_IMG_DECLARE( bg3_480px );
+#elif defined ( CKGPRO ) || defined ( CKGRANDE )
+    LV_IMG_DECLARE( bg_r_480px );
+    LV_IMG_DECLARE( bg1_r_480px );
+    LV_IMG_DECLARE( bg2_r_480px );
+    LV_IMG_DECLARE( bg3_r_480px );
 
-    const lv_img_dsc_t bg = bg_480px;
-    const lv_img_dsc_t bg1 = bg1_480px;
-    const lv_img_dsc_t bg2 = bg2_480px;
-    const lv_img_dsc_t bg3 = bg3_480px;
+    const lv_img_dsc_t bg = bg_r_480px;
+    const lv_img_dsc_t bg1 = bg1_r_480px;
+    const lv_img_dsc_t bg2 = bg2_r_480px;
+    const lv_img_dsc_t bg3 = bg3_r_480px;
 #else
     LV_IMG_DECLARE( bg_240px );
     LV_IMG_DECLARE( bg1_240px );

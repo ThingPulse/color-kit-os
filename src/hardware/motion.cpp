@@ -69,7 +69,7 @@
         }
     #elif defined( WT32_SC01 )
 
-    #elif defined( CKGPRO )
+    #elif defined( CKGPRO ) || defined ( CKGRANDE )
 
     #else
         #warning "no hardware driver for bma/axis sensor"
@@ -219,7 +219,7 @@ void bma_setup( void ) {
             bma.enableTiltInterrupt();
             bma.enableWakeupInterrupt();
         #elif defined( WT32_SC01 )
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
 
         #endif
     #endif
@@ -260,7 +260,7 @@ bool bma_powermgm_event_cb( EventBits_t event, void *arg ) {
                                                 detachInterrupt( BMA_INT_1 );
                                                 break;
             #elif defined( WT32_SC01 )
-            #elif defined( CKGPRO )
+            #elif defined( CKGPRO ) || defined ( CKGRANDE )
 
             #endif
         #endif
@@ -332,7 +332,7 @@ bool bma_powermgm_loop_cb( EventBits_t event , void *arg ) {
                     BMA_stepcounter = true;
                 }
             #elif defined( WT32_SC01 )
-            #elif defined( CKGPRO )
+            #elif defined( CKGPRO ) || defined ( CKGRANDE )
 
             #endif
         #endif         
@@ -386,7 +386,7 @@ void bma_notify_stepcounter( void ) {
         #elif defined( LILYGO_WATCH_2021 )
             stepcounter_before_reset = bma.getCounter();
         #elif defined( WT32_SC01 )
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
 
         #endif
     #endif
@@ -410,7 +410,7 @@ void bma_standby( void ) {
             #elif defined( LILYGO_WATCH_2021 )
                 bma.enableStepCountInterrupt( false );
             #elif defined( WT32_SC01 )
-            #elif defined( CKGPRO )
+            #elif defined( CKGPRO ) || defined ( CKGRANDE )
 
             #endif
         #endif
@@ -428,7 +428,7 @@ void bma_standby( void ) {
             gpio_wakeup_enable ( (gpio_num_t)BMA_INT_1, GPIO_INTR_POSEDGE );
             esp_sleep_enable_gpio_wakeup ();
         #elif defined( WT32_SC01 )
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
 
         #endif
     #endif
@@ -450,7 +450,7 @@ void bma_wakeup( void ) {
             #elif defined( LILYGO_WATCH_2021 )
                 bma.enableStepCountInterrupt( true );
             #elif defined( WT32_SC01 )
-            #elif defined( CKGPRO )
+            #elif defined( CKGPRO ) || defined ( CKGRANDE )
 
             #endif
         #endif
@@ -489,7 +489,7 @@ void bma_wakeup( void ) {
                 #elif defined( LILYGO_WATCH_2021 )
                     bma.resetStepCounter();
                 #elif defined( WT32_SC01 )
-                #elif defined( CKGPRO )
+                #elif defined( CKGPRO ) || defined ( CKGRANDE )
                 #endif
             #endif
             stepcounter_before_reset = 0;
@@ -521,7 +521,7 @@ void bma_reload_settings( void ) {
             bma.enableWakeupInterrupt( bma_config.enable[ BMA_DOUBLECLICK ] );
             bma.enableTiltInterrupt( bma_config.enable[ BMA_TILT ] );
         #elif defined( WT32_SC01 )
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
         #endif
     #endif
 }
@@ -645,7 +645,7 @@ void bma_set_rotate_tilt( uint32_t rotation ) {
                             break;
             }
         #elif defined( WT32_SC01 )
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
 
         #endif
     #endif
@@ -666,7 +666,7 @@ void bma_reset_stepcounter( void ) {
         #elif defined( LILYGO_WATCH_2021 )
             bma.resetStepCounter();
         #elif defined( WT32_SC01 )
-        #elif defined( CKGPRO )
+        #elif defined( CKGPRO ) || defined ( CKGRANDE )
 
         #endif
     #endif

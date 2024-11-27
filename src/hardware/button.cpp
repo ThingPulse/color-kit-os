@@ -64,7 +64,7 @@ bool button_send_cb( EventBits_t event, void *arg );
     #elif defined( LILYGO_WATCH_2021 ) 
         #include <twatch2021_config.h>
     #elif defined( WT32_SC01 )
-    #elif defined ( CKGPRO )
+    #elif defined ( CKGPRO ) || defined ( CKGRANDE )
     #else
         #warning "no hardware driver for button"
     #endif
@@ -110,7 +110,7 @@ void button_setup( void ) {
             pinMode( BTN_2, INPUT );
             pinMode( BTN_3, INPUT );
         #elif defined( WT32_SC01 )
-        #elif defined ( CKGPRO )
+        #elif defined ( CKGPRO ) || defined ( CKGRANDE )
 
         #endif
     #endif
@@ -401,7 +401,7 @@ bool button_powermgm_loop_cb( EventBits_t event, void *arg ) {
             if ( refresh_button ) button_send_cb( BUTTON_REFRESH, (void*)NULL );
         }
     #elif defined( WT32_SC01 )
-    #elif defined ( CKGPRO )
+    #elif defined ( CKGPRO ) || defined ( CKGRANDE )
     #endif
     /**
      * prevent "warning: variable 'temp_button_irq_flag' set but not used" in some platform conditions
@@ -484,7 +484,7 @@ bool button_powermgm_event_cb( EventBits_t event, void *arg ) {
             }
         #elif defined( WT32_SC01 )
             retval = true;
-        #elif defined ( CKGPRO )
+        #elif defined ( CKGPRO ) || defined ( CKGRANDE )
             retval = true;
         #endif
     #endif
