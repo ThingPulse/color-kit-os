@@ -16,7 +16,7 @@ class ColorKitPro : public lgfx::LGFX_Device
 
   lgfx::Bus_Parallel16 _bus_instance;
   lgfx::Panel_ILI9488 _panel_instance;
-  lgfx::Light_PWM     _light_instance;
+  //lgfx::Light_PWM     _light_instance;
   //lgfx::ITouch*  _touch_instance_ptr = nullptr;
 
   /// Detects and configures the touch panel during initialization;
@@ -109,17 +109,6 @@ public:
       _panel_instance.config(cfg);
     }
 
-    {
-      auto cfg = _light_instance.config();
-
-      cfg.pin_bl = PIN_TFT_LED;
-      cfg.invert = false;
-      cfg.freq   = 44100;
-      cfg.pwm_channel = 7;
-
-      _light_instance.config(cfg);
-      _panel_instance.light(&_light_instance);
-    }
     setPanel(&_panel_instance);
   }
 };

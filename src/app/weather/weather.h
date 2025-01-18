@@ -41,6 +41,7 @@
         char humidity[16] = "";
         char name[32] = "";
         char icon[16] = "";
+        char description[32] = "";
         char wind[16] = "";
     } weather_forcast_t;
 

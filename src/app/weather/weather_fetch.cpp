@@ -64,9 +64,10 @@ int weather_fetch_today( weather_config_t *weather_config, weather_forcast_t *we
             if ( doc["cod"].as<uint32_t>() == 200 ) {
                 weather_today->valide = true;
                 snprintf( weather_today->temp, sizeof( weather_today->temp ), "%0.1f°%s", doc["main"]["temp"].as<float>(), weather_units_symbol);
-                snprintf( weather_today->humidity, sizeof( weather_today->humidity ),"%f%%", doc["main"]["humidity"].as<float>() );
-                snprintf( weather_today->pressure, sizeof( weather_today->pressure ),"%fpha", doc["main"]["pressure"].as<float>() );
+                snprintf( weather_today->humidity, sizeof( weather_today->humidity ),"%.0f%%", doc["main"]["humidity"].as<float>() );
+                snprintf( weather_today->pressure, sizeof( weather_today->pressure ),"%.0fpha", doc["main"]["pressure"].as<float>() );
                 strcpy( weather_today->icon, doc["weather"][0]["icon"] );
+                strcpy( weather_today->description, doc["weather"][0]["description"] );
                 strcpy( weather_today->name, doc["name"] );
 
                 int directionDegree = doc["wind"]["deg"].as<int>();

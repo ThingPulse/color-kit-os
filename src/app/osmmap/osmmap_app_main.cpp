@@ -185,13 +185,13 @@ void osmmap_app_main_setup( uint32_t tile_num ) {
     lv_obj_align( osmmap_cont, osmmap_app_main_tile, LV_ALIGN_IN_TOP_MID, 0, 0 );
 
     osmmap_app_tile_img = lv_img_create( osmmap_cont, NULL );
-    lv_obj_set_width( osmmap_app_tile_img, lv_disp_get_hor_res( NULL )>512?lv_disp_get_hor_res( NULL ):240 );
-    lv_obj_set_height( osmmap_app_tile_img, lv_disp_get_hor_res( NULL )>512?lv_disp_get_hor_res( NULL ):240 );
+    lv_obj_set_width( osmmap_app_tile_img, lv_disp_get_hor_res( NULL )>512?lv_disp_get_hor_res( NULL ):320 );
+    lv_obj_set_height( osmmap_app_tile_img, lv_disp_get_hor_res( NULL )>512?lv_disp_get_ver_res( NULL ):320 );
     lv_img_set_src( osmmap_app_tile_img, osm_map_get_no_data_image() );
 #ifdef M5PAPER
     lv_img_set_zoom( osmmap_app_tile_img, 540 );
 #endif
-    lv_obj_align( osmmap_app_tile_img, osmmap_cont, LV_ALIGN_CENTER, 0, 0 );
+    lv_obj_align( osmmap_app_tile_img, osmmap_cont, LV_ALIGN_IN_BOTTOM_MID, 0, 0 );
 
     osmmap_app_pos_img = lv_img_create( osmmap_cont, NULL );
     lv_img_set_src( osmmap_app_pos_img, &info_fail_16px );
@@ -569,7 +569,7 @@ void osmmap_update_Task( void * pvParameters ) {
             if ( osm_map_get_tile_image( osmmap_location ) ) {
                 lv_img_set_src( osmmap_app_tile_img, osm_map_get_tile_image( osmmap_location ) );
             }
-            lv_obj_align( osmmap_app_tile_img, lv_obj_get_parent( osmmap_app_tile_img ), LV_ALIGN_CENTER, 0 , 0 );
+            lv_obj_align( osmmap_app_tile_img, lv_obj_get_parent( osmmap_app_tile_img ), LV_ALIGN_IN_BOTTOM_MID, 0 , 0 );
             eventmask |= OSM_APP_LOAD_AHEAD_REQUEST;
         }
         /**
