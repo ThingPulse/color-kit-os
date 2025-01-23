@@ -73,6 +73,7 @@ int weather_fetch_today( weather_config_t *weather_config, weather_forcast_t *we
                 int directionDegree = doc["wind"]["deg"].as<int>();
                 int speed = doc["wind"]["speed"].as<int>();
                 weather_wind_to_string( weather_today, speed, directionDegree );
+                weather_today->wind_deg = directionDegree;
                 httpcode = 200;
             }
         }
@@ -100,7 +101,7 @@ int weather_fetch_forecast( weather_config_t *weather_config, weather_forcast_t 
     /**
      * build uri string
      */
-    snprintf( url, sizeof( url ), "http://%s/data/2.5/forecast?cnt=%d&lat=%s&lon=%s&appid=%s&units=%s", OWM_HOST, WEATHER_MAX_FORECAST, weather_config->lat, weather_config->lon, weather_config->apikey, weather_units_char);
+    snprintf( url, sizeof( url ), "http://%s/data/2.5/forecast/daily?cnt=%d&lat=%s&lon=%s&appid=%s&units=%s", OWM_HOST, WEATHER_MAX_FORECAST, weather_config->lat, weather_config->lon, weather_config->apikey, weather_units_char);
     log_d("http get: %s", url );
     /**
      * load uri file into ram
@@ -125,14 +126,14 @@ int weather_fetch_forecast( weather_config_t *weather_config, weather_forcast_t 
                 weather_forecast[0].valide = true;
                 for ( int i = 0 ; i < WEATHER_MAX_FORECAST ; i++ ) {
                     weather_forecast[ i ].timestamp = doc["list"][i]["dt"].as<long>() | 0;
-                    snprintf( weather_forecast[ i ].temp, sizeof( weather_forecast[ i ].temp ),"%0.1f°%s", doc["list"][i]["main"]["temp"].as<float>(), weather_units_symbol );
-                    snprintf( weather_forecast[ i ].humidity, sizeof( weather_forecast[ i ].humidity ),"%f%%", doc["list"][i]["main"]["humidity"].as<float>() );
-                    snprintf( weather_forecast[ i ].pressure, sizeof( weather_forecast[ i ].pressure ),"%fpha", doc["list"][i]["main"]["pressure"].as<float>() );
+                    snprintf( weather_forecast[ i ].temp, sizeof( weather_forecast[ i ].temp ),"%0.1f°%s", doc["list"][i]["temp"]["day"].as<float>(), weather_units_symbol );
+                    snprintf( weather_forecast[ i ].humidity, sizeof( weather_forecast[ i ].humidity ),"%f%%", doc["list"][i]["humidity"].as<float>() );
+                    snprintf( weather_forecast[ i ].pressure, sizeof( weather_forecast[ i ].pressure ),"%fpha", doc["list"][i]["pressure"].as<float>() );
                     strncpy( weather_forecast[ i ].icon, doc["list"][i]["weather"][0]["icon"] | "n/a", sizeof(  weather_forecast[ i ].icon ) );
                     strncpy( weather_forecast[ i ].name, doc["city"]["name"] | "n/a", sizeof( weather_forecast[ i ].name ) );
 
-                    int directionDegree = doc["list"][i]["wind"]["deg"].as<int>() | 0;
-                    int speed = doc["list"][i]["wind"]["speed"].as<int>() | 0;
+                    int directionDegree = doc["list"][i]["deg"].as<int>() | 0;
+                    int speed = doc["list"][i]["speed"].as<int>() | 0;
                     weather_wind_to_string( &weather_forecast[i], speed, directionDegree );
                 }
                 httpcode = 200;
@@ -189,6 +190,6 @@ void weather_wind_to_string( weather_forcast_t* container, int speed, int direct
         dir = "NE";
     else if ( directionDegree > 11 )
         dir = "NNE";
-    snprintf( container->wind, sizeof(container->wind), "%d %s", speed, dir);
+    snprintf( container->wind_speed, sizeof(container->wind_speed), "%d %s", speed, dir);
     return;
 }

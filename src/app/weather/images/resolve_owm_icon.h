@@ -6,6 +6,6 @@
         const void *icon;
     };
 
-    const void * resolve_owm_icon( char * iconname );
+    const void * resolve_owm_icon( char * iconname, bool is64PxIcon );
 
 #endif // _RESOLVE_OWM_ICON_H

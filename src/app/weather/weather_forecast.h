@@ -12,5 +12,6 @@
 
     void weather_forecast_tile_setup( uint32_t tile_num );
     void weather_forecast_sync( void );
+    void weather_app_task( lv_task_t * task );
 
 #endif // _WEATHER_FORECAST_H

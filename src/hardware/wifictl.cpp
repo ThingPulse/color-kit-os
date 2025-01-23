@@ -474,7 +474,8 @@ bool wifictl_insert_network( const char *ssid, const char *password ) {
         strncpy( wifictl_config->networklist[ entry ].password, password, sizeof( wifictl_config->networklist[ entry ].password ) );
         wifictl_save_config();
 #ifndef NATIVE_64BIT
-        WiFi.scanNetworks( true );
+        WiFi.setScanMethod( WIFI_ALL_CHANNEL_SCAN );
+        WiFi.scanNetworks( true, true, false, 2000 );
         wifictl_set_event( WIFICTL_SCAN );
 #endif
         retval = true;
@@ -490,7 +491,7 @@ bool wifictl_insert_network( const char *ssid, const char *password ) {
         strncpy( wifictl_config->networklist[ entry ].password, password, sizeof( wifictl_config->networklist[ entry ].password ) );
         wifictl_save_config();
 #ifndef NATIVE_64BIT
-        WiFi.scanNetworks( true );
+        WiFi.scanNetworks( true, false, 1500  );
         wifictl_set_event( WIFICTL_SCAN );
 #endif
         retval = true;

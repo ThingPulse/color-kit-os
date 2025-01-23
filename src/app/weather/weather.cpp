@@ -77,6 +77,7 @@ void weather_sync_Task( void * pvParameters );
  * declare you images or fonts you need
  */
 LV_IMG_DECLARE(owm01d_64px);
+LV_IMG_DECLARE(img_weather_fog_64px);
 LV_IMG_DECLARE(info_ok_16px);
 LV_IMG_DECLARE(info_fail_16px);
 LV_FONT_DECLARE(Ubuntu_16px);
@@ -142,7 +143,8 @@ static void enter_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event ) {
 }
 
 void weather_add_widget( void ) {
-    weather_widget = widget_register( "n/a", &owm01d_64px, enter_weather_widget_event_cb );
+    weather_widget = widget_register( "n/a", &img_weather_fog_64px, enter_weather_widget_event_cb );
+
 }
 
 void weather_remove_widget( void ) {
@@ -206,11 +208,10 @@ void weather_widget_sync( void ) {
 
     if ( retval == 200 ) {
         widget_set_label( weather_widget, weather_today.temp );
-        widget_set_icon( weather_widget, (lv_obj_t*)resolve_owm_icon( weather_today.icon ) );
-        widget_set_indicator( weather_widget, ICON_INDICATOR_OK );
+        widget_set_icon( weather_widget,  (lv_obj_t*)resolve_owm_icon( weather_today.icon, false ));
 
         if ( weather_config.showWind ) {
-            widget_set_extended_label( weather_widget, weather_today.wind );
+            widget_set_extended_label( weather_widget, weather_today.wind_speed );
         }
         else {
             widget_set_extended_label( weather_widget, "" );

@@ -22,53 +22,94 @@
 #include "config.h"
 
 #include "resolve_owm_icon.h"
+#include "utils/logging.h"
 
-LV_IMG_DECLARE(owm01d_64px);
-LV_IMG_DECLARE(owm02d_64px);
-LV_IMG_DECLARE(owm03d_64px);
-LV_IMG_DECLARE(owm04d_64px);
-LV_IMG_DECLARE(owm09d_64px);
-LV_IMG_DECLARE(owm10d_64px);
-LV_IMG_DECLARE(owm11d_64px);
-LV_IMG_DECLARE(owm13d_64px);
-LV_IMG_DECLARE(owm50d_64px);
-LV_IMG_DECLARE(owm01n_64px);
-LV_IMG_DECLARE(owm02n_64px);
-LV_IMG_DECLARE(owm03n_64px);
-LV_IMG_DECLARE(owm04n_64px);
-LV_IMG_DECLARE(owm09n_64px);
-LV_IMG_DECLARE(owm10n_64px);
-LV_IMG_DECLARE(owm11n_64px);
-LV_IMG_DECLARE(owm13n_64px);
-LV_IMG_DECLARE(owm50n_64px);
+
+LV_IMG_DECLARE(img_weather_unknown);
+LV_IMG_DECLARE(img_weather_thunderstorm);
+LV_IMG_DECLARE(img_weather_snow);
+LV_IMG_DECLARE(img_weather_sleet);
+LV_IMG_DECLARE(img_weather_rain);
+LV_IMG_DECLARE(img_weather_partly_cloudy_night);
+LV_IMG_DECLARE(img_weather_partly_cloudy_day);
+LV_IMG_DECLARE(img_weather_n_a);
+LV_IMG_DECLARE(img_weather_light_rain);
+LV_IMG_DECLARE(img_weather_fog);
+LV_IMG_DECLARE(img_weather_extreme_rain);
+LV_IMG_DECLARE(img_weather_drizzle);
+LV_IMG_DECLARE(img_weather_cloudy);
+LV_IMG_DECLARE(img_weather_clear_night);
+LV_IMG_DECLARE(img_weather_clear_day);
+
+LV_IMG_DECLARE(img_weather_unknown_64px);
+LV_IMG_DECLARE(img_weather_thunderstorm_64px);
+LV_IMG_DECLARE(img_weather_snow_64px);
+LV_IMG_DECLARE(img_weather_sleet_64px);
+LV_IMG_DECLARE(img_weather_rain_64px);
+LV_IMG_DECLARE(img_weather_partly_cloudy_night_64px);
+LV_IMG_DECLARE(img_weather_partly_cloudy_day_64px);
+LV_IMG_DECLARE(img_weather_n_a_64px);
+LV_IMG_DECLARE(img_weather_light_rain_64px);
+LV_IMG_DECLARE(img_weather_fog_64px);
+LV_IMG_DECLARE(img_weather_extreme_rain_64px);
+LV_IMG_DECLARE(img_weather_drizzle_64px);
+LV_IMG_DECLARE(img_weather_cloudy_64px);
+LV_IMG_DECLARE(img_weather_clear_night_64px);
+LV_IMG_DECLARE(img_weather_clear_day_64px);
 
 struct owm_icon owm_icon[ 18 ] = {
-    { "01d", &owm01d_64px },
-    { "02d", &owm02d_64px },
-    { "03d", &owm03d_64px },
-    { "04d", &owm04d_64px },
-    { "09d", &owm09d_64px },
-    { "10d", &owm10d_64px },
-    { "11d", &owm11d_64px },
-    { "13d", &owm13d_64px },
-    { "50d", &owm50d_64px },
-    { "01n", &owm01n_64px },
-    { "02n", &owm02n_64px },
-    { "03n", &owm03n_64px },
-    { "04n", &owm04n_64px },
-    { "09n", &owm09n_64px },
-    { "10n", &owm10n_64px },
-    { "11n", &owm11n_64px },
-    { "13n", &owm13n_64px },
-    { "50n", &owm50n_64px }
+    { "01d", &img_weather_clear_day },
+    { "02d", &img_weather_partly_cloudy_day },
+    { "03d", &img_weather_cloudy },
+    { "04d", &img_weather_partly_cloudy_day },
+    { "09d", &img_weather_partly_cloudy_day },
+    { "10d", &img_weather_rain },
+    { "11d", &img_weather_thunderstorm },
+    { "13d", &img_weather_snow },
+    { "50d", &img_weather_fog },
+    { "01n", &img_weather_clear_night },
+    { "02n", &img_weather_partly_cloudy_night },
+    { "03n", &img_weather_cloudy },
+    { "04n", &img_weather_partly_cloudy_night },
+    { "09n", &img_weather_partly_cloudy_night },
+    { "10n", &img_weather_rain },
+    { "11n", &img_weather_thunderstorm },
+    { "13n", &img_weather_snow },
+    { "50n", &img_weather_fog }
 };
 
-const void * resolve_owm_icon( char *iconname ) {
+struct owm_icon owm_icon_64px[ 18 ] = {
+    { "01d", &img_weather_clear_day_64px },
+    { "02d", &img_weather_partly_cloudy_day_64px },
+    { "03d", &img_weather_cloudy_64px },
+    { "04d", &img_weather_partly_cloudy_day_64px },
+    { "09d", &img_weather_partly_cloudy_day_64px },
+    { "10d", &img_weather_rain_64px },
+    { "11d", &img_weather_thunderstorm_64px },
+    { "13d", &img_weather_snow_64px },
+    { "50d", &img_weather_fog_64px },
+    { "01n", &img_weather_clear_night_64px },
+    { "02n", &img_weather_partly_cloudy_night_64px },
+    { "03n", &img_weather_cloudy_64px },
+    { "04n", &img_weather_partly_cloudy_night_64px },
+    { "09n", &img_weather_partly_cloudy_night_64px },
+    { "10n", &img_weather_rain_64px },
+    { "11n", &img_weather_thunderstorm_64px },
+    { "13n", &img_weather_snow_64px },
+    { "50n", &img_weather_fog_64px }
+};
+
+const void * resolve_owm_icon( char *iconname, bool is64PxIcon ) {
+
     for ( uint32_t icon = 0 ; icon < 18 ; icon++ ) {
         if ( !strcmp( (const char*)owm_icon[ icon ].iconname , (const char*)iconname ) ){
-            return( owm_icon[ icon ].icon );
+            if ( is64PxIcon ) {
+                return( owm_icon_64px[ icon ].icon );
+            } else {
+                return( owm_icon[ icon ].icon );
+            }
         }
     }
-    return( &owm01d_64px );
+    return( &img_weather_n_a );
 }
 

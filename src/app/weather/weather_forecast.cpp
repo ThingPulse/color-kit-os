@@ -34,6 +34,10 @@
 #include "hardware/powermgm.h"
 #include "hardware/wifictl.h"
 #include "utils/alloc.h"
+#include "ui/screens.h"
+#include "ui/images.h"
+#include "sunmoon/SunMoonCalc.h"
+#include "sunmoon/util.h"
 
 #ifdef NATIVE_64BIT
     #include "utils/logging.h"
@@ -83,13 +87,64 @@ static void exit_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event );
 static void setup_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event );
 static void refresh_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event );
 
+const char* windIcons[] = { 
+  "wind-n", "wind-nne", "wind-ne", "wind-ene", "wind-e", "wind-ese", "wind-se", "wind-sse", 
+  "wind-s", "wind-ssw", "wind-sw", "wind-wsw", "wind-w", "wind-wnw", "wind-nw", "wind-nnw"
+};
+
+const char* WEEKDAYS_ABBR[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+
+lv_task_t * _weather_app_task = NULL;
+
+lv_obj_t* forecast_icons[4];
+lv_obj_t* forecast_temp_label[4];
+lv_obj_t* forecast_day_label[4];
+
+lv_img_dsc_t moon_phases[] = {
+    img_moon_phase_0,
+    img_moon_phase_1,
+    img_moon_phase_2,
+    img_moon_phase_3,
+    img_moon_phase_4,
+    img_moon_phase_5,
+    img_moon_phase_6,
+    img_moon_phase_7,
+    img_moon_phase_8,
+    img_moon_phase_9,
+    img_moon_phase_10,
+    img_moon_phase_11,
+    img_moon_phase_12,
+    img_moon_phase_13,
+    img_moon_phase_14,
+    img_moon_phase_15,
+    img_moon_phase_16,
+    img_moon_phase_17,
+    img_moon_phase_18,
+    img_moon_phase_19,
+    img_moon_phase_20,
+    img_moon_phase_21,
+    img_moon_phase_22,
+    img_moon_phase_23,
+    img_moon_phase_24,
+    img_moon_phase_25,
+    img_moon_phase_26,
+    img_moon_phase_27,
+    img_moon_phase_28,
+    img_moon_phase_29,
+    img_moon_phase_30,
+    img_moon_phase_31
+
+};
+
+
 void weather_forecast_tile_setup( uint32_t tile_num ) {
 
     weather_forecast = (weather_forcast_t*)CALLOC_ASSERT( sizeof( weather_forcast_t ) * WEATHER_MAX_FORECAST , 1, "weather forecast calloc faild" );
 
     weather_forecast_tile_num = tile_num;
     weather_forecast_tile = mainbar_get_tile_obj( weather_forecast_tile_num );
-
+    create_screen_main(weather_forecast_tile);
+    
     exit_btn = wf_add_exit_button( weather_forecast_tile, exit_weather_widget_event_cb );
     lv_obj_align(exit_btn, weather_forecast_tile, LV_ALIGN_IN_BOTTOM_LEFT, THEME_PADDING, -THEME_PADDING );
 
@@ -102,80 +157,24 @@ void weather_forecast_tile_setup( uint32_t tile_num ) {
     lv_style_copy( &weather_current_temp_style, APP_STYLE );
     lv_style_set_text_font( &weather_current_temp_style, LV_STATE_DEFAULT, &Ubuntu_48px);
 
-    weather_forecast_location_label = lv_label_create( weather_forecast_tile , NULL);
-    lv_label_set_text( weather_forecast_location_label, "n/a");
-    lv_obj_reset_style_list( weather_forecast_location_label, LV_OBJ_PART_MAIN );
-    #if defined( ROUND_DISPLAY )
-        lv_obj_align( weather_forecast_location_label, weather_forecast_tile, LV_ALIGN_IN_TOP_MID, 0, 10 );
-    #else
-        lv_obj_align( weather_forecast_location_label, weather_forecast_tile, LV_ALIGN_IN_TOP_LEFT, THEME_PADDING, THEME_PADDING );
-    #endif
+    lv_obj_set_style_local_bg_color(weather_forecast_tile, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00000000));
 
-    weather_forecast_update_label = lv_label_create( weather_forecast_tile , NULL);
-    lv_label_set_text( weather_forecast_update_label, "");
-    lv_obj_reset_style_list( weather_forecast_update_label, LV_OBJ_PART_MAIN );
-    #if defined( ROUND_DISPLAY )
-        lv_obj_align( weather_forecast_update_label, weather_forecast_location_label, LV_ALIGN_OUT_BOTTOM_MID, 0, 0 );
-    #else
-        lv_obj_align( weather_forecast_update_label, weather_forecast_location_label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0 );
-    #endif
+    forecast_icons[0] = objects.image_day0;
+    forecast_icons[1] = objects.image_day1;
+    forecast_icons[2] = objects.image_day2;
+    forecast_icons[3] = objects.image_day3;
 
+    forecast_temp_label[0] = objects.label_temp_day0;
+    forecast_temp_label[1] = objects.label_temp_day1;
+    forecast_temp_label[2] = objects.label_temp_day2;
+    forecast_temp_label[3] = objects.label_temp_day3;
+
+    forecast_day_label[0] = objects.label_day0;
+    forecast_day_label[1] = objects.label_day1;
+    forecast_day_label[2] = objects.label_day2;
+    forecast_day_label[3] = objects.label_day3;
 
 
-
-    lv_obj_t * weater_forecast_cont = lv_obj_create( weather_forecast_tile, NULL );
-    lv_obj_set_size( weater_forecast_cont, lv_disp_get_hor_res( NULL ) , ( lv_disp_get_ver_res( NULL ) / 4 )  );
-    lv_obj_add_style( weater_forecast_cont, LV_OBJ_PART_MAIN, ws_get_mainbar_style()  );
-    lv_obj_align( weater_forecast_cont, weather_forecast_tile, LV_ALIGN_CENTER, 0, 0 );
-
-    for ( int i = 0 ; i < WEATHER_MAX_FORECAST && i < WEATHER_MAX_FORECAST_ICON; i++ ) {
-        weather_forecast_icon_imgbtn[ i ] = wf_add_image_button_old( weater_forecast_cont, owm01d_64px, NULL, APP_STYLE );
-        lv_obj_align( weather_forecast_icon_imgbtn[ i ], weater_forecast_cont, LV_ALIGN_IN_LEFT_MID, ( WEATHER_FORCAST_ICON_SPACE / 2 ) + ( i * WEATHER_ICON_SIZE + WEATHER_FORCAST_ICON_SPACE ) , 0 );
-
-        weather_forecast_temperature_label[ i ] = lv_label_create( weater_forecast_cont , NULL);
-        lv_label_set_text( weather_forecast_temperature_label[ i ], "n/a");
-        lv_obj_reset_style_list( weather_forecast_temperature_label[ i ], LV_OBJ_PART_MAIN );
-        lv_obj_align( weather_forecast_temperature_label[ i ], weather_forecast_icon_imgbtn[ i ], LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
-
-        weather_forecast_wind_label[ i ] = lv_label_create( weater_forecast_cont , NULL);
-        lv_label_set_text( weather_forecast_wind_label[i], "");
-        lv_obj_reset_style_list( weather_forecast_wind_label[i], LV_OBJ_PART_MAIN);
-        lv_obj_align( weather_forecast_wind_label[i], weather_forecast_temperature_label[ i ], LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
-
-        weather_forecast_time_label[ i ] = lv_label_create( weater_forecast_cont , NULL);
-        lv_label_set_text( weather_forecast_time_label[ i ], "n/a");
-        lv_obj_reset_style_list( weather_forecast_time_label[ i ], LV_OBJ_PART_MAIN );
-        lv_obj_align( weather_forecast_time_label[ i ], weather_forecast_icon_imgbtn[ i ], LV_ALIGN_OUT_TOP_MID, 0, 0);
-    }
-
-    #if defined ( CKGPRO ) || defined ( CKGRANDE )
-        lv_obj_t * current_weather_cont = lv_obj_create( weather_forecast_tile, NULL );
-        lv_obj_set_size( current_weather_cont, lv_disp_get_hor_res( NULL ) , ( lv_disp_get_ver_res( NULL ) / 5 )  );
-        lv_obj_add_style( current_weather_cont, LV_OBJ_PART_MAIN, ws_get_mainbar_style()  );
-        lv_obj_align( current_weather_cont, weater_forecast_cont, LV_ALIGN_OUT_TOP_MID, 0, 0 );
-
-        current_weather_icon = wf_add_image_button( weather_forecast_tile, owm01d_64px, NULL, APP_STYLE );
-        lv_obj_align( current_weather_icon, current_weather_cont, LV_ALIGN_IN_LEFT_MID, 0 , 0 );
-
-
-        current_temp_label = lv_label_create( weather_forecast_tile , NULL);
-        lv_label_set_text( current_temp_label, "00.0°");
-        lv_obj_add_style(current_temp_label, LV_OBJ_PART_MAIN, &weather_current_temp_style);
-        lv_obj_align( current_temp_label, current_weather_cont, LV_ALIGN_CENTER, 0 , 0 );
-
-        current_description_label = lv_label_create( weather_forecast_tile , NULL);
-        lv_label_set_text( current_description_label, "clear sky");
-        lv_obj_align( current_description_label, current_temp_label, LV_ALIGN_OUT_TOP_MID, 0 , 0 );
-
-        current_humidity_label = lv_label_create( weather_forecast_tile , NULL);
-        lv_label_set_text( current_humidity_label, "61%");
-        lv_obj_align( current_humidity_label, current_temp_label, LV_ALIGN_OUT_BOTTOM_MID, 0 , 0 );
-
-        current_pressure_label = lv_label_create( weather_forecast_tile , NULL);
-        lv_label_set_text( current_pressure_label, "1015hPa");
-        lv_obj_align( current_pressure_label, current_humidity_label, LV_ALIGN_OUT_BOTTOM_MID, 0 , 0 );
-
-    #endif
     mainbar_add_tile_button_cb( weather_forecast_tile_num, weather_button_event_cb );
     mainbar_add_tile_activate_cb( weather_forecast_tile_num, weather_forecast_activate_cb );
 }
@@ -194,11 +193,16 @@ static void weather_forecast_activate_cb( void ) {
         weather_sync_request();
         weather_last_update = millis();
     }
+    //if( !_weather_app_task )
+    //        _weather_app_task = lv_task_create( weather_app_task, 1000, LV_TASK_PRIO_MID, NULL );
 }
 
 bool weather_button_event_cb( EventBits_t event, void *arg ) {
     switch( event ) {
-        case BUTTON_EXIT:           mainbar_jump_back();
+        case BUTTON_EXIT:           
+                                    if( _weather_app_task )
+                                            lv_task_del(_weather_app_task);
+                                    mainbar_jump_back();
                                     break;
         case BUTTON_SETUP:          weather_jump_to_setup();
                                     break;
@@ -229,6 +233,25 @@ static void refresh_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event ) 
     }
 }
 
+void weather_app_task( lv_task_t * task ) {
+
+    time_t now;
+    struct tm info;
+    char buf[64];
+
+    gui_take();
+
+    time( &now );
+    localtime_r( &now, &info );
+    strftime( buf, sizeof(buf), "%d.%b", &info );
+    lv_label_set_text( objects.label_date, buf );
+    strftime( buf, sizeof(buf), "%H:%M", &info );
+    lv_label_set_text( objects.label_time, buf );
+
+    gui_give();
+
+}
+
 void weather_forecast_sync( void  ) {
     weather_config_t *weather_config = weather_get_config();
     int32_t retval = -1;
@@ -243,65 +266,63 @@ void weather_forecast_sync( void  ) {
         return;
     }
 
-    time_t now;
-    struct tm info;
     char buf[64];
 
     gui_take();
 
-    lv_label_set_text( weather_forecast_location_label, weather_forecast[ 0 ].name );
-    #if defined( ROUND_DISPLAY )
-        lv_obj_align( weather_forecast_location_label, weather_forecast_tile, LV_ALIGN_IN_TOP_MID, 0, 10 );
-    #else
-        lv_obj_align( weather_forecast_location_label, weather_forecast_tile, LV_ALIGN_IN_TOP_LEFT, 10, 10 );
-    #endif
+    lv_img_set_src(objects.image_current_weather, resolve_owm_icon( weather_today.icon, false ));
+    lv_label_set_text( objects.label_current_temperature, weather_today.temp );
+    lv_label_set_text( objects.label_current_description, weather_today.description );
+    lv_label_set_text( objects.label_humidity, weather_today.humidity );
+    lv_label_set_text( objects.label_pressure, weather_today.pressure );
 
+    struct tm *forecastLocalTime; 
+    for ( int i = 0; i < 4; i++) {
+        forecastLocalTime = localtime(&weather_forecast[i].timestamp);
+        lv_label_set_text(forecast_day_label[i], WEEKDAYS_ABBR[forecastLocalTime->tm_wday]);
+        lv_img_set_src( forecast_icons[i], resolve_owm_icon(weather_forecast[ i ].icon, true) );
 
-
-    for ( int i = 0 ; i < WEATHER_MAX_FORECAST && i < WEATHER_MAX_FORECAST_ICON ; i++ ) {
-        lv_imgbtn_set_src( weather_forecast_icon_imgbtn[ i ], LV_BTN_STATE_RELEASED, resolve_owm_icon( weather_forecast[ i * 2 ].icon ) );
-        lv_imgbtn_set_src( weather_forecast_icon_imgbtn[ i ], LV_BTN_STATE_PRESSED, resolve_owm_icon( weather_forecast[ i * 2 ].icon ) );
-        lv_imgbtn_set_src( weather_forecast_icon_imgbtn[ i ], LV_BTN_STATE_CHECKED_RELEASED, resolve_owm_icon( weather_forecast[ i * 2 ].icon ) );
-        lv_imgbtn_set_src( weather_forecast_icon_imgbtn[ i ], LV_BTN_STATE_CHECKED_PRESSED, resolve_owm_icon( weather_forecast[ i * 2 ].icon ) );
-        lv_label_set_text( weather_forecast_temperature_label[ i ], weather_forecast[ i * 2 ].temp );
-
-        if(weather_config->showWind) {
-            lv_label_set_text(weather_forecast_wind_label[i], weather_forecast[i * 2].wind);
-        }
-        else {
-            lv_label_set_text(weather_forecast_wind_label[i], "");
-        }
-        
-        lv_obj_align(weather_forecast_temperature_label[i], weather_forecast_icon_imgbtn[i], LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
-        lv_obj_align(weather_forecast_wind_label[i], weather_forecast_temperature_label[i], LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
-
-        localtime_r( &weather_forecast[ i * 2 ].timestamp, &info );
-        strftime( buf, sizeof(buf), "%H:%M", &info );
-        lv_label_set_text( weather_forecast_time_label[ i ], buf );
-        lv_img_set_zoom( weather_forecast_time_label[ i ], 128 );
-        lv_obj_set_size(weather_forecast_time_label[ i ], 20, 20);
-        lv_obj_align( weather_forecast_time_label[ i ], weather_forecast_icon_imgbtn[ i ], LV_ALIGN_OUT_TOP_MID, 0, 0);
     }
 
-    #if defined ( CKGPRO ) || defined ( CKGRANDE )
 
-        lv_imgbtn_set_src( current_weather_icon, LV_BTN_STATE_RELEASED, resolve_owm_icon( weather_today.icon ) );
-        lv_label_set_text( current_temp_label, weather_today.temp );
-        lv_label_set_text( current_description_label, weather_today.description );
-        lv_label_set_text( current_humidity_label, weather_today.humidity );
-        lv_label_set_text( current_pressure_label, weather_today.pressure );
 
-    #endif
+    //lv_obj_align( weather_forecast_update_label, weather_forecast_location_label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0 );
+    lv_label_set_text(objects.label_wind_speed, weather_today.wind_speed);
 
-    time( &now );
-    localtime_r( &now, &info );
-    strftime( buf, sizeof(buf), "updated: %d.%b %H:%M", &info );
-    lv_label_set_text( weather_forecast_update_label, buf );
-    #if defined( ROUND_DISPLAY )
-        lv_obj_align( weather_forecast_update_label, weather_forecast_location_label, LV_ALIGN_OUT_BOTTOM_MID, 0, 0 );
-    #else
-        lv_obj_align( weather_forecast_update_label, weather_forecast_location_label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0 );
-    #endif
+    int windAngleIndex = round(weather_today.wind_deg * 16 / 360);
+    if (windAngleIndex > 15) windAngleIndex = 0;
+    lv_img_set_src(objects.image_wind, getLvglImageByName(windIcons[windAngleIndex]));
+
+    time_t tnow = time(nullptr);
+    struct tm *nowUtc = gmtime(&tnow);
+
+    char *endptr; 
+
+    SunMoonCalc smCalc(mkgmtime(nowUtc), strtod(weather_config->lat, &endptr), strtod(weather_config->lon, &endptr));
+    const SunMoonCalc::Result result = smCalc.calculateSunAndMoonData();
+
+
+    char timestampBuffer[26];
+    // Sun
+    strftime(timestampBuffer, 26, UI_TIME_FORMAT_NO_SECONDS, localtime(&result.sun.rise));
+    lv_label_set_text(objects.label_sunrise, timestampBuffer);
+
+    strftime(timestampBuffer, 26, UI_TIME_FORMAT_NO_SECONDS, localtime(&result.sun.set));
+    lv_label_set_text(objects.label_sunset, timestampBuffer);
+
+    // Moon
+    strftime(timestampBuffer, 26, UI_TIME_FORMAT_NO_SECONDS, localtime(&result.moon.rise));
+    lv_label_set_text(objects.label_moonrise, timestampBuffer);
+    strftime(timestampBuffer, 26, UI_TIME_FORMAT_NO_SECONDS, localtime(&result.moon.set));
+    lv_label_set_text(objects.label_moonset, timestampBuffer);
+
+    // Moon icon
+    int imageIndex = round(result.moon.age * NUMBER_OF_MOON_IMAGES / LUNAR_MONTH);
+    if (imageIndex == NUMBER_OF_MOON_IMAGES) imageIndex = NUMBER_OF_MOON_IMAGES - 1;
+
+    lv_img_set_src(objects.image_moon, &moon_phases[imageIndex]);
+
+    
     lv_obj_invalidate( lv_scr_act() );
 
     gui_give();
