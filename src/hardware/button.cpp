@@ -32,6 +32,7 @@ bool button_send_cb( EventBits_t event, void *arg );
      */
     #include "utils/logging.h"
     #include <SDL2/SDL.h>
+#elif defined ( CKGPRO ) || defined ( CKGRANDE )
 #else
     #include <Arduino.h>
     #if defined( M5PAPER )
@@ -92,6 +93,7 @@ bool button_powermgm_event_cb( EventBits_t event, void *arg );
 void button_setup( void ) {
     #ifdef NATIVE_64BIT
 
+    #elif defined ( CKGPRO ) || defined ( CKGRANDE )
     #else
         #if defined( M5PAPER )
             /**
@@ -167,6 +169,8 @@ bool button_powermgm_loop_cb( EventBits_t event, void *arg ) {
         media_button = state[ SDL_SCANCODE_M ];
         if ( media_button ) button_send_cb( BUTTON_MEDIA_TEST, (void*)NULL );
     }
+#elif defined ( CKGPRO ) || defined ( CKGRANDE )
+
 #else
     /*
      * handle IRQ event
@@ -415,6 +419,8 @@ bool button_powermgm_event_cb( EventBits_t event, void *arg ) {
     bool retval = false;
 
     #ifdef NATIVE_64BIT
+        retval = true;
+    #elif defined ( CKGPRO ) || defined ( CKGRANDE )
         retval = true;
     #else
         #if defined( M5PAPER )

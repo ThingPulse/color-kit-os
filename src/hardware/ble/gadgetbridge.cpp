@@ -31,7 +31,7 @@
 /**
  * platform depended libs
  */
-#ifdef NATIVE_64BIT
+#if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
     #include "utils/logging.h"
     #include "utils/millis.h"
 #else
@@ -66,7 +66,7 @@ static bool gadgetbridge_send_event_cb( EventBits_t event, void *arg );
 static bool gadgetbridge_powermgm_loop_cb( EventBits_t event, void *arg );
 static bool gadgetbridge_blectl_event_cb( EventBits_t event, void *arg );
 
-#ifdef NATIVE_64BIT
+#if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
 #else
     /**
      * @brief Characteristic callback class für gadgetbridge
@@ -125,7 +125,7 @@ void gadgetbridge_setup( void ) {
     gadgetbridge_msg.msglen = 0;
     gadgetbridge_msg.msgpos = 0;
 
-    #ifdef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
     #else
         /**
          * allocate send and receive queue
@@ -217,7 +217,7 @@ bool gadgetbridge_send_loop_msg( const char *format, ... ) {
 bool gadgetbridge_send_msg( const char *format, ... ) {
     bool retval = false;
 
-    #ifdef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
     #else
         /**
          * check if we connected
@@ -284,7 +284,7 @@ static void gadgetbridge_send_chunk ( unsigned char *msg, int32_t len ) {
     /*
      * send msg chunk
      */
-    #ifdef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
     #else
         pGadgetbridgeTXCharacteristic->setValue( msg, len );
         pGadgetbridgeTXCharacteristic->notify();
@@ -309,7 +309,7 @@ static bool gadgetbridge_powermgm_loop_cb( EventBits_t event, void *arg ) {
     /**
      * work on send queue
      */
-    #ifdef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
     #else
         /**
          * copy next msg from the queue
@@ -354,7 +354,7 @@ static bool gadgetbridge_powermgm_loop_cb( EventBits_t event, void *arg ) {
     /**
      * work on recieve queue
      */
-    #ifdef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
     #else
         /**
          * get next msg from receive queue

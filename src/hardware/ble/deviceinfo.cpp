@@ -24,7 +24,7 @@
 #include "hardware/blectl.h"
 
 void deviceinfo_setup( void ) {
-    #ifdef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
 
     #else
         NimBLEServer *pServer = blectl_get_ble_server();

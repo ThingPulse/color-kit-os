@@ -22,8 +22,10 @@ void create_screen_main(lv_obj_t *tile) {
     //lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
     lv_obj_set_style_local_bg_color(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xff000000));
     lv_obj_set_style_local_text_color(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xffffffff & 0xFFFFFF));
+    lv_obj_set_style_local_border_width(obj, 0, LV_CONT_PART_MAIN, LV_STATE_DEFAULT);
+    lv_obj_set_style_local_bg_opa(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 180);
     {
-        lv_obj_t *parent_obj = obj;
+        lv_obj_t *parent_obj = tile;
         {
             // labelDate
             lv_obj_t *obj = lv_label_create(parent_obj, NULL);
@@ -63,7 +65,7 @@ void create_screen_main(lv_obj_t *tile) {
             // imageCurrentWeather
             lv_obj_t *obj = lv_img_create(parent_obj, NULL);
             objects.image_current_weather = obj;
-            lv_obj_set_pos(obj, 0, 111);
+            lv_obj_set_pos(obj, -4, 111);
             lv_obj_set_size(obj, 100, 100);
             lv_img_set_src(obj, &img_weather_clear_day);
         }
@@ -71,7 +73,7 @@ void create_screen_main(lv_obj_t *tile) {
             // imageWind
             lv_obj_t *obj = lv_img_create(parent_obj, NULL);
             objects.image_wind = obj;
-            lv_obj_set_pos(obj, 230, 115);
+            lv_obj_set_pos(obj, 234, 115);
             lv_obj_set_size(obj, 75, 75);
             lv_img_set_src(obj, &img_wind_n);
         }
@@ -113,7 +115,7 @@ void create_screen_main(lv_obj_t *tile) {
             lv_obj_t *obj = lv_label_create(parent_obj, NULL);
 			lv_label_set_long_mode(obj, LV_LABEL_LONG_CROP);
             objects.label_wind_speed = obj;
-            lv_obj_set_pos(obj, 223, 196);
+            lv_obj_set_pos(obj, 227, 196);
             lv_obj_set_size(obj, 90, 17);
             lv_label_set_static_text(obj, "1 m/s");
             lv_obj_set_style_local_text_font(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &ui_font_open_sans16);
@@ -323,30 +325,6 @@ void create_screen_main(lv_obj_t *tile) {
             lv_label_set_static_text(obj, "Waning Gibbous");
             lv_obj_set_style_local_text_font(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &ui_font_open_sans16);
             lv_label_set_align(obj, LV_LABEL_ALIGN_CENTER);
-        }
-        {
-            // lineProgressBar
-            lv_obj_t *obj = lv_line_create(parent_obj, NULL);
-            static lv_point_t line_points[] = {
-                { 0, 0 },
-                { 320, 0 }
-            };
-            lv_line_set_points(obj, line_points, 2);
-            objects.line_progress_bar = obj;
-            lv_obj_set_pos(obj, 0, 4);
-            lv_obj_set_size(obj, 321, 1);
-            
-    		static lv_style_t style_obj;
-    		lv_style_init(&style_obj);
-    		lv_style_set_line_color(&style_obj, LV_STATE_DEFAULT, lv_color_hex(0xff005bff));
-    		lv_obj_add_style(obj, LV_LINE_PART_MAIN, &style_obj);
-    
-            
-    		static lv_style_t style_obj_2;
-    		lv_style_init(&style_obj_2);
-    		lv_style_set_line_width(&style_obj_2, LV_STATE_DEFAULT, 8);
-    		lv_obj_add_style(obj, LV_LINE_PART_MAIN, &style_obj_2);
-    ;
         }
     }
 }

@@ -38,7 +38,6 @@ typedef struct _objects_t {
     lv_obj_t *label_moonrise;
     lv_obj_t *label_moonset;
     lv_obj_t *label_moon_phase;
-    lv_obj_t *line_progress_bar;
 } objects_t;
 
 extern objects_t objects;

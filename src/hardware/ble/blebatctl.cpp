@@ -24,7 +24,7 @@
 
 #include "hardware/pmu.h"
 
-#ifdef NATIVE_64BIT
+#if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
 
 #else
     #include <Arduino.h>

@@ -22,10 +22,10 @@
 #ifndef _BLECTL_H
     #define _BLECTL_H
 
-    #ifdef NATIVE_64BIT
+    #if defined(NATIVE_64BIT) || defined( NO_BLUETOOTH )
         #include "utils/io.h"
     #else
-        #include "NimBLEDevice.h"
+        //#include "NimBLEDevice.h"
     #endif
 
     #include "callback.h"
@@ -250,15 +250,17 @@
      */
     void blectl_set_autoon( bool autoon );
 
-#ifndef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
+
+    #else
     /**
      * @brief get the raw BLE Server
      */
-    NimBLEServer *blectl_get_ble_server( void );
+    //NimBLEServer *blectl_get_ble_server( void );
     /**
      * @brief get the raw BLE Advertising
      */
-    NimBLEAdvertising *blectl_get_ble_advertising( void );
-#endif
+    //NimBLEAdvertising *blectl_get_ble_advertising( void );
+    #endif
 
 #endif // _BLECTL_H

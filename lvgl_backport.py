@@ -6,7 +6,7 @@ import sys
 CONVERSIONS = {
     # Function names
     r'\bcreate_screen_main\(\)': r'create_screen_main(lv_obj_t *tile)',
-    #r'\blv_obj_t \*parent_obj = obj;': r'//lv_obj_t *parent_obj = obj;',
+    r'\blv_obj_t \*parent_obj = obj;': r'lv_obj_t *parent_obj = tile;',
     r'\blv_obj_set_scrollbar_mode\(obj, LV_SCROLLBAR_MODE_OFF\);': r'//lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);',
 
     # Object creation
@@ -35,6 +35,9 @@ CONVERSIONS = {
     ''',
     r'\blv_obj_set_style_text_color\((\w+),\s*lv_color_hex\((0x[0-9a-fA-F]+)\),\s*LV_PART_MAIN\s*\|\s*LV_STATE_DEFAULT\)': r'lv_obj_set_style_local_text_color(\1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(\2 & 0xFFFFFF))',
     r'\blv_label_set_long_mode\(obj, LV_LABEL_LONG_CLIP\)': r'lv_label_set_long_mode(obj, LV_LABEL_LONG_CROP)',
+    r'\blv_obj_set_style_border_width\(obj, 0, LV_PART_MAIN \| LV_STATE_DEFAULT\)': r'lv_obj_set_style_local_border_width(obj, 0, LV_CONT_PART_MAIN, LV_STATE_DEFAULT)',
+    r'\blv_obj_set_style_bg_opa\(obj, (\w+), LV_PART_MAIN \| LV_STATE_DEFAULT\)': r'lv_obj_set_style_local_bg_opa(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, \1)',
+
 
 
     # Flags

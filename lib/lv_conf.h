@@ -55,7 +55,7 @@
         #define LV_COLOR_16_SWAP   0
     #elif defined( LILYGO_WATCH_2021 )
         #define LV_COLOR_16_SWAP   1
-    #elif define ( CKGPRO )
+    #elif defined ( CKGPRO )
         #define LV_COLOR_16_SWAP   0
     #endif
 #endif

@@ -68,6 +68,7 @@ lv_obj_t * current_temp_label = NULL;
 lv_obj_t * current_description_label = NULL;
 lv_obj_t * current_humidity_label = NULL;
 lv_obj_t * current_pressure_label = NULL;
+lv_obj_t * spinner = NULL;
 
 static weather_forcast_t *weather_forecast = NULL;
 static weather_forcast_t weather_today;
@@ -174,6 +175,12 @@ void weather_forecast_tile_setup( uint32_t tile_num ) {
     forecast_day_label[2] = objects.label_day2;
     forecast_day_label[3] = objects.label_day3;
 
+    spinner = lv_spinner_create(weather_forecast_tile, NULL);
+    lv_spinner_set_spin_time(spinner, 1000);
+    lv_obj_set_pos(spinner, 5, 5);
+    lv_obj_set_size(spinner, 80, 80);
+    lv_obj_set_hidden(spinner, true);
+
 
     mainbar_add_tile_button_cb( weather_forecast_tile_num, weather_button_event_cb );
     mainbar_add_tile_activate_cb( weather_forecast_tile_num, weather_forecast_activate_cb );
@@ -233,13 +240,10 @@ static void refresh_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event ) 
     }
 }
 
-void weather_app_task( lv_task_t * task ) {
-
+void update_time() {
     time_t now;
     struct tm info;
     char buf[64];
-
-    gui_take();
 
     time( &now );
     localtime_r( &now, &info );
@@ -247,14 +251,21 @@ void weather_app_task( lv_task_t * task ) {
     lv_label_set_text( objects.label_date, buf );
     strftime( buf, sizeof(buf), "%H:%M", &info );
     lv_label_set_text( objects.label_time, buf );
+}
 
-    gui_give();
-
+void weather_app_task( lv_task_t * task ) {
+    update_time();
 }
 
 void weather_forecast_sync( void  ) {
     weather_config_t *weather_config = weather_get_config();
     int32_t retval = -1;
+    gui_take();
+
+    lv_obj_set_hidden(spinner, false);
+    update_time();
+
+    gui_give();
 
     retval = weather_fetch_today( weather_config , &weather_today );
     if (retval != 200) {
@@ -321,6 +332,7 @@ void weather_forecast_sync( void  ) {
     if (imageIndex == NUMBER_OF_MOON_IMAGES) imageIndex = NUMBER_OF_MOON_IMAGES - 1;
 
     lv_img_set_src(objects.image_moon, &moon_phases[imageIndex]);
+    lv_obj_set_hidden(spinner, true);
 
     
     lv_obj_invalidate( lv_scr_act() );

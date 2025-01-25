@@ -34,7 +34,7 @@
 #include "utils/alloc.h"
 #include "utils/bluejsonrequest.h"
 
-#ifdef NATIVE_64BIT
+#if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
     #include "utils/logging.h"
     #include "utils/millis.h"
 
@@ -68,7 +68,7 @@ callback_t *blectl_callback = NULL;         /** @brief blectl callback structure
 static bool blectl_send_event_cb( EventBits_t event, void *arg );
 static bool blectl_powermgm_event_cb( EventBits_t event, void *arg );
 
-#ifdef NATIVE_64BIT
+#if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
 #else
     NimBLEServer *pServer = NULL;                          
     NimBLEAdvertising *pAdvertising = NULL;
@@ -179,7 +179,7 @@ static bool blectl_powermgm_event_cb( EventBits_t event, void *arg );
 #endif
 
 void blectl_setup( void ) {
-    #ifdef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
     #else
         /**
          * allocate event group
@@ -269,7 +269,7 @@ bool blectl_powermgm_event_cb( EventBits_t event, void *arg ) {
 }
 
 void blectl_set_event( EventBits_t bits ) {
-    #ifdef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
         blectl_status |= bits;
     #else
         portENTER_CRITICAL( &blectlMux );
@@ -279,7 +279,7 @@ void blectl_set_event( EventBits_t bits ) {
 }
 
 void blectl_clear_event( EventBits_t bits ) {
-    #ifdef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
         blectl_status &= ~bits;
     #else
         portENTER_CRITICAL( &blectlMux );
@@ -291,7 +291,7 @@ void blectl_clear_event( EventBits_t bits ) {
 bool blectl_get_event( EventBits_t bits ) {
     EventBits_t temp;
     
-    #ifdef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
         temp = blectl_status & bits;
     #else
         portENTER_CRITICAL( &blectlMux );
@@ -371,7 +371,7 @@ void blectl_set_advertising( bool advertising ) {
     if ( blectl_get_event( BLECTL_CONNECT ) )
         return;
 
-    #ifdef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
     #else
         if ( advertising )
             pServer->getAdvertising()->start();
@@ -389,7 +389,7 @@ void blectl_set_txpower( int32_t txpower ) {
     /**
      * set tx power
      */
-    #ifdef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
     #else
         switch( blectl_config.txpower ) {
             case 0:             NimBLEDevice::setPower( ESP_PWR_LVL_N12 );
@@ -484,7 +484,7 @@ void blectl_read_config( void ) {
 void blectl_on( void ) {
     blectl_config.autoon = true;
 
-    #ifdef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
     #else
         if ( blectl_config.advertising ) {
             pServer->getAdvertising()->start();
@@ -502,7 +502,7 @@ void blectl_on( void ) {
 void blectl_off( void ) {
     blectl_config.autoon = false;
 
-    #ifdef NATIVE_64BIT
+    #if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
     #else
         pServer->getAdvertising()->stop();
     #endif
@@ -513,7 +513,7 @@ void blectl_off( void ) {
     blectl_send_event_cb( BLECTL_CONFIG_UPDATE, NULL );
 }
 
-#ifdef NATIVE_64BIT
+#if  defined( NATIVE_64BIT ) || defined( NO_BLUETOOTH )
 #else
     #ifdef M5PAPER
     #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )

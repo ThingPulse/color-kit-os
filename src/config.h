@@ -97,7 +97,7 @@
             #define RES_X_MAX       320
             #define RES_Y_MAX       480
             #define USE_PSRAM_ALLOC_LVGL
-            #define ENABLE_WEBSERVER                        /** @brief To disable built-in webserver, comment this line */
+            //#define ENABLE_WEBSERVER                        /** @brief To disable built-in webserver, comment this line */
             //#define ENABLE_FTPSERVER                        /** @brief To disable built-in ftpserver, comment this line */
             #define NO_BLUETOOTH 
             #define NO_UPDATES   

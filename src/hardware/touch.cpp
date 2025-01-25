@@ -159,6 +159,7 @@ void touch_setup( void ) {
     #elif defined ( CKGRANDE )
         pinMode( GPIO_NUM_27, INPUT );
         ASSERT( ctp.begin(40), "Couldn't start FT6206 touchscreen controller");
+        attachInterrupt( GPIO_NUM_27, &touch_irq, FALLING );
     #else
         #error "no touch init implemented, please setup minimal drivers ( display/framebuffer/touch )"
     #endif
