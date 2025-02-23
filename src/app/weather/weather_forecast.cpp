@@ -31,6 +31,7 @@
 #include "gui/keyboard.h"
 #include "gui/widget_factory.h"
 #include "gui/widget_styles.h"
+#include "gui/widget.h"
 #include "hardware/powermgm.h"
 #include "hardware/wifictl.h"
 #include "utils/alloc.h"
@@ -72,13 +73,24 @@ lv_obj_t * spinner = NULL;
 
 static weather_forcast_t *weather_forecast = NULL;
 static weather_forcast_t weather_today;
-static uint64_t weather_last_update = 0;
+
+static void weather_update_task( lv_task_t * task );
+
+lv_task_t * weather_tile_task;
+
+icon_t * weather_widget = NULL;
+
+typedef struct {
+    uint32_t last_update_time; // Tracks the last update time
+} WeatherTaskData;
 
 LV_IMG_DECLARE(refresh_32px);
 LV_IMG_DECLARE(owm01d_64px);
 
 lv_style_t weather_current_temp_style;
 LV_FONT_DECLARE(Ubuntu_48px);
+
+
 
 static void weather_forecast_activate_cb( void );
 bool weather_button_event_cb( EventBits_t event, void *arg );
@@ -87,6 +99,7 @@ bool weather_forecast_wifictl_event_cb( EventBits_t event, void *arg );
 static void exit_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event );
 static void setup_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event );
 static void refresh_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event );
+
 
 const char* windIcons[] = { 
   "wind-n", "wind-nne", "wind-ne", "wind-ene", "wind-e", "wind-ese", "wind-se", "wind-sse", 
@@ -138,7 +151,23 @@ lv_img_dsc_t moon_phases[] = {
 };
 
 
+void weather_widget_setup() {
+
+    weather_config_t *weather_config = weather_get_config();
+    // register app and widget icon
+    if ( weather_config->widget ) {
+        weather_add_widget();
+    }
+
+    if( weather_config->showWind ) {
+        widget_set_extended_label( weather_widget, "0" );
+    }
+}
+
 void weather_forecast_tile_setup( uint32_t tile_num ) {
+    log_i("weather_forecast_tile_setup");
+
+
 
     weather_forecast = (weather_forcast_t*)CALLOC_ASSERT( sizeof( weather_forcast_t ) * WEATHER_MAX_FORECAST , 1, "weather forecast calloc faild" );
 
@@ -184,24 +213,24 @@ void weather_forecast_tile_setup( uint32_t tile_num ) {
 
     mainbar_add_tile_button_cb( weather_forecast_tile_num, weather_button_event_cb );
     mainbar_add_tile_activate_cb( weather_forecast_tile_num, weather_forecast_activate_cb );
+
+    weather_tile_task = lv_task_create( weather_update_task, 500, LV_TASK_PRIO_MID, NULL );
+
 }
 
 static void weather_forecast_activate_cb( void ) {
+    log_i("weather_forecast_activate_cb");
     wf_image_button_fade_in( exit_btn, 500, 0 );
     wf_image_button_fade_in( setup_btn, 500, 100 );
     wf_image_button_fade_in( reload_btn, 500, 200 );
-    if( weather_last_update != 0 ) {
-        if( weather_last_update <= millis() - ( 15 * 60 * 1000 ) ) {
-            weather_sync_request();
-            weather_last_update = millis();
-        }
+    weather_forecast_sync();
+    return;
+    WeatherTaskData *data = (WeatherTaskData *)malloc(sizeof(WeatherTaskData));
+    data->last_update_time = 0; // Initialize last update time
+    if( !_weather_app_task ) {
+            _weather_app_task = lv_task_create( weather_app_task, 10000, LV_TASK_PRIO_MID, data );
     }
-    else {
-        weather_sync_request();
-        weather_last_update = millis();
-    }
-    //if( !_weather_app_task )
-    //        _weather_app_task = lv_task_create( weather_app_task, 1000, LV_TASK_PRIO_MID, NULL );
+
 }
 
 bool weather_button_event_cb( EventBits_t event, void *arg ) {
@@ -242,31 +271,51 @@ static void refresh_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event ) 
 
 void update_time() {
     time_t now;
-    struct tm info;
+    static time_t last = 0;
+    struct tm info, last_info;
     char buf[64];
 
     time( &now );
     localtime_r( &now, &info );
-    strftime( buf, sizeof(buf), "%d.%b", &info );
-    lv_label_set_text( objects.label_date, buf );
-    strftime( buf, sizeof(buf), "%H:%M", &info );
-    lv_label_set_text( objects.label_time, buf );
+
+    if ( last != 0 ) {
+        localtime_r( &last, &last_info );
+    }
+
+    if ( last == 0 || info.tm_min != last_info.tm_min || info.tm_hour != last_info.tm_hour) {
+        
+        strftime( buf, sizeof(buf), "%a %d.%b %Y", &info );
+        lv_label_set_text( objects.label_date, buf );
+        strftime( buf, sizeof(buf), "%H:%M", &info );
+        lv_label_set_text( objects.label_time, buf );
+        log_i("Update time: %s", buf);
+        last = now;
+    }
 }
 
-void weather_app_task( lv_task_t * task ) {
+static void weather_update_task( lv_task_t * task ) {
+    //WeatherTaskData *data = (WeatherTaskData *)task->user_data;
     update_time();
+
+    static unsigned long last = 0;
+   
+    if( (millis() - last) > 4 * 60 * 1000 ) {
+        weather_sync_request();
+        last = millis();
+    }
 }
 
 void weather_forecast_sync( void  ) {
+    log_i("weather_forecast_sync");
     weather_config_t *weather_config = weather_get_config();
     int32_t retval = -1;
-    gui_take();
 
-    lv_obj_set_hidden(spinner, false);
+    //gui_take();
+    //lv_obj_set_hidden(spinner, false);
     update_time();
 
-    gui_give();
-
+    //gui_give();
+    
     retval = weather_fetch_today( weather_config , &weather_today );
     if (retval != 200) {
         return;
@@ -279,7 +328,17 @@ void weather_forecast_sync( void  ) {
 
     char buf[64];
 
-    gui_take();
+
+    widget_set_label( weather_widget, weather_today.temp );
+    widget_set_icon( weather_widget,  (lv_obj_t*)resolve_owm_icon( weather_today.icon, true ));
+
+    if ( weather_config->showWind ) {
+        widget_set_extended_label( weather_widget, weather_today.wind_speed );
+    }
+    else {
+        widget_set_extended_label( weather_widget, "" );
+    }
+    
 
     lv_img_set_src(objects.image_current_weather, resolve_owm_icon( weather_today.icon, false ));
     lv_label_set_text( objects.label_current_temperature, weather_today.temp );
@@ -295,9 +354,6 @@ void weather_forecast_sync( void  ) {
 
     }
 
-
-
-    //lv_obj_align( weather_forecast_update_label, weather_forecast_location_label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0 );
     lv_label_set_text(objects.label_wind_speed, weather_today.wind_speed);
 
     int windAngleIndex = round(weather_today.wind_deg * 16 / 360);
@@ -306,6 +362,11 @@ void weather_forecast_sync( void  ) {
 
     time_t tnow = time(nullptr);
     struct tm *nowUtc = gmtime(&tnow);
+    struct tm nowLocal;
+    localtime_r( &tnow, &nowLocal );
+
+    strftime( buf, sizeof(buf), "%H:%M", &nowLocal );
+    lv_label_set_text( objects.last_update, buf );
 
     char *endptr; 
 
@@ -332,11 +393,19 @@ void weather_forecast_sync( void  ) {
     if (imageIndex == NUMBER_OF_MOON_IMAGES) imageIndex = NUMBER_OF_MOON_IMAGES - 1;
 
     lv_img_set_src(objects.image_moon, &moon_phases[imageIndex]);
-    lv_obj_set_hidden(spinner, true);
+    //lv_obj_set_hidden(spinner, true);
 
     
     lv_obj_invalidate( lv_scr_act() );
-
-    gui_give();
     
 }
+
+void weather_add_widget( void ) {
+    weather_widget = widget_register( "n/a", &img_weather_fog_64px, enter_weather_widget_event_cb );
+}
+
+void weather_remove_widget( void ) {
+    weather_widget = widget_remove( weather_widget );
+}
+
+

@@ -406,6 +406,7 @@ bool button_powermgm_loop_cb( EventBits_t event, void *arg ) {
         }
     #elif defined( WT32_SC01 )
     #elif defined ( CKGPRO ) || defined ( CKGRANDE )
+    
     #endif
     /**
      * prevent "warning: variable 'temp_button_irq_flag' set but not used" in some platform conditions

@@ -63,6 +63,9 @@ static int registed = app_autocall_function( &compass_app_setup, 8 );           
  * setup routine for wifimon app
  */
 void compass_app_setup( void ) {
+    #if defined( ONLY_ESSENTIAL )
+        return;
+    #endif
     /*
      * check if app already registered for autocall
      */

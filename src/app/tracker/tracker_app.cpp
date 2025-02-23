@@ -64,6 +64,9 @@ static int registed = app_autocall_function( &tracker_app_setup, 4 );           
  * setup routine for wifimon app
  */
 void tracker_app_setup( void ) {
+    #if defined( ONLY_ESSENTIAL )
+        return;
+    #endif
     /*
      * check if app already registered for autocall
      */

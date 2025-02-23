@@ -157,7 +157,7 @@ void touch_setup( void ) {
         pinMode( GPIO_NUM_6, INPUT );
         ASSERT( ctp.begin(40), "Couldn't start FT6206 touchscreen controller");
     #elif defined ( CKGRANDE )
-        pinMode( GPIO_NUM_27, INPUT );
+        pinMode( PIN_TOUCH_IRQ, INPUT );
         ASSERT( ctp.begin(40), "Couldn't start FT6206 touchscreen controller");
         attachInterrupt( GPIO_NUM_27, &touch_irq, FALLING );
     #else
@@ -257,7 +257,21 @@ bool touch_powermgm_loop_event_cb( EventBits_t event, void *arg ) {
                     break;
             } 
         #elif defined( CKGPRO ) || defined ( CKGRANDE )
-            retval = true;   
+            switch( event ) {
+                case POWERMGM_STANDBY:
+                    if( ctp.touched() )
+                        powermgm_set_event( POWERMGM_WAKEUP_REQUEST );
+                    retval = true;
+                    break;
+                case POWERMGM_WAKEUP:
+                    retval = true;
+                    break;
+                case POWERMGM_SILENCE_WAKEUP:
+                    if ( ctp.touched() )
+                        powermgm_set_event( POWERMGM_WAKEUP_REQUEST );
+                    retval = true;        
+                    break;
+            }
         #else
             #error "no touch powermgm loop event implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif
@@ -326,13 +340,14 @@ bool touch_powermgm_event_cb( EventBits_t event, void *arg ) {
                                                 retval = true;
                                                 break;
             }
+        
         #elif defined( CKGPRO ) || defined ( CKGRANDE )
             switch( event ) {
                 case POWERMGM_STANDBY:          log_d("go standby");
                                                 /**
                                                  * enable GPIO in lightsleep for wakeup
                                                  */
-                                                gpio_wakeup_enable( (gpio_num_t)GPIO_NUM_6, GPIO_INTR_LOW_LEVEL );
+                                                gpio_wakeup_enable( (gpio_num_t)PIN_TOUCH_IRQ, GPIO_INTR_LOW_LEVEL );
                                                 esp_sleep_enable_gpio_wakeup ();
                                                 retval = true;
                                                 break;

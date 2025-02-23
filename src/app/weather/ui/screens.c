@@ -326,6 +326,16 @@ void create_screen_main(lv_obj_t *tile) {
             lv_obj_set_style_local_text_font(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &ui_font_open_sans16);
             lv_label_set_align(obj, LV_LABEL_ALIGN_CENTER);
         }
+        {
+            // lastUpdate
+            lv_obj_t *obj = lv_label_create(parent_obj, NULL);
+			lv_label_set_long_mode(obj, LV_LABEL_LONG_CROP);
+            objects.last_update = obj;
+            lv_obj_set_pos(obj, 5, 3);
+            lv_obj_set_size(obj, 80, 20);
+            lv_label_set_static_text(obj, "Text");
+            lv_obj_set_style_local_text_font(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &ui_font_open_sans16);
+        }
     }
 }
 

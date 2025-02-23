@@ -55,6 +55,9 @@ static int registed = app_autocall_function( &osmand_app_setup, 16 );           
  * 
  */
 void osmand_app_setup( void ) {
+    #if defined( ONLY_ESSENTIAL )
+        return;
+    #endif
     /*
      * check if app already registered for autocall
      */

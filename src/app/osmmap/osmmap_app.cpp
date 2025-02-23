@@ -53,6 +53,9 @@ static int registed = app_autocall_function( &osmmap_app_setup, 16 );           
  * setup routine for example app
  */
 void osmmap_app_setup( void ) {
+    #if defined( ONLY_ESSENTIAL )
+        return;
+    #endif
     /*
      * check if app already registered for autocall
      */

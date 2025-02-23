@@ -74,6 +74,7 @@ bool timesync_register_cb( EventBits_t event, CALLBACK_FUNC callback_func, const
         /*
      * check if an callback table exist, if not allocate a callback table
      */
+    log_i("Registering timesync callback");
     if ( timesync_callback == NULL ) {
         timesync_callback = callback_init( "timesync" );
         if ( timesync_callback == NULL ) {

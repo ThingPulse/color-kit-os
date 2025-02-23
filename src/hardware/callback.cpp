@@ -118,6 +118,7 @@ callback_t *callback_init( const char *name ) {
 }
 
 bool callback_register( callback_t *callback, EventBits_t event, CALLBACK_FUNC callback_func, const char *id ) {
+    printf("Callback register: %s", id);
     bool retval = false;
     /**
      * check if callback table not NULL

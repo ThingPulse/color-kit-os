@@ -5,7 +5,9 @@
 #include "hardware/hardware.h"
 #include "hardware/powermgm.h"
 
+
 #if defined( NATIVE_64BIT )
+    #include <stdio.h>
     /**
      * for non arduino
      */                 
@@ -13,6 +15,7 @@
     void loop( void );
 
     int main( void ) {
+        setvbuf(stdout, NULL, _IOLBF, 0);
         setup();
         while( 1 ) { loop(); };
         return( 0 );

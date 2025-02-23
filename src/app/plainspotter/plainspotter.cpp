@@ -17,23 +17,15 @@
 #include "config.h"
 #include "quickglui/quickglui.h"
 
-#include "activity.h"
+#include "plainspotter.h"
 #include "gui/mainbar/mainbar.h"
 #include "gui/widget_styles.h"
 #include "gui/app.h"
 #include "hardware/motion.h"
 // #include "hardware/blestepctl.h"
 #include "hardware/motor.h"
-
-#ifdef NATIVE_64BIT
-
-#else
-    #ifdef M5PAPER
-    #elif defined ( CKGPRO ) || defined ( CKGRANDE )
-    #elif defined( LILYGO_WATCH_2020_V1 ) || defined( LILYGO_WATCH_2020_V2 ) || defined( LILYGO_WATCH_2020_V3 )
-        #include <TTGO.h>
-    #endif
-#endif
+#include "hardware/timesync.h"
+#include "utils/millis.h"
 
 // App icon must have an size of 64x64 pixel with an alpha channel
 // Use https://lvgl.io/tools/imageconverter to convert your images and set "true color with alpha"
@@ -45,15 +37,14 @@ LV_FONT_DECLARE(Ubuntu_32px);
 #define YES "Yes"
 #define NO  "No"
 
-static SynchronizedApplication activityApp;
-static JsonConfig config("activity.json");
+static SynchronizedApplication plainspotterApp;
+static JsonConfig config("plainspotter.json");
 
 // Options
 static String size, length, goal_step, goal_dist;
 // Widgets
-static Label lblStepcounter, lblStepachievement;
-static Label lblDistance, lblDistachievement;
-static Arc arcStepcounter, arcDistance;
+static Label lblStepcounter;
+
 
 static Style big, small;
 
@@ -63,32 +54,35 @@ static lv_event_cb_t default_msgbox_cb;
 static void build_main_page();
 static void refresh_main_page();
 static void build_settings();
-static void activity_activate_cb();
-static void activity_reset_cb(lv_obj_t * obj, lv_event_t event);
+static void plainspotter_activate_cb();
+static void plainspotter_reset_cb(lv_obj_t * obj, lv_event_t event);
+static bool plainspotter_app_time_update_event_cb( EventBits_t event, void *arg );
+
+
 /*
  * automatic register the app setup function with explicit call in main.cpp
  */
-static int registed = app_autocall_function( &activity_app_setup, 8 );           /** @brief app autocall function */
+static int registed = app_autocall_function( &plainspotter_app_setup, 8 );           /** @brief app autocall function */
 /*
  * setup routine for application
  */
-void activity_app_setup() {
-    #if defined( ONLY_ESSENTIAL )
-        return;
-    #endif
+void plainspotter_app_setup() {
     // Create and register new application
     //   params: name, icon, auto add "refresh" button (this app will use synchronize function of the SynchronizedApplication class).
     //   Also, you can configure count of the required pages in the next two params (to have more app screens).
-    activityApp.init("activity", &move_64px, 1, 1);
+    plainspotterApp.init("plainspotter", &move_64px, 1, 1);
 
-    mainbar_add_tile_activate_cb( activityApp.mainTileId(), activity_activate_cb );
+    mainbar_add_tile_activate_cb( plainspotterApp.mainTileId(), plainspotter_activate_cb );
 
     // Build and configure application
     build_main_page();
     build_settings();
 
+    timesync_register_cb( TIME_SYNC_UPDATE, plainspotter_app_time_update_event_cb, "plainspotter time sync" );
+
+
     // Executed when user click "refresh" button
-    activityApp.synchronizeActionHandler([](SyncRequestSource source) {
+    plainspotterApp.synchronizeActionHandler([](SyncRequestSource source) {
         if ( blectl_get_event( BLECTL_ON ) )
         {
             // blestepctl_update(true);
@@ -98,7 +92,7 @@ void activity_app_setup() {
     });
 
     // Add a trash button to reset counter
-    activityApp.mainPage().addAppButton(trash_32px, [](Widget btn) {
+    plainspotterApp.mainPage().addAppButton(trash_32px, [](Widget btn) {
         static const char * btns[] ={YES, NO, ""};
 
         lv_obj_t * mbox1 = lv_msgbox_create(lv_scr_act(), NULL);
@@ -107,7 +101,7 @@ void activity_app_setup() {
         lv_obj_set_width(mbox1, 200);
         // Save default callback
         default_msgbox_cb = lv_obj_get_event_cb(mbox1);
-        lv_obj_set_event_cb(mbox1, activity_reset_cb);
+        lv_obj_set_event_cb(mbox1, plainspotter_reset_cb);
         lv_obj_align(mbox1, NULL, LV_ALIGN_CENTER, 0, 0);
     });
     
@@ -123,41 +117,14 @@ void build_main_page()
     small.textFont(&Ubuntu_16px)
       .textOpacity(LV_OPA_80);
 
-    AppPage& screen = activityApp.mainPage(); // This is parent for all main screen widgets
+    AppPage& screen = plainspotterApp.mainPage(); // This is parent for all main screen widgets
 
-    arcStepcounter = Arc(&screen, 0, 360);
-    arcStepcounter.start(0).end(0).rotation(90)
-        .style(ws_get_arc_style(), LV_ARC_PART_INDIC, false )
-        .style(ws_get_arc_bg_style(), LV_ARC_PART_BG, false )
-        .size(lv_disp_get_ver_res( NULL ) > lv_disp_get_hor_res( NULL ) ? lv_disp_get_hor_res( NULL ) / 2 : lv_disp_get_ver_res( NULL ) / 2, lv_disp_get_ver_res( NULL ) > lv_disp_get_hor_res( NULL ) ? lv_disp_get_hor_res( NULL ) / 2 : lv_disp_get_ver_res( NULL ) / 2 )
-        .alignInParentLeftMid(0, 0);
+
 
     lblStepcounter = Label(&screen);
     lblStepcounter.text("0")
-        .style(big, true)
-        .align(arcStepcounter, LV_ALIGN_OUT_TOP_MID);
+        .style(big, true);
     
-    lblStepachievement = Label(&screen);
-    lblStepachievement.text("0%")
-        .style(small, true)
-        .alignOrig0(arcStepcounter, LV_ALIGN_CENTER);
-    
-    arcDistance = Arc(&screen, 0, 360);
-    arcDistance.start(0).end(0).rotation(90)
-        .style(ws_get_arc_style(), LV_ARC_PART_INDIC, false )
-        .style(ws_get_arc_bg_style(), LV_ARC_PART_BG, false )
-        .size(lv_disp_get_ver_res( NULL ) > lv_disp_get_hor_res( NULL ) ? lv_disp_get_hor_res( NULL ) / 2 : lv_disp_get_ver_res( NULL ) / 2, lv_disp_get_ver_res( NULL ) > lv_disp_get_hor_res( NULL ) ? lv_disp_get_hor_res( NULL ) / 2 : lv_disp_get_ver_res( NULL ) / 2 )
-        .alignInParentRightMid(0, 0);
-
-    lblDistance = Label(&screen);
-    lblDistance.text("0")
-        .style(big, true)
-        .align(arcDistance, LV_ALIGN_OUT_TOP_MID);
-    
-    lblDistachievement = Label(&screen);
-    lblDistachievement.text("0")
-        .style(small, true)
-        .alignOrig0(arcDistance, LV_ALIGN_CENTER);
 }
 
 void refresh_main_page()
@@ -166,32 +133,22 @@ void refresh_main_page()
     uint32_t gStep = atoi( goal_step.c_str() );
     uint32_t gDist = atoi( goal_dist.c_str() );
     // Get current value
-    uint32_t stp = bma_get_stepcounter();
+    static uint32_t stp = random();
     uint32_t ach = gStep == 0 ? 0 : 100 * stp / gStep;
     uint32_t dist = stp * atoi( length.c_str() ) / 100;
     log_d("Refresh activity: %d steps", stp);
     // Raw steps
     snprintf( buff, sizeof( buff ), "%d", stp );
     lblStepcounter.text(buff).realign();
-    // Achievement
-    snprintf( buff, sizeof( buff ), "%d%%", ach );
-    lblStepachievement.text(buff).realign();
-    arcStepcounter.end( gStep == 0 ? 0 : 360 * stp / gStep );
-    // Distance
-    snprintf( buff, sizeof( buff ), "%d m", dist );
-    lblDistance.text(buff).realign();
-    // Achievement
-    snprintf( buff, sizeof( buff ), "%d%%", gDist == 0 ? 0 : 100 * dist / gDist );
-    lblDistachievement.text(buff).realign();
-    arcDistance.end( gDist == 0 ? 0 : 360 * dist / gDist );
+
 }
 
-void activity_activate_cb()
+void plainspotter_activate_cb()
 {
     refresh_main_page();
 }
 
-static void activity_reset_cb(lv_obj_t * obj, lv_event_t event)
+static void plainspotter_reset_cb(lv_obj_t * obj, lv_event_t event)
 {
     if(event == LV_EVENT_VALUE_CHANGED) {
         const char *answer = lv_msgbox_get_active_btn_text(obj);
@@ -213,5 +170,16 @@ void build_settings()
     config.addString("Step Goal", 7, "10000").setDigitsMode(true,"0123456789").assign(&goal_step); // steps
     config.addString("Distance Goal", 7, "5000").setDigitsMode(true,"0123456789").assign(&goal_dist); // m
 
-    activityApp.useConfig(config, true); // true - auto create settings page widgets
+    plainspotterApp.useConfig(config, true); // true - auto create settings page widgets
+}
+
+static bool plainspotter_app_time_update_event_cb( EventBits_t event, void *arg ) {
+    log_i("Updating time event");
+    printf("Updating time event");
+    /*switch( event ) {
+        case TIME_SYNC_UPDATE:
+            update_time();
+            break;
+    }*/
+    return( true );
 }
