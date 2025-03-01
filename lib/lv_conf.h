@@ -280,6 +280,8 @@ typedef void *lv_fs_drv_user_data_t;
  * LV_IMG_CACHE_DEF_SIZE must be >= 1 */
 #define LV_IMG_CACHE_DEF_SIZE       1
 
+#define LV_USE_PNG                  1
+
 /*Declare the type of the user data of image decoder (can be e.g. `void *`, `int`, `struct`)*/
 typedef void *lv_img_decoder_user_data_t;
 

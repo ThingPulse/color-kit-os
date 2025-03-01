@@ -26,6 +26,7 @@
 #include "hardware/motor.h"
 #include "hardware/timesync.h"
 #include "utils/millis.h"
+#include "plainspotter_app_main.h"
 
 // App icon must have an size of 64x64 pixel with an alpha channel
 // Use https://lvgl.io/tools/imageconverter to convert your images and set "true color with alpha"
@@ -78,8 +79,6 @@ void plainspotter_app_setup() {
     build_main_page();
     build_settings();
 
-    timesync_register_cb( TIME_SYNC_UPDATE, plainspotter_app_time_update_event_cb, "plainspotter time sync" );
-
 
     // Executed when user click "refresh" button
     plainspotterApp.synchronizeActionHandler([](SyncRequestSource source) {
@@ -119,28 +118,14 @@ void build_main_page()
 
     AppPage& screen = plainspotterApp.mainPage(); // This is parent for all main screen widgets
 
-
-
-    lblStepcounter = Label(&screen);
-    lblStepcounter.text("0")
-        .style(big, true);
+    plainspotter_app_main_setup(&screen);
     
 }
 
 void refresh_main_page()
 {
-    char buff[36];
-    uint32_t gStep = atoi( goal_step.c_str() );
-    uint32_t gDist = atoi( goal_dist.c_str() );
-    // Get current value
-    static uint32_t stp = random();
-    uint32_t ach = gStep == 0 ? 0 : 100 * stp / gStep;
-    uint32_t dist = stp * atoi( length.c_str() ) / 100;
-    log_d("Refresh activity: %d steps", stp);
-    // Raw steps
-    snprintf( buff, sizeof( buff ), "%d", stp );
-    lblStepcounter.text(buff).realign();
 
+    //refresh_map();
 }
 
 void plainspotter_activate_cb()
