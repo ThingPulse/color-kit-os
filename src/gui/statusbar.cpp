@@ -38,10 +38,12 @@
 #include "hardware/sound.h"
 #include "hardware/display.h"
 #include "hardware/gpsctl.h"
+#include "hardware/timesync.h"
 
 #include "gui/widget_factory.h"
 #include "gui/widget_styles.h"
 #include "gui/mainbar/mainbar.h"
+
 
 #ifdef NATIVE_64BIT
     #include "utils/logging.h"
@@ -64,7 +66,7 @@ static lv_obj_t *statusbar_wifilabel = NULL;
 static lv_obj_t *statusbar_wifiiplabel = NULL;
 static lv_obj_t *statusbar_bluetooth = NULL;
 static lv_obj_t *statusbar_gps = NULL;
-static lv_obj_t *statusbar_stepcounterlabel = NULL;
+static lv_obj_t *statusbar_timelabel = NULL;
 static lv_obj_t *statusbar_volume_slider = NULL;
 static lv_obj_t *statusbar_brightness_slider = NULL;
 static lv_obj_t *statusbar_sound_icon = NULL;
@@ -113,7 +115,6 @@ bool statusbar_soundctl_event_cb( EventBits_t event, void *arg );
 bool statusbar_blectl_event_cb( EventBits_t event, void *arg );
 bool statusbar_wifictl_event_cb( EventBits_t event, void *arg );
 bool statusbar_rtcctl_event_cb( EventBits_t event, void *arg );
-bool statusbar_bmactl_event_cb( EventBits_t event, void *arg );
 bool statusbar_pmuctl_event_cb( EventBits_t event, void *arg );
 bool statusbar_displayctl_event_cb( EventBits_t event, void *arg );
 bool statusbar_style_event_cb( EventBits_t event, void *arg );
@@ -123,6 +124,8 @@ void statusbar_wifi_set_ip_state( bool state, const char *ip );
 void statusbar_bluetooth_set_state( bool state );
 void statusbar_gps_event_cb( lv_obj_t *gps, lv_event_t event );
 void statusbar_set_dark( bool dark_mode );
+
+void statusbar_update_time();
 
 lv_task_t * statusbar_task;
 void statusbar_update_task( lv_task_t * task );
@@ -259,11 +262,11 @@ void statusbar_setup( void )
     lv_obj_align( statusbar_gps, statusbar, LV_ALIGN_IN_TOP_LEFT, 8, STATUSBAR_HEIGHT );
     lv_imgbtn_set_state( statusbar_gps, LV_BTN_STATE_CHECKED_PRESSED );
 
-    statusbar_stepcounterlabel = lv_label_create(statusbar, NULL );
-    lv_obj_reset_style_list( statusbar_stepcounterlabel, LV_OBJ_PART_MAIN );
-    lv_obj_add_style( statusbar_stepcounterlabel, LV_OBJ_PART_MAIN, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] );
-    lv_label_set_text( statusbar_stepcounterlabel, "0");
-    lv_obj_align( statusbar_stepcounterlabel, statusbar, LV_ALIGN_IN_LEFT_MID, 5, 0 );
+    statusbar_timelabel = lv_label_create(statusbar, NULL );
+    lv_obj_reset_style_list( statusbar_timelabel, LV_OBJ_PART_MAIN );
+    lv_obj_add_style( statusbar_timelabel, LV_OBJ_PART_MAIN, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] );
+    lv_label_set_text( statusbar_timelabel, "");
+    lv_obj_align( statusbar_timelabel, statusbar, LV_ALIGN_IN_LEFT_MID, 5, 0 );
 
     lv_obj_t *statusbar_volume_cont = lv_obj_create( statusbar, NULL );
     lv_obj_add_style( statusbar_volume_cont, LV_OBJ_PART_MAIN, &style );
@@ -328,7 +331,6 @@ void statusbar_setup( void )
     blectl_register_cb( BLECTL_CONNECT | BLECTL_DISCONNECT | BLECTL_ON | BLECTL_OFF, statusbar_blectl_event_cb, "statusbar bluetooth" );
     wifictl_register_cb( WIFICTL_CONNECT | WIFICTL_DISCONNECT | WIFICTL_OFF | WIFICTL_ON | WIFICTL_MSG | WIFICTL_WPS_SUCCESS | WIFICTL_WPS_FAILED | WIFICTL_CONNECT_IP, statusbar_wifictl_event_cb, "statusbar wifi" );
     rtcctl_register_cb( RTCCTL_ALARM_ENABLED | RTCCTL_ALARM_DISABLED, statusbar_rtcctl_event_cb, "statusbar rtc" );
-    bma_register_cb( BMACTL_STEPCOUNTER, statusbar_bmactl_event_cb, "statusbar stepcounter" );
     pmu_register_cb( PMUCTL_STATUS, statusbar_pmuctl_event_cb, "statusbar pmu");
     display_register_cb( DISPLAYCTL_BRIGHTNESS, statusbar_displayctl_event_cb, "statusbar display" );
     gpsctl_register_cb( GPSCTL_ENABLE | GPSCTL_DISABLE | GPSCTL_FIX | GPSCTL_NOFIX, statusbar_gpsctl_event_cb, "statusbar gps" );
@@ -359,6 +361,8 @@ void statusbar_update_task( lv_task_t * task ) {
         statusbar_refresh();
         statusbar_refresh_update = false;
     }
+    statusbar_update_time();
+
 }
 
 bool statusbar_style_event_cb( EventBits_t event, void *arg ) {
@@ -373,6 +377,48 @@ bool statusbar_style_event_cb( EventBits_t event, void *arg ) {
     }
     
     return( true );
+}
+
+void statusbar_update_time() {
+    /*
+     * check if statusbar alread initialized
+     */
+    if ( !statusbar_init ) {
+        log_e("statusbar not initialized");
+        return;
+    }
+
+    time_t now;
+    static time_t last = 0;
+    struct tm  info, last_info;
+    char time_str[64]="";
+    char info_str[64]="";
+    /*
+     * copy current time into now and convert it local time info
+     */
+    time( &now );
+    localtime_r( &now, &info );
+    /*
+     * convert last time_t into tm from
+     * last check if last equal zero (first run condition)
+     */
+    if ( last != 0 ) {
+        localtime_r( &last, &last_info );
+    }
+    /*
+     * Time:
+     * only update while time changes or force is set
+     * Display has a minute resolution
+     */
+    if ( last == 0 || info.tm_min != last_info.tm_min || info.tm_hour != last_info.tm_hour ) {
+        timesync_get_current_timestring( time_str, sizeof(time_str) );
+        log_d("renew time: %s", time_str );
+        lv_label_set_text( statusbar_timelabel, time_str );
+        /*
+         * Save for next loop
+         */
+        last = now;
+    }
 }
 
 bool statusbar_gpsctl_event_cb( EventBits_t event, void *arg ) {
@@ -517,24 +563,6 @@ bool statusbar_pmuctl_event_cb( EventBits_t event, void *arg ) {
                                          *(int32_t*)arg & PMUCTL_STATUS_CHARGING,
                                          *(int32_t*)arg & PMUCTL_STATUS_PLUG);
             break;
-    }
-    return( true );
-}
-
-bool statusbar_bmactl_event_cb( EventBits_t event, void *arg ) {
-    char stepcounter[16]="";
-    /*
-     * check if statusbar ready
-     */
-    if ( !statusbar_init ) {
-        log_e("statusbar not initialized");
-        return( true );
-    }
-
-    switch( event ) {
-        case BMACTL_STEPCOUNTER:    snprintf( stepcounter, sizeof( stepcounter ), "%d", *(uint32_t *)arg );
-                                    lv_label_set_text( statusbar_stepcounterlabel, stepcounter );
-                                    break;
     }
     return( true );
 }

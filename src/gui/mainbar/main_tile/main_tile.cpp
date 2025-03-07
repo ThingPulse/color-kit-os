@@ -141,13 +141,13 @@ void main_tile_setup( void ) {
     lv_obj_align( clock_cont, main_cont, LV_ALIGN_CENTER, 0, 0 );
     
     timelabel = lv_label_create( clock_cont , NULL);
-    lv_label_set_text(timelabel, "00:00");
+    lv_label_set_text(timelabel, "");
     lv_obj_reset_style_list( timelabel, LV_OBJ_PART_MAIN );
     lv_obj_add_style( timelabel, LV_OBJ_PART_MAIN, &timestyle );
     lv_obj_align(timelabel, NULL, LV_ALIGN_CENTER, 0, 0);
 
     datelabel = lv_label_create( clock_cont , NULL);
-    lv_label_set_text(datelabel, "1.Jan 1970");
+    lv_label_set_text(datelabel, "WiFi Not Connected");
     lv_obj_reset_style_list( datelabel, LV_OBJ_PART_MAIN );
     lv_obj_add_style( datelabel, LV_OBJ_PART_MAIN, &datestyle );
     lv_obj_align( datelabel, clock_cont, LV_ALIGN_IN_BOTTOM_MID, 0, 0 );
