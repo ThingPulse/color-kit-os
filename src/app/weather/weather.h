@@ -56,6 +56,8 @@
 
     void weather_jump_to_setup( void );
 
+    void weather_jump_to_image( void );
+
     void weather_sync_request( void );
 
     void weather_save_config( void );

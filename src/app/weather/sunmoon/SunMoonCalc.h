@@ -21,7 +21,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
+#ifndef _SUN_MOON_CALC_H
+#define _SUN_MOON_CALC_H
 #include <time.h>
 
 #ifdef ARDUINO
@@ -157,3 +158,4 @@ private:
     time_t fromJulian(double julianDays) const;
     double toJulian(int16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second) const;
 };
+#endif

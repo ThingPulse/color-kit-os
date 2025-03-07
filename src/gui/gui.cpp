@@ -195,7 +195,7 @@ void gui_setup( void ) {
     #ifndef NO_BLUETOOTH
         bluetooth_settings_tile_setup();
     #endif
-    watchface_manager_setup();
+    // watchface_manager_setup();
     #if defined( LILYGO_WATCH_HAS_SDCARD )
         sdcard_settings_tile_setup();
     #endif

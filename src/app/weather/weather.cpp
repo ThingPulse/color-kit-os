@@ -23,6 +23,7 @@
 #include "weather.h"
 #include "weather_fetch.h"
 #include "weather_forecast.h"
+#include "weather_image.h"
 #include "weather_setup.h"
 #include "images/resolve_owm_icon.h"
 #include "gui/gui.h"
@@ -62,6 +63,7 @@ weather_forcast_t weather_today;
  */
 uint32_t weather_app_tile_num;
 uint32_t weather_app_setup_tile_num;
+uint32_t weather_app_image_tile_num;
 /*
  * app icon
  */
@@ -88,6 +90,7 @@ static int registed = app_autocall_function( &weather_app_setup, 0 );           
 
 
 void weather_app_setup( void ) {
+
     if( !registed ) {
         return;
     }
@@ -98,10 +101,12 @@ void weather_app_setup( void ) {
     // get an app tile and copy mainstyle
     weather_app_tile_num = mainbar_add_app_tile( 1, 2, "Weather App" );
     weather_app_setup_tile_num = weather_app_tile_num + 1;
+    weather_app_image_tile_num =  weather_app_setup_tile_num + 1;
 
     // init forecast and setup tile
     weather_forecast_tile_setup( weather_app_tile_num );
     weather_setup_tile_setup( weather_app_setup_tile_num );
+    weather_image_tile_setup( weather_app_image_tile_num) ;
 
     weather_app = app_register( "weather", &owm01d_64px, enter_weather_widget_event_cb );  
 
@@ -145,6 +150,10 @@ void weather_jump_to_setup( void ) {
     mainbar_jump_to_tilenumber( weather_app_setup_tile_num, LV_ANIM_ON, true );    
 }
 
+void weather_jump_to_image( void ) {
+    mainbar_jump_to_tilenumber( weather_app_image_tile_num, LV_ANIM_ON, true );    
+}
+
 void weather_sync_request( void ) {
 #ifdef NATIVE_64BIT
     weather_sync_Task( NULL );
@@ -175,7 +184,7 @@ void weather_sync_Task( void * pvParameters ) {
     if ( xEventGroupGetBits( weather_sync_event_handle ) & WEATHER_SYNC_REQUEST ) {       
 #endif
     log_i("Updating weather");
-    //weather_widget_sync();
+
     weather_forecast_sync();
 
 #ifndef NATIVE_64BIT

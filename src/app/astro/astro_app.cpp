@@ -59,6 +59,9 @@ static int registed = app_autocall_function( &astro_app_setup, 8 );           /*
  * setup routine for astro app
  */
 void astro_app_setup( void ) {
+    #ifndef ASTRO_APP
+        return;
+    #endif
     /*
      * check if app already registered for autocall
      */

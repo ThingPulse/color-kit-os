@@ -26,27 +26,21 @@
 #define SCREEN_WIDTH  320
 #define SCREEN_HEIGHT 320
 
-osm_location_t *map_location = NULL;             /** @brief osm location obj */
+
 
 // A global buffer to hold the canvas pixels.
 // It must have SCREEN_WIDTH * SCREEN_HEIGHT elements.
-lv_color_t g_canvas_buf[SCREEN_WIDTH * SCREEN_HEIGHT];
+lv_color_t *map_canvas_buf;
+lv_color_t *plane_canvas_buf;
 
-void canvas_event_cb(lv_obj_t * canvas, lv_event_t event);
 
-// A pointer to our canvas object so we can draw onto it later.
-lv_obj_t *g_canvas = NULL;
+lv_obj_t *map_canvas = NULL;
+lv_obj_t *plane_canvas = NULL;
 
-typedef struct {
-    lv_point_t img_pos;      // current image top-left coordinate on the canvas
-    bool dragging;
-    lv_point_t drag_start;   // pointer position when drag started
-    lv_point_t img_pos_start;// image position when drag started
-} drag_data_t;
+bool is_buffer_allocated = false;
 
-// We'll keep this data around
-drag_data_t g_drag_data;
-
+static void planespotter_update_task( lv_task_t * task );
+lv_task_t * planespotter_tile_task;
 
 // ----------------------------------------------------------------------
 // Page Setup
@@ -91,6 +85,9 @@ bool download_tile_image(int x, int y, int zoom, uint8_t **data, size_t *data_si
     *data_size = uri_load_dsc->size;
 
     log_i("Tile Size: %d", uri_load_dsc->size);
+    if (uri_load_dsc->size == 0) {
+        return false;
+    }
 
     // -> Use your HTTP library to download the image into memory:
     // *data = pointer_to_downloaded_bytes;
@@ -100,27 +97,39 @@ bool download_tile_image(int x, int y, int zoom, uint8_t **data, size_t *data_si
     return true; // replace with real implementation
 }
 
-// Decodes a raw image buffer (PNG/JPG) into an LVGL image descriptor
-// This snippet uses the built-in PNG decoder from LVGL (must be enabled)
-// or a custom decoder. Implementation details vary with your build config.
-lv_img_dsc_t decode_tile_image(const uint8_t *data, size_t data_size)
-{
-    lv_img_dsc_t img_dsc;
-    memset(&img_dsc, 0, sizeof(img_dsc));
-    img_dsc.data = data;
-    img_dsc.data_size = data_size;
-    img_dsc.header.always_zero = 0;
-    img_dsc.header.cf = LV_IMG_CF_RAW_ALPHA; 
-    img_dsc.header.w = 256;
-    img_dsc.header.h = 256;
-    // Typically, you set header.w, header.h, etc., but the LVGL PNG decoder
-    // can figure those out automatically if configured properly.
-    return img_dsc;
-}
-
-
 void draw_map_tiles(double centerLat, double centerLon, uint8_t zoom)
 {
+    if (!is_buffer_allocated) {
+        #ifndef NATIVE_64BIT
+            log_i("PSARM: %d", ESP.getFreePsram());
+        #endif
+        size_t buf_size_in_pixels = LV_CANVAS_BUF_SIZE_TRUE_COLOR(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        map_canvas_buf = (lv_color_t*) MALLOC(sizeof(lv_color_t) * buf_size_in_pixels);
+        plane_canvas_buf = (lv_color_t*) MALLOC(sizeof(lv_color_t) * buf_size_in_pixels);
+
+        // Assign the local buffer to the canvas
+        lv_canvas_set_buffer(
+            map_canvas,
+            map_canvas_buf,
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT,
+            LV_IMG_CF_TRUE_COLOR
+        );
+
+        lv_canvas_set_buffer(
+            plane_canvas,
+            plane_canvas_buf,
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT,
+            LV_IMG_CF_TRUE_COLOR_CHROMA_KEYED
+        );
+
+        lv_canvas_fill_bg(plane_canvas, LV_COLOR_TRANSP, 128);
+
+
+        is_buffer_allocated = true;
+    }
     double xTileD, yTileD;
     lat_lon_to_tile(centerLat, centerLon, zoom, &xTileD, &yTileD);
 
@@ -139,15 +148,28 @@ void draw_map_tiles(double centerLat, double centerLon, uint8_t zoom)
 
     // We want to fill the 320×480 area around that center tile.
     // Let's define how many tiles horizontally and vertically we need:
-    int tilesH = 2; // covers 320 px horizontally
-    int tilesV = 3; // covers 480 px vertically (but you might use 3 to be safe)
+    int tilesH = 3; // covers 320 px horizontally
+    int tilesV = 4; // covers 480 px vertically (but you might use 3 to be safe)
+    int number_of_tiles = tilesH * tilesV;
 
-
-    uint8_t* tile_data[6];
-    size_t tile_data_size[6] = {0};
-    lv_img_dsc_t tile_img[6];
+    
+    
+    
     uint8_t tile_index = 0;
 
+    
+    uint8_t *tile_data = NULL;
+    size_t tile_data_size = 0;
+    lv_draw_img_dsc_t draw_dsc[9];
+    for (int i = 0; i < 9; i++) {
+        lv_draw_img_dsc_init(&draw_dsc[i]);
+    }
+
+    lv_img_dsc_t tile_img[9];
+    
+    //lv_img_cache_set_size( 1 );
+    //lv_img_cache_set_size( 1 );
+    //lv_img_cache_invalidate_src(NULL);
 
     for(int ty = 0; ty < tilesV; ty++)
     {
@@ -159,77 +181,108 @@ void draw_map_tiles(double centerLat, double centerLon, uint8_t zoom)
             // Where on the canvas do we draw this tile?
             int drawX = (tx - tilesH/2)*256 + centerOffsetX + 160; // +160 to center it horizontally
             int drawY = (ty - tilesV/2)*256 + centerOffsetY + 240; // +240 to center it vertically
+            int tile_right  = drawX + 256;
+            int tile_bottom = drawY + 256;
 
+            if(tile_right < 0 || tile_bottom < 0 || drawX >= SCREEN_WIDTH || drawY >= SCREEN_HEIGHT) {
+                log_i("Skipping invisible tile");
+                continue;
+            }
+            log_i("Processing tile %d", tile_index);
+            #ifndef NATIVE_64BIT
+                log_i("PSARM: %d", ESP.getFreePsram());
+            
+            #endif
+            tile_data= NULL;
+            tile_data_size = 0;
 
-            if(!download_tile_image(tileX, tileY, zoom, &tile_data[tile_index], &tile_data_size[tile_index])) {
+            if(!download_tile_image(tileX, tileY, zoom, &tile_data, &tile_data_size)) {
                 log_e("Download failed");
                 // If download fails, skip or show a placeholder
                 continue;
             }
 
-            //lv_img_dsc_t tile_img = decode_tile_image(tile_data, tile_data_size);
 
-            memset(&tile_img[tile_index], 0, sizeof(tile_img));
-            tile_img[tile_index].data = tile_data[tile_index];
-            tile_img[tile_index].data_size = tile_data_size[tile_index];
+            memset(&tile_img[tile_index], 0, sizeof(tile_img[tile_index]));
+            tile_img[tile_index].data = tile_data;
+            tile_img[tile_index].data_size = tile_data_size;
             tile_img[tile_index].header.always_zero = 0;
             tile_img[tile_index].header.cf = LV_IMG_CF_RAW_ALPHA; // or something appropriate
             tile_img[tile_index].header.w = 256;
             tile_img[tile_index].header.h = 256;
 
-            lv_draw_img_dsc_t draw_dsc;
-            lv_draw_img_dsc_init(&draw_dsc);
-
+            lv_draw_label_dsc_t label;
+            lv_draw_label_dsc_init(&label);
+            label.color = LV_COLOR_RED;
+            
+            char tile_text[128];
+            snprintf(tile_text, sizeof(tile_text), "%d", tile_index);
+            log_i("Tile text: %s", tile_text);
             // Now draw it on the canvas (in LVGL v7).
             // (x, y) are the coords on the canvas where the top-left of the tile is drawn.
-            lv_canvas_draw_img(g_canvas, drawX, drawY, &tile_img[tile_index], &draw_dsc);
+
+            lv_canvas_draw_img(map_canvas, drawX, drawY, &tile_img[tile_index], &draw_dsc[tile_index]);
+            lv_img_cache_invalidate_src(&tile_img[tile_index]);
+
+            //lv_canvas_draw_text(plane_canvas, drawX + 10, drawY + 30, 100, &label, tile_text, LV_LABEL_ALIGN_LEFT);
+            
             log_i("Draw map to %d, %d", drawX, drawY);
 
             // Freed after drawing if the decoder doesn’t keep a reference.
             //free(tile_data);
+            //tile_img[tile_index].data = NULL;
+
+            //free(tile_data);
             tile_index++;
+
+            
         }
-    }
-    for (int i = 0; i < 9; i++) {
-        free(tile_data[i]);
     }
 
     // Finally refresh the canvas object
-    lv_obj_invalidate(g_canvas);
+    lv_obj_invalidate(map_canvas);
+
+
+}
+
+void refresh_map() {
+    draw_map_tiles(47.4, 8.6, 13 );
+}
+
+static void planespotter_update_task( lv_task_t * task ) {
+    lv_canvas_fill_bg(plane_canvas, LV_COLOR_TRANSP, 128);
+    lv_draw_label_dsc_t label;
+    lv_draw_label_dsc_init(&label);
+    label.color = LV_COLOR_RED;
+    char tile_text[128];
+    snprintf(tile_text, sizeof(tile_text), "%d", millis());
+
+    lv_canvas_draw_text(plane_canvas,160, 240, 100, &label, tile_text, LV_LABEL_ALIGN_LEFT);
 }
 
 
 void plainspotter_app_main_setup( AppPage* screen) {
 
     // Create a canvas on the active screen
-    g_canvas = lv_canvas_create(screen->handle(), NULL);
-    if(!g_canvas) {
+    map_canvas = lv_canvas_create(screen->handle(), NULL);
+    if(!map_canvas) {
         LV_LOG_WARN("Failed to create canvas object");
         return;
     }
 
-    // Assign the local buffer to the canvas
-    lv_canvas_set_buffer(
-        g_canvas,
-        g_canvas_buf,
-        SCREEN_WIDTH,
-        SCREEN_HEIGHT,
-        LV_IMG_CF_TRUE_COLOR
-    );
+    plane_canvas = lv_canvas_create(screen->handle(), NULL);
+    if(!plane_canvas) {
+        LV_LOG_WARN("Failed to create canvas object");
+        return;
+    }
+
 
     // Position the canvas at top-left of the screen (0,0)
-    lv_obj_set_pos(g_canvas, 0, 0);
-    //lv_obj_set_event_cb(screen->handle(), canvas_event_cb);
+    lv_obj_set_pos(map_canvas, 0, 0);
+    lv_obj_set_pos(plane_canvas, 0, 0);
 
-    // Optional: set a background fill (just as an example)
-    // Fill the canvas buffer with a light gray color
-    lv_color_t bg_color = LV_COLOR_SILVER;
-    lv_canvas_fill_bg(g_canvas, bg_color, LV_OPA_COVER);
+    planespotter_tile_task = lv_task_create( planespotter_update_task, 5000, LV_TASK_PRIO_MID, NULL );
 
-    //refresh_map_tile(5, 9, 12, 50, 50);
-
-    draw_map_tiles(47.4, 8.5, 10 );
-    //draw_map_tiles(10, 10, 10 );
 }
 
 

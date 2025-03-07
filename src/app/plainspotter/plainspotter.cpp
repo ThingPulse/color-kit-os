@@ -68,6 +68,7 @@ static int registed = app_autocall_function( &plainspotter_app_setup, 8 );      
  * setup routine for application
  */
 void plainspotter_app_setup() {
+    return;
     // Create and register new application
     //   params: name, icon, auto add "refresh" button (this app will use synchronize function of the SynchronizedApplication class).
     //   Also, you can configure count of the required pages in the next two params (to have more app screens).
@@ -104,7 +105,7 @@ void plainspotter_app_setup() {
         lv_obj_align(mbox1, NULL, LV_ALIGN_CENTER, 0, 0);
     });
     
-    refresh_main_page();
+    //refresh_main_page();
 }
 
 void build_main_page()
@@ -125,7 +126,7 @@ void build_main_page()
 void refresh_main_page()
 {
 
-    //refresh_map();
+    refresh_map();
 }
 
 void plainspotter_activate_cb()

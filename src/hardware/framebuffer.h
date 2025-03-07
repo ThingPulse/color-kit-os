@@ -47,7 +47,7 @@
             #define FRAMEBUFFER_BUFFER_H        40
         #elif defined( CKGPRO ) || defined ( CKGRANDE )
             #define FRAMEBUFFER_BUFFER_W        RES_X_MAX
-            #define FRAMEBUFFER_BUFFER_H        40           
+            #define FRAMEBUFFER_BUFFER_H        100           
         #endif
     #endif
 

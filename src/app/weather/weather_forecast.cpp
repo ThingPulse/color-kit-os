@@ -240,7 +240,8 @@ bool weather_button_event_cb( EventBits_t event, void *arg ) {
                                             lv_task_del(_weather_app_task);
                                     mainbar_jump_back();
                                     break;
-        case BUTTON_SETUP:          weather_jump_to_setup();
+        case BUTTON_SETUP:          //weather_jump_to_setup();
+                                    weather_jump_to_image();
                                     break;
         case BUTTON_REFRESH:        weather_sync_request();
                                     break;
