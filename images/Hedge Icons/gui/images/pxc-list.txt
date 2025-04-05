@@ -1,4 +1,5 @@
 ./bg_r_480px.c
+./thingpulse_300px.c
 ./bg1_r_480px.c
 ./bg3_240px.c
 ./bg2_480px.c

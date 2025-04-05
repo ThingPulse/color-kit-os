@@ -40,13 +40,13 @@
         public:
         display_config_t();
         uint32_t brightness = DISPLAY_MAX_BRIGHTNESS;   /** @brief display brightness */
-        uint32_t timeout = DISPLAY_MIN_TIMEOUT;         /** @brief display time out */
+        uint32_t timeout = DISPLAY_MAX_TIMEOUT;         /** @brief display time out */
         uint32_t rotation = 0;                          /** @brief display rotation */
         bool block_return_maintile = false;             /** @brief block back to main tile on standby */
         bool use_dma = true;                            /** @brief use dma framebuffer */
         bool use_double_buffering = false;              /** @brief use double framebuffer */
         bool vibe = true;                               /** @brief vibe for touch feedback */
-        uint32_t background_image = 4;                  /** @brief background image */
+        uint32_t background_image = 0;                  /** @brief background image */
 
         protected:
         ////////////// Available for overloading: //////////////

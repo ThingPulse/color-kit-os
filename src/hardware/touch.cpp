@@ -27,6 +27,7 @@
 #include "touch.h"
 #include "powermgm.h"
 #include "callback.h"
+#include "button.h"
 
 #include "utils/alloc.h"
 
@@ -61,6 +62,8 @@ touch_config_t touch_config;
     #else
         #error "no hardware driver for touch, please setup minimal drivers ( display/framebuffer/touch )"
     #endif
+
+    bool touch_send_event_cb( EventBits_t event, void *arg );
     volatile bool DRAM_ATTR touch_irq_flag = false;
     portMUX_TYPE DRAM_ATTR Touch_IRQ_Mux = portMUX_INITIALIZER_UNLOCKED;
     void IRAM_ATTR touch_irq( void );
@@ -76,6 +79,11 @@ touch_config_t touch_config;
         */
         portEXIT_CRITICAL_ISR(&Touch_IRQ_Mux);
         powermgm_resume_from_ISR();
+        if ( powermgm_get_event( POWERMGM_STANDBY ) || powermgm_get_event( POWERMGM_SILENCE_WAKEUP ) ){
+            touch_send_event_cb( TOUCH_UPDATE, (void*)NULL );
+            log_i("Powermgt request");
+        }
+        log_i("Touch");
     }
 
     static SemaphoreHandle_t xSemaphores = NULL;
@@ -95,7 +103,7 @@ bool touched = false;
 static bool touch_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
 bool touch_powermgm_loop_event_cb( EventBits_t event, void *arg );
 bool touch_powermgm_event_cb( EventBits_t event, void *arg );
-bool touch_send_event_cb( EventBits_t event, void *arg );
+
 
 void touch_setup( void ) {
     /**
@@ -259,16 +267,20 @@ bool touch_powermgm_loop_event_cb( EventBits_t event, void *arg ) {
         #elif defined( CKGPRO ) || defined ( CKGRANDE )
             switch( event ) {
                 case POWERMGM_STANDBY:
-                    if( ctp.touched() )
+                    if( ctp.touched() ) {
+                        log_i("Set wakeup request");
                         powermgm_set_event( POWERMGM_WAKEUP_REQUEST );
+                    }
                     retval = true;
                     break;
                 case POWERMGM_WAKEUP:
                     retval = true;
                     break;
                 case POWERMGM_SILENCE_WAKEUP:
-                    if ( ctp.touched() )
+                    if ( ctp.touched() ) {
+                        log_i("Set wakeup request");
                         powermgm_set_event( POWERMGM_WAKEUP_REQUEST );
+                    }
                     retval = true;        
                     break;
             }
@@ -342,6 +354,7 @@ bool touch_powermgm_event_cb( EventBits_t event, void *arg ) {
             }
         
         #elif defined( CKGPRO ) || defined ( CKGRANDE )
+            log_i("touch event");
             switch( event ) {
                 case POWERMGM_STANDBY:          log_d("go standby");
                                                 /**

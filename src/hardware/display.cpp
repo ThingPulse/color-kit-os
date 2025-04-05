@@ -313,6 +313,7 @@ static void display_standby( void ) {
 }
 
 static void display_wakeup( bool silence ) {
+    log_i("Display wakeup");
     /**
      * wakeup with or without display
      */

@@ -1,5 +1,6 @@
 ./bg2_r_480px.png
 ./bg_240px.png
+./thingpulse_300px.png
 ./bg2_480px.png
 ./bg1_320px.png
 ./bg2_540px.png

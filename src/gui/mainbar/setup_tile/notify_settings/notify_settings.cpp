@@ -60,6 +60,7 @@ static void notify_enter_setup_event_cb( lv_obj_t * obj, lv_event_t event );
 static void notify_exit_setup_event_cb( lv_obj_t * obj, lv_event_t event );
 
 void notify_settings_tile_setup( void ) {
+    return;
     // get an app tile and copy mainstyle
     notify_settings_tile_num = mainbar_add_setup_tile( 1, 1, "battery setup" );
     notify_settings_tile = mainbar_get_tile_obj( notify_settings_tile_num );

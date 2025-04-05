@@ -48,7 +48,7 @@ lv_obj_t *preload = NULL;
 lv_obj_t *preload_label = NULL;
 lv_style_t style;
 
-LV_IMG_DECLARE(hedgehog);
+LV_IMG_DECLARE(thingpulse_300px);
 
 void splash_screen_stage_one( void ) {
 
@@ -74,10 +74,10 @@ void splash_screen_stage_one( void ) {
     }
     else {
         log_i("use default boot logo");
-        lv_img_set_src( logo, &hedgehog );
+        lv_img_set_src( logo, &thingpulse_300px );
     }
     lv_obj_align( logo, NULL, LV_ALIGN_CENTER, 0, 0 );
-    lv_obj_add_style( logo, LV_OBJ_PART_MAIN, SYSTEM_ICON_STYLE );
+    //lv_obj_add_style( logo, LV_OBJ_PART_MAIN, SYSTEM_ICON_STYLE );
 
     preload = lv_bar_create( lv_scr_act(), NULL );
     lv_obj_set_size( preload, lv_disp_get_hor_res( NULL ) - 80, 20 );

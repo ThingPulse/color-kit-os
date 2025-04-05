@@ -24,6 +24,7 @@
 #include "powermgm.h"
 #include "callback.h"
 #include "button.h"
+#include "touch.h"
 
 #ifdef NATIVE_64BIT 
     #include <unistd.h>
@@ -55,6 +56,7 @@ callback_t *powermgm_loop_callback = NULL;
 static uint32_t lighsleep = 0;
 
 bool powermgm_button_event_cb( EventBits_t event, void *arg );
+bool powermgm_touch_event_cb( EventBits_t event, void *arg );
 bool powermgm_send_event_cb( EventBits_t event );
 bool powermgm_send_loop_event_cb( EventBits_t event );
 
@@ -81,6 +83,7 @@ void powermgm_setup( void ) {
      * register powerbutton event
      */
     button_register_cb( BUTTON_PWR, powermgm_button_event_cb, "powermgm pwr button event");
+    touch_register_cb(TOUCH_UPDATE, powermgm_touch_event_cb, "powermgm touch event");
 }
 
 bool powermgm_button_event_cb( EventBits_t event, void *arg ) {
@@ -92,7 +95,19 @@ bool powermgm_button_event_cb( EventBits_t event, void *arg ) {
     return( true );
 }
 
+bool powermgm_touch_event_cb( EventBits_t event, void *arg ) {
+    
+    switch( event ) {
+        case TOUCH_UPDATE:    
+            log_i("powermgm_touch_event_cb");
+            //powermgm_set_event( POWERMGM_WAKEUP_REQUEST );
+            break;     
+    }
+    return( true );
+}
+
 void powermgm_loop( void ) {
+    static uint32_t lastCall = 0;
     static bool standby = true;
     #ifdef NATIVE_64BIT
         /**
@@ -125,6 +140,7 @@ void powermgm_loop( void ) {
      * handle powermgm request
      */
     if ( powermgm_get_event( POWERMGM_SILENCE_WAKEUP_REQUEST | POWERMGM_WAKEUP_REQUEST ) ) {
+        log_i("Wakeup request");
         /*
          * clear powermgm state
          */

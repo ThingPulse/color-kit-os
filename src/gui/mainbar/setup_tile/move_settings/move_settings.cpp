@@ -50,6 +50,7 @@ static void tilt_onoff_event_handler(lv_obj_t * obj, lv_event_t event);
 static void daily_stepcounter_onoff_event_handler(lv_obj_t * obj, lv_event_t event);
 
 void move_settings_tile_setup( void ) {
+    return;
     // get an app tile and copy mainstyle
     move_tile_num = mainbar_add_setup_tile( 1, 1, "move settings" );
     move_settings_tile = mainbar_get_tile_obj( move_tile_num );
