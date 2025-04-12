@@ -40,6 +40,7 @@
         bool showWind = false;
         bool imperial = false;
         bool widget = false;
+        char lang[10] = "";
     
         protected:
         ////////////// Available for overloading: //////////////

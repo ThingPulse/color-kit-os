@@ -37,7 +37,7 @@ int weather_fetch_today( weather_config_t *weather_config, weather_forcast_t *we
     int httpcode = -1;
     const char* weather_units_symbol = weather_config->imperial ? "F" : "C";
     const char* weather_units_char = weather_config->imperial ? "imperial" : "metric";
-    const char* weather_lang = "de";
+    const char* weather_lang = weather_config->lang;
     /**
      * build uri string
      */
@@ -103,7 +103,7 @@ int weather_fetch_forecast( weather_config_t *weather_config, weather_forcast_t 
     int httpcode = -1;
     const char* weather_units_symbol = weather_config->imperial ? "F" : "C";
     const char* weather_units_char = weather_config->imperial ? "imperial" : "metric";
-    const char* weather_lang = "de";
+    const char* weather_lang = weather_config->lang;
     /**
      * build uri string
      */

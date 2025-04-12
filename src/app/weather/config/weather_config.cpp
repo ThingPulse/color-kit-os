@@ -33,6 +33,7 @@ bool weather_config_t::onSave(JsonDocument& doc) {
     doc["showWind"] = showWind;
     doc["imperial"] = imperial;
     doc["widget"] = widget;
+    doc["lang"] = lang;
 
     return true;
 }
@@ -46,6 +47,11 @@ bool weather_config_t::onLoad(JsonDocument& doc) {
     showWind = doc["showWind"] | false;
     imperial = doc["imperial"] | false;
     widget = doc["widget"] | false;
+    if (doc.containsKey("lang")) {
+        strncpy( lang, doc["lang"], sizeof( lang ) );
+    } else {
+        strncpy( lang, "en", sizeof( lon ) );
+    }
 
     return true;
 }

@@ -39,6 +39,7 @@
 #include "ui/images.h"
 #include "sunmoon/SunMoonCalc.h"
 #include "sunmoon/util.h"
+#include "i18n/weather_i18n.h"
 
 #ifdef NATIVE_64BIT
     #include "utils/logging.h"
@@ -107,6 +108,9 @@ const char* windIcons[] = {
 };
 
 const char* WEEKDAYS_ABBR[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+string_id_t WEEKDAYS_TEXT_KEYS[] = {STR_SUNDAY, STR_MONDAY, STR_TUESDAY, STR_WEDNESDAY, STR_THURSDAY, STR_FRIDAY, STR_SATURDAY};
+string_id_t MOON_PHASE_KEYS[] = {STR_NEW_MOON, STR_WAXING_CRESCENT, STR_FIRST_QUARTER, STR_WAXING_GIBBOUS,
+    STR_FULL_MOON, STR_WANING_GIBBOUS, STR_LAST_QUARTER, STR_WANING_CRESCENT};
 
 lv_task_t * _weather_app_task = NULL;
 
@@ -350,7 +354,7 @@ void weather_forecast_sync( void  ) {
     struct tm *forecastLocalTime; 
     for ( int i = 0; i < 4; i++) {
         forecastLocalTime = localtime(&weather_forecast[i].timestamp);
-        lv_label_set_text(forecast_day_label[i], WEEKDAYS_ABBR[forecastLocalTime->tm_wday]);
+        lv_label_set_text(forecast_day_label[i], get_string(WEEKDAYS_TEXT_KEYS[forecastLocalTime->tm_wday]));
         lv_img_set_src( forecast_icons[i], resolve_owm_icon(weather_forecast[ i ].icon, true) );
         lv_label_set_text(forecast_temp_label[i], weather_forecast[ i ].temp);
 
@@ -382,6 +386,7 @@ void weather_forecast_sync( void  ) {
 
     char timestampBuffer[26];
     // Sun
+    lv_label_set_text(objects.label_sun, get_string(STR_SUN));
     strftime(timestampBuffer, 26, UI_TIME_FORMAT_NO_SECONDS, localtime(&result.sun.rise));
     lv_label_set_text(objects.label_sunrise, timestampBuffer);
 
@@ -389,6 +394,7 @@ void weather_forecast_sync( void  ) {
     lv_label_set_text(objects.label_sunset, timestampBuffer);
 
     // Moon
+    lv_label_set_text(objects.label_moon, get_string(STR_MOON));
     strftime(timestampBuffer, 26, UI_TIME_FORMAT_NO_SECONDS, localtime(&result.moon.rise));
     lv_label_set_text(objects.label_moonrise, timestampBuffer);
     strftime(timestampBuffer, 26, UI_TIME_FORMAT_NO_SECONDS, localtime(&result.moon.set));
@@ -397,6 +403,9 @@ void weather_forecast_sync( void  ) {
     // Moon icon
     int imageIndex = round(result.moon.age * NUMBER_OF_MOON_IMAGES / LUNAR_MONTH);
     if (imageIndex == NUMBER_OF_MOON_IMAGES) imageIndex = NUMBER_OF_MOON_IMAGES - 1;
+
+    // Moon label
+    lv_label_set_text(objects.label_moon_phase, get_string(MOON_PHASE_KEYS[result.moon.phase.index]));
 
     lv_img_set_src(objects.image_moon, &moon_phases[imageIndex]);
     //lv_obj_set_hidden(spinner, true);

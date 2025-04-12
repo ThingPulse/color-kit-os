@@ -34,6 +34,7 @@
 #include "hardware/motor.h"
 #include "hardware/gpsctl.h"
 #include "utils/bluejsonrequest.h"
+#include "i18n/weather_i18n.h"
 
 #ifdef NATIVE_64BIT
     #include "utils/logging.h"
@@ -52,6 +53,7 @@ lv_obj_t *weather_autosync_onoff = NULL;
 lv_obj_t *weather_wind_onoff = NULL;
 lv_obj_t *weather_imperial_onoff = NULL;
 lv_obj_t *weather_widget_onoff = NULL;
+lv_obj_t *language_list = NULL;
 lv_style_t weather_widget_setup_style;
 
 static void weather_textarea_event_cb( lv_obj_t * obj, lv_event_t event );
@@ -61,12 +63,15 @@ static void weather_autosync_onoff_event_handler( lv_obj_t * obj, lv_event_t eve
 static void weather_wind_onoff_event_handler( lv_obj_t *obj, lv_event_t event );
 static void weather_imperial_onoff_event_handler( lv_obj_t *obj, lv_event_t event );
 static void weather_widget_onoff_event_handler(lv_obj_t *obj, lv_event_t event);
+static void weather_language_event_handler(lv_obj_t *obj, lv_event_t event);
+
 
 bool weather_gpsctl_app_use_location_event_cb( EventBits_t event, void *arg );
 bool weather_bluetooth_message_event_cb( EventBits_t event, void *arg );
 static void weather_bluetooth_message_msg_pharse( BluetoothJsonRequest &doc );
 
 void weather_setup_tile_setup( uint32_t tile_num ) {
+    int32_t selected_language_index = 0;
 
     weather_config_t *weather_config = weather_get_config();
 
@@ -179,6 +184,13 @@ void weather_setup_tile_setup( uint32_t tile_num ) {
     lv_label_set_text( weather_widget_label, "widget");
     lv_obj_align( weather_widget_label, weather_widget_cont, LV_ALIGN_IN_LEFT_MID, 10, 0);
 
+    set_language_by_code(weather_config->lang);
+    String supported_languages = "en\nde";
+    lv_obj_t *language_cont = wf_add_labeled_list( weather_setup_tile, "language", &language_list, supported_languages.c_str(), weather_language_event_handler, ws_get_setup_tile_style() );
+    lv_obj_align( language_cont, weather_widget_cont, LV_ALIGN_OUT_BOTTOM_MID, 0, 8 );
+
+    lv_dropdown_set_selected( language_list, current_language );
+
     if ( weather_config->autosync)
         lv_switch_on(weather_autosync_onoff, LV_ANIM_OFF);
     else
@@ -262,6 +274,20 @@ static void exit_weather_widget_setup_event_cb( lv_obj_t * obj, lv_event_t event
                                             strncpy( weather_config->lon, lv_textarea_get_text( weather_lon_textfield ), sizeof( weather_config->lon ) );
                                             weather_save_config();
                                             mainbar_jump_back();
+                                            break;
+    }
+}
+
+static void weather_language_event_handler(lv_obj_t * obj, lv_event_t event) {
+    switch( event ) {
+        case ( LV_EVENT_VALUE_CHANGED):     char language_str[3] = "";
+                                            uint16_t selected_language = lv_dropdown_get_selected(obj);
+                                            set_language((language_t) selected_language);
+
+                                            lv_dropdown_get_selected_str( obj, language_str, sizeof( language_str ) );
+                                            weather_config_t *weather_config = weather_get_config();
+                                            strncpy( weather_config->lang, language_str, sizeof( language_str ) );
+
                                             break;
     }
 }
