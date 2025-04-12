@@ -107,10 +107,11 @@ const char* windIcons[] = {
   "wind-s", "wind-ssw", "wind-sw", "wind-wsw", "wind-w", "wind-wnw", "wind-nw", "wind-nnw"
 };
 
-const char* WEEKDAYS_ABBR[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
 string_id_t WEEKDAYS_TEXT_KEYS[] = {STR_SUNDAY, STR_MONDAY, STR_TUESDAY, STR_WEDNESDAY, STR_THURSDAY, STR_FRIDAY, STR_SATURDAY};
 string_id_t MOON_PHASE_KEYS[] = {STR_NEW_MOON, STR_WAXING_CRESCENT, STR_FIRST_QUARTER, STR_WAXING_GIBBOUS,
     STR_FULL_MOON, STR_WANING_GIBBOUS, STR_LAST_QUARTER, STR_WANING_CRESCENT};
+
+string_id_t MONTH_KEYS[] = {    STR_JANUARY, STR_FEBRUARY, STR_MARCH,STR_APRIL,STR_MAY,STR_JUNE,STR_JULY,STR_AUGUST,  STR_SEPTEMBER,STR_OCTOBER,STR_NOVEMBER,STR_DECEMBER};
 
 lv_task_t * _weather_app_task = NULL;
 
@@ -289,7 +290,7 @@ void update_time() {
 
     if ( last == 0 || info.tm_min != last_info.tm_min || info.tm_hour != last_info.tm_hour) {
         
-        strftime( buf, sizeof(buf), "%a %d.%b %Y", &info );
+        snprintf(buf, sizeof(buf), "%s, %d. %s %d", get_string(WEEKDAYS_TEXT_KEYS[info.tm_wday]), info.tm_mday, get_string(MONTH_KEYS[info.tm_mon]), 1900 + info.tm_year);
         lv_label_set_text( objects.label_date, buf );
         strftime( buf, sizeof(buf), "%H:%M", &info );
         lv_label_set_text( objects.label_time, buf );

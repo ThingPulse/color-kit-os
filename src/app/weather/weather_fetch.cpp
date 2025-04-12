@@ -26,6 +26,24 @@
 #include "hardware/powermgm.h"
 #include "utils/json_psram_allocator.h"
 #include "utils/uri_load/uri_load.h"
+#include "i18n/weather_i18n.h"
+
+string_id_t WIND_DIRECTION_KEYS[] = {STR_DIR_N,
+    STR_DIR_NNE,
+    STR_DIR_NE,
+    STR_DIR_ENE,
+    STR_DIR_E,
+    STR_DIR_ESE,
+    STR_DIR_SE,
+    STR_DIR_SSE,
+    STR_DIR_S,
+    STR_DIR_SSW,
+    STR_DIR_SW,
+    STR_DIR_WSW,
+    STR_DIR_W,
+    STR_DIR_WNW,
+    STR_DIR_NW,
+    STR_DIR_NNW};
 
 /**
  * Utility function to convert numbers to directions
@@ -288,7 +306,19 @@ int weather_fetch_onecall( weather_config_t *weather_config, weather_forcast_t *
     return( httpcode );
 }
 
-void weather_wind_to_string( weather_forcast_t* container, int speed, int directionDegree )
+void weather_wind_to_string( weather_forcast_t* container, int speed, int degrees ) {
+    // Normalize degrees to 0–360
+    while (degrees < 0) degrees += 360;
+    while (degrees >= 360) degrees -= 360;
+
+    // Divide compass into 16 segments of 22.5 degrees each
+    int index = (int)((degrees + 11.25f) / 22.5f) % 16;
+
+    snprintf( container->wind_speed, sizeof(container->wind_speed), "%d %s", speed, get_string(WIND_DIRECTION_KEYS[index]));
+
+}
+
+/*void weather_wind_to_string( weather_forcast_t* container, int speed, int directionDegree )
 {
     const char *dir = "N";
     if ( directionDegree > 348 )
@@ -325,4 +355,4 @@ void weather_wind_to_string( weather_forcast_t* container, int speed, int direct
         dir = "NNE";
     snprintf( container->wind_speed, sizeof(container->wind_speed), "%d %s", speed, dir);
     return;
-}
+}*/
