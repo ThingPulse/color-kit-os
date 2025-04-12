@@ -120,7 +120,7 @@ bool BaseJsonConfig::save( uint32_t size ) {
     bool result = false;
 #ifdef NATIVE_64BIT
     std::fstream file;
-
+    log_d("Saving file %s", fileName);
     file.open(fileName, std::fstream::out );
 #else
     fs::File file = SPIFFS.open(fileName, FILE_WRITE );

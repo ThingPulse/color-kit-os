@@ -324,11 +324,11 @@ void weather_forecast_sync( void  ) {
 
     retval = weather_fetch_forecast( weather_get_config() , &weather_forecast[ 0 ] );
     if (retval != 200) {
-        return;
+        //return;
     }
 
+    //retval = weather_fetch_onecall( weather_config, &weather_today, &weather_forecast[ 0 ]);
     char buf[64];
-
 
     widget_set_label( weather_widget, weather_today.temp );
     widget_set_icon( weather_widget,  (lv_obj_t*)resolve_owm_icon( weather_today.icon, true ));
@@ -352,6 +352,7 @@ void weather_forecast_sync( void  ) {
         forecastLocalTime = localtime(&weather_forecast[i].timestamp);
         lv_label_set_text(forecast_day_label[i], WEEKDAYS_ABBR[forecastLocalTime->tm_wday]);
         lv_img_set_src( forecast_icons[i], resolve_owm_icon(weather_forecast[ i ].icon, true) );
+        lv_label_set_text(forecast_temp_label[i], weather_forecast[ i ].temp);
 
     }
 
@@ -366,8 +367,12 @@ void weather_forecast_sync( void  ) {
     struct tm nowLocal;
     localtime_r( &tnow, &nowLocal );
 
-    strftime( buf, sizeof(buf), "%H:%M", &nowLocal );
-    lv_label_set_text( objects.last_update, buf );
+    if (weather_today.valide) {
+        strftime( buf, sizeof(buf), "%H:%M", &nowLocal );
+        lv_label_set_text( objects.last_update, buf );
+    } else {
+        lv_label_set_text( objects.last_update, "ERROR" );
+    }
 
     char *endptr; 
 

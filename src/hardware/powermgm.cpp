@@ -99,8 +99,8 @@ bool powermgm_touch_event_cb( EventBits_t event, void *arg ) {
     
     switch( event ) {
         case TOUCH_UPDATE:    
-            log_i("powermgm_touch_event_cb");
-            //powermgm_set_event( POWERMGM_WAKEUP_REQUEST );
+            //log_i("powermgm_touch_event_cb");
+            powermgm_set_event( POWERMGM_WAKEUP_REQUEST );
             break;     
     }
     return( true );

@@ -37,6 +37,8 @@
         bool valide = false;
         time_t timestamp = 0;
         char temp[16] = "";
+        char min_temp[16] = "";
+        char max_temp[16] = "";
         char pressure[16] = "";
         char humidity[16] = "";
         char name[32] = "";
@@ -45,6 +47,16 @@
         char wind_speed[16] = "";
         int wind_deg = 0;
     } weather_forcast_t;
+
+    typedef struct {
+        int weekday = 0;
+        float min_temp = 200.0f;
+        float max_temp = -200.0f;
+        float max_wind_speed = 0.0f;
+        char icon_at_noon[16] = "";
+        char description_at_noon[32] = "";
+        long timestamp = 0;
+    } weather_forecast_raw_t;
 
     void weather_app_setup( void );
 
