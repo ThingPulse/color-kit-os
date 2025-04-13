@@ -9,20 +9,23 @@ extern "C" {
 
 typedef struct _objects_t {
     lv_obj_t *main;
-    lv_obj_t *label_date;
+    lv_obj_t *time_container;
     lv_obj_t *label_time;
-    lv_obj_t *label_current_temperature;
-    lv_obj_t *image_current_weather;
-    lv_obj_t *image_wind;
-    lv_obj_t *label_current_description;
-    lv_obj_t *label_humidity;
-    lv_obj_t *label_pressure;
+    lv_obj_t *label_date;
+    lv_obj_t *today_container;
     lv_obj_t *label_wind_speed;
-    lv_obj_t *label_day0;
+    lv_obj_t *label_pressure;
+    lv_obj_t *label_humidity;
+    lv_obj_t *label_current_description;
+    lv_obj_t *image_wind;
+    lv_obj_t *image_current_weather;
+    lv_obj_t *label_current_temperature;
+    lv_obj_t *forecast_container;
+    lv_obj_t *label_temp_day0;
     lv_obj_t *label_day1;
     lv_obj_t *label_day2;
     lv_obj_t *label_day3;
-    lv_obj_t *label_temp_day0;
+    lv_obj_t *label_day0;
     lv_obj_t *label_temp_day1;
     lv_obj_t *label_temp_day2;
     lv_obj_t *label_temp_day3;
@@ -30,6 +33,8 @@ typedef struct _objects_t {
     lv_obj_t *image_day1;
     lv_obj_t *image_day2;
     lv_obj_t *image_day3;
+    lv_obj_t *message_container;
+    lv_obj_t *label_error_message;
     lv_obj_t *image_moon;
     lv_obj_t *label_sun;
     lv_obj_t *label_moon;

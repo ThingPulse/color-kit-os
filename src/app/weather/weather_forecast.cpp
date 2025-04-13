@@ -300,7 +300,6 @@ void update_time() {
 }
 
 static void weather_update_task( lv_task_t * task ) {
-    //WeatherTaskData *data = (WeatherTaskData *)task->user_data;
     update_time();
 
     static unsigned long last = 0;
@@ -316,56 +315,62 @@ void weather_forecast_sync( void  ) {
     weather_config_t *weather_config = weather_get_config();
     int32_t retval = -1;
 
-    //gui_take();
-    //lv_obj_set_hidden(spinner, false);
     update_time();
 
-    //gui_give();
     
     retval = weather_fetch_today( weather_config , &weather_today );
-    if (retval != 200) {
-        return;
-    }
+    //lv_obj_set_hidden(objects.today_container, true);
 
     retval = weather_fetch_forecast( weather_get_config() , &weather_forecast[ 0 ] );
-    if (retval != 200) {
-        //return;
-    }
+
+    //lv_obj_set_hidden(objects.forecast_container, true);
 
     //retval = weather_fetch_onecall( weather_config, &weather_today, &weather_forecast[ 0 ]);
     char buf[64];
 
-    widget_set_label( weather_widget, weather_today.temp );
-    widget_set_icon( weather_widget,  (lv_obj_t*)resolve_owm_icon( weather_today.icon, true ));
+    if (weather_today.valide) {
+        lv_obj_set_hidden(objects.today_container, false);
+        lv_obj_set_hidden(objects.message_container, true);
+        widget_set_label( weather_widget, weather_today.temp );
+        widget_set_icon( weather_widget,  (lv_obj_t*)resolve_owm_icon( weather_today.icon, true ));
 
-    if ( weather_config->showWind ) {
-        widget_set_extended_label( weather_widget, weather_today.wind_speed );
-    }
-    else {
-        widget_set_extended_label( weather_widget, "" );
-    }
-    
+        if ( weather_config->showWind ) {
+            widget_set_extended_label( weather_widget, weather_today.wind_speed );
+        }
+        else {
+            widget_set_extended_label( weather_widget, "" );
+        }
+        
 
-    lv_img_set_src(objects.image_current_weather, resolve_owm_icon( weather_today.icon, false ));
-    lv_label_set_text( objects.label_current_temperature, weather_today.temp );
-    lv_label_set_text( objects.label_current_description, weather_today.description );
-    lv_label_set_text( objects.label_humidity, weather_today.humidity );
-    lv_label_set_text( objects.label_pressure, weather_today.pressure );
-
-    struct tm *forecastLocalTime; 
-    for ( int i = 0; i < 4; i++) {
-        forecastLocalTime = localtime(&weather_forecast[i].timestamp);
-        lv_label_set_text(forecast_day_label[i], get_string(WEEKDAYS_TEXT_KEYS[forecastLocalTime->tm_wday]));
-        lv_img_set_src( forecast_icons[i], resolve_owm_icon(weather_forecast[ i ].icon, true) );
-        lv_label_set_text(forecast_temp_label[i], weather_forecast[ i ].temp);
-
+        lv_img_set_src(objects.image_current_weather, resolve_owm_icon( weather_today.icon, false ));
+        lv_label_set_text( objects.label_current_temperature, weather_today.temp );
+        lv_label_set_text( objects.label_current_description, weather_today.description );
+        lv_label_set_text( objects.label_humidity, weather_today.humidity );
+        lv_label_set_text( objects.label_pressure, weather_today.pressure );
+    } else {
+        lv_obj_set_hidden(objects.today_container, true);
+        lv_obj_set_hidden(objects.message_container, false);
     }
 
-    lv_label_set_text(objects.label_wind_speed, weather_today.wind_speed);
+    if (weather_forecast[0].valide) {
+        lv_obj_set_hidden(objects.forecast_container, false);
+        struct tm *forecastLocalTime; 
+        for ( int i = 0; i < 4; i++) {
+            forecastLocalTime = localtime(&weather_forecast[i].timestamp);
+            lv_label_set_text(forecast_day_label[i], get_string(WEEKDAYS_TEXT_KEYS[forecastLocalTime->tm_wday]));
+            lv_img_set_src( forecast_icons[i], resolve_owm_icon(weather_forecast[ i ].icon, true) );
+            lv_label_set_text(forecast_temp_label[i], weather_forecast[ i ].temp);
 
-    int windAngleIndex = round(weather_today.wind_deg * 16 / 360);
-    if (windAngleIndex > 15) windAngleIndex = 0;
-    lv_img_set_src(objects.image_wind, getLvglImageByName(windIcons[windAngleIndex]));
+        }
+
+        lv_label_set_text(objects.label_wind_speed, weather_today.wind_speed);
+
+        int windAngleIndex = round(weather_today.wind_deg * 16 / 360);
+        if (windAngleIndex > 15) windAngleIndex = 0;
+        lv_img_set_src(objects.image_wind, getLvglImageByName(windIcons[windAngleIndex]));
+    } else {
+        lv_obj_set_hidden(objects.forecast_container, true);
+    }
 
     time_t tnow = time(nullptr);
     struct tm *nowUtc = gmtime(&tnow);

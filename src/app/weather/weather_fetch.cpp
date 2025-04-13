@@ -78,6 +78,7 @@ int weather_fetch_today( weather_config_t *weather_config, weather_forcast_t *we
             log_e("weather today deserializeJson() failed: %s (%d bytes)", error.c_str(), uri_load_dsc->size );
             doc.clear();
             uri_load_free_all( uri_load_dsc );
+            weather_today->valide = false;
             return( httpcode );
         }
 
@@ -86,7 +87,7 @@ int weather_fetch_today( weather_config_t *weather_config, weather_forcast_t *we
                 weather_today->valide = true;
                 snprintf( weather_today->temp, sizeof( weather_today->temp ), "%0.1f°%s", doc["main"]["temp"].as<float>(), weather_units_symbol);
                 snprintf( weather_today->humidity, sizeof( weather_today->humidity ),"%.0f%%", doc["main"]["humidity"].as<float>() );
-                snprintf( weather_today->pressure, sizeof( weather_today->pressure ),"%.0fpha", doc["main"]["pressure"].as<float>() );
+                snprintf( weather_today->pressure, sizeof( weather_today->pressure ),"%.0fhPa", doc["main"]["pressure"].as<float>() );
                 strcpy( weather_today->icon, doc["weather"][0]["icon"] );
                 strcpy( weather_today->description, doc["weather"][0]["description"] );
                 strcpy( weather_today->name, doc["name"] );
@@ -96,6 +97,8 @@ int weather_fetch_today( weather_config_t *weather_config, weather_forcast_t *we
                 weather_wind_to_string( weather_today, speed, directionDegree );
                 weather_today->wind_deg = directionDegree;
                 httpcode = 200;
+            } else {
+                weather_today->valide = false;
             }
         } else {
             weather_today->valide = false;
@@ -106,6 +109,7 @@ int weather_fetch_today( weather_config_t *weather_config, weather_forcast_t *we
         doc.clear();
     }
     else {
+        weather_today->valide = false;
         httpcode = -1;
     }
     /**
@@ -143,6 +147,7 @@ int weather_fetch_forecast( weather_config_t *weather_config, weather_forcast_t 
             log_e("weather forecast deserializeJson() failed: %s (%d bytes)", error.c_str(), uri_load_dsc->size );
             doc.clear();
             uri_load_free_all( uri_load_dsc );
+            weather_forecast[0].valide = false;
             return( httpcode );
         }
 
@@ -209,8 +214,11 @@ int weather_fetch_forecast( weather_config_t *weather_config, weather_forcast_t 
 
                 httpcode = 200;
             } else {
+                weather_forecast[0].valide = false;
                 log_e("Call failed with code: %d", httpcode);
             }
+        } else {
+            weather_forecast[0].valide = false;
         }
         /**
          * clear json
@@ -218,6 +226,7 @@ int weather_fetch_forecast( weather_config_t *weather_config, weather_forcast_t 
         doc.clear();
     }
     else {
+        weather_forecast[0].valide = false;
         httpcode = -1;
     }
     /**
@@ -317,42 +326,3 @@ void weather_wind_to_string( weather_forcast_t* container, int speed, int degree
     snprintf( container->wind_speed, sizeof(container->wind_speed), "%d %s", speed, get_string(WIND_DIRECTION_KEYS[index]));
 
 }
-
-/*void weather_wind_to_string( weather_forcast_t* container, int speed, int directionDegree )
-{
-    const char *dir = "N";
-    if ( directionDegree > 348 )
-        ; // already set to "N"
-    else if ( directionDegree > 326 )
-        dir = "NNW";
-    else if ( directionDegree > 303 )
-        dir = "NW";
-    else if ( directionDegree > 281 )
-        dir = "WNW";
-    else if ( directionDegree > 258 )
-        dir = "W";
-    else if ( directionDegree > 236 )
-        dir = "WSW";
-    else if ( directionDegree > 213 )
-        dir = "SW";
-    else if ( directionDegree > 191 )
-        dir = "SSW";
-    else if ( directionDegree > 168 )
-        dir = "S";
-    else if ( directionDegree > 146 )
-        dir = "SSE";
-    else if ( directionDegree > 123 )
-        dir = "SE";
-    else if ( directionDegree > 101 )
-        dir = "ESE";
-    else if ( directionDegree > 78 )
-        dir = "E";
-    else if ( directionDegree > 56 )
-        dir = "ENE";
-    else if ( directionDegree > 33 )
-        dir = "NE";
-    else if ( directionDegree > 11 )
-        dir = "NNE";
-    snprintf( container->wind_speed, sizeof(container->wind_speed), "%d %s", speed, dir);
-    return;
-}*/

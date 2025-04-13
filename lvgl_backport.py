@@ -6,11 +6,12 @@ import sys
 CONVERSIONS = {
     # Function names
     r'\bcreate_screen_main\(\)': r'create_screen_main(lv_obj_t *tile)',
-    r'\blv_obj_t \*parent_obj = obj;': r'lv_obj_t *parent_obj = tile;',
+    #r'\blv_obj_t \*parent_obj = obj;': r'lv_obj_t *parent_obj = tile;',
     r'\blv_obj_set_scrollbar_mode\(obj, LV_SCROLLBAR_MODE_OFF\);': r'//lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);',
 
     # Object creation
     r'\blv_obj_create\(0\)': r'lv_cont_create(tile, NULL)',
+    r'\blv_obj_create\((\w+)\)': r'lv_cont_create(\1, NULL)',
     r'\blv_label_create\((\w+)\);': r'lv_label_create(\1, NULL);\n\t\t\tlv_label_set_long_mode(obj, LV_LABEL_LONG_CROP);',
     r'\blv_img_create\((\w+)\)': r'lv_img_create(\1, NULL)',
     r'\blv_line_create\((\w+)\)': r'lv_line_create(\1, NULL)',
@@ -37,7 +38,12 @@ CONVERSIONS = {
     r'\blv_label_set_long_mode\(obj, LV_LABEL_LONG_CLIP\)': r'lv_label_set_long_mode(obj, LV_LABEL_LONG_CROP)',
     r'\blv_obj_set_style_border_width\(obj, 0, LV_PART_MAIN \| LV_STATE_DEFAULT\)': r'lv_obj_set_style_local_border_width(obj, 0, LV_CONT_PART_MAIN, LV_STATE_DEFAULT)',
     r'\blv_obj_set_style_bg_opa\(obj, (\w+), LV_PART_MAIN \| LV_STATE_DEFAULT\)': r'lv_obj_set_style_local_bg_opa(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, \1)',
-
+    r'\blv_obj_set_style_pad_left\(obj, (\w+), LV_PART_MAIN \| LV_STATE_DEFAULT\)': r'lv_obj_set_style_local_pad_left(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, \1)',
+    r'\blv_obj_set_style_pad_top\(obj, (\w+), LV_PART_MAIN \| LV_STATE_DEFAULT\)': r'lv_obj_set_style_local_pad_top(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, \1)',
+    r'\blv_obj_set_style_pad_right\(obj, (\w+), LV_PART_MAIN \| LV_STATE_DEFAULT\)': r'lv_obj_set_style_local_pad_right(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, \1)',
+    r'\blv_obj_set_style_pad_bottom\(obj, (\w+), LV_PART_MAIN \| LV_STATE_DEFAULT\)': r'lv_obj_set_style_local_pad_bottom(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, \1)',
+    r'\blv_obj_set_style_radius\(obj, (\w+), LV_PART_MAIN \| LV_STATE_DEFAULT\)': r'lv_obj_set_style_local_radius(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, \1)',
+    r'\blv_obj_add_flag\(obj, LV_OBJ_FLAG_HIDDEN\)': r'lv_obj_set_hidden(obj, true)',
 
 
     # Flags
