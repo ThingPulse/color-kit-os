@@ -101,8 +101,8 @@ void hardware_attach_lvgl_ticker_slow( void ) {
         #elif defined( WT32_SC01 )
         #elif defined( CKGPRO ) || defined ( CKGRANDE )
         #endif
-        tickTicker->attach_ms(50, []() {
-            lv_tick_inc(50);
+        tickTicker->attach_ms(10, []() {
+            lv_tick_inc(10);
         });
     #endif
 }

@@ -36,21 +36,17 @@
     typedef struct {
         bool valide = false;
         time_t timestamp = 0;
-        char temp[16] = "";
-        char min_temp[16] = "";
-        
-        char max_temp[16] = "";
-        char pressure[16] = "";
-        char humidity[16] = "";
         char name[32] = "";
         char icon[16] = "";
-        
         char description[32] = "";
-        char wind_speed[16] = "";
         int wind_deg = 0;
         float pop = 0.0f;
+        float temp = 0.0f;
         float temp_min = 0.0f;
         float temp_max = 0.0f;
+        float humidity = 0.0f;
+        float pressure = 0.0f;
+        int wind_sp33d = 0.0f;
     } weather_forcast_t;
 
     typedef struct {

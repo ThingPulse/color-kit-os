@@ -315,6 +315,10 @@ void weather_forecast_sync( void  ) {
     weather_config_t *weather_config = weather_get_config();
     int32_t retval = -1;
 
+    const char* weather_units_symbol = weather_config->imperial ? "F" : "C";
+    const char* weather_units_char = weather_config->imperial ? "imperial" : "metric";
+    const char* weather_wind_speed_symbol = weather_config->imperial ? "mph" : "m/s";
+
     update_time();
 
     
@@ -331,11 +335,18 @@ void weather_forecast_sync( void  ) {
     if (weather_today.valide) {
         lv_obj_set_hidden(objects.today_container, false);
         lv_obj_set_hidden(objects.message_container, true);
-        widget_set_label( weather_widget, weather_today.temp );
+        
+        snprintf( buf, sizeof( buf ),"%0.1f°%s", weather_today.temp, weather_units_symbol );
+        widget_set_label( weather_widget, buf );
+        lv_label_set_text( objects.label_current_temperature, buf );
+        snprintf( buf, sizeof( buf ),"%0.0f%%", weather_today.humidity );
         widget_set_icon( weather_widget,  (lv_obj_t*)resolve_owm_icon( weather_today.icon, true ));
 
+        snprintf( buf, sizeof( buf ),"%d%s %d°", weather_today.wind_sp33d, weather_wind_speed_symbol, weather_today.wind_deg );
+        lv_label_set_text(objects.label_wind_speed, buf);
         if ( weather_config->showWind ) {
-            widget_set_extended_label( weather_widget, weather_today.wind_speed );
+            widget_set_extended_label( weather_widget, buf );
+            
         }
         else {
             widget_set_extended_label( weather_widget, "" );
@@ -343,10 +354,12 @@ void weather_forecast_sync( void  ) {
         
 
         lv_img_set_src(objects.image_current_weather, resolve_owm_icon( weather_today.icon, false ));
-        lv_label_set_text( objects.label_current_temperature, weather_today.temp );
+        
         lv_label_set_text( objects.label_current_description, weather_today.description );
-        lv_label_set_text( objects.label_humidity, weather_today.humidity );
-        lv_label_set_text( objects.label_pressure, weather_today.pressure );
+        snprintf( buf, sizeof( buf ),"%0.0f%%", weather_today.humidity );
+        lv_label_set_text( objects.label_humidity, buf );
+        snprintf( buf, sizeof( buf ),"%0.0fhPa", weather_today.pressure );
+        lv_label_set_text( objects.label_pressure, buf );
     } else {
         lv_obj_set_hidden(objects.today_container, true);
         lv_obj_set_hidden(objects.message_container, false);
@@ -360,11 +373,12 @@ void weather_forecast_sync( void  ) {
             forecastLocalTime = localtime(&weather_forecast[i].timestamp);
             lv_label_set_text(forecast_day_label[i], get_string(WEEKDAYS_TEXT_KEYS[forecastLocalTime->tm_wday]));
             lv_img_set_src( forecast_icons[i], resolve_owm_icon(weather_forecast[ i ].icon, true) );
-            lv_label_set_text(forecast_temp_label[i], weather_forecast[ i ].temp);
+            snprintf( buf, sizeof( buf ),"%0.0f|%0.0f°%s", weather_forecast[i].temp_min, weather_forecast[i].temp_max, weather_units_symbol );
+            lv_label_set_text(forecast_temp_label[i], buf);
 
         }
 
-        lv_label_set_text(objects.label_wind_speed, weather_today.wind_speed);
+        
 
         int windAngleIndex = round(weather_today.wind_deg * 16 / 360);
         if (windAngleIndex > 15) windAngleIndex = 0;

@@ -464,7 +464,7 @@ void create_screen_detail(lv_obj_t *tile) {
             lv_obj_t *obj = lv_cont_create(parent_obj, NULL);
             objects.detail_container_template = obj;
             lv_obj_set_pos(obj, 0, 64);
-            lv_obj_set_size(obj, 320, 64);
+            lv_obj_set_size(obj, 320, 40);
             lv_obj_set_style_local_pad_left(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
             lv_obj_set_style_local_pad_top(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
             lv_obj_set_style_local_pad_right(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -481,7 +481,7 @@ void create_screen_detail(lv_obj_t *tile) {
                     lv_obj_t *obj = lv_label_create(parent_obj, NULL);
 			lv_label_set_long_mode(obj, LV_LABEL_LONG_CROP);
                     objects.detail_time_label_template = obj;
-                    lv_obj_set_pos(obj, 13, 17);
+                    lv_obj_set_pos(obj, 7, 12);
                     lv_obj_set_size(obj, 50, 19);
                     lv_label_set_static_text(obj, "15:00");
                     lv_obj_set_style_local_text_font(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &ui_font_open_sans16);
@@ -490,7 +490,7 @@ void create_screen_detail(lv_obj_t *tile) {
                     // detailImageTemplate
                     lv_obj_t *obj = lv_img_create(parent_obj, NULL);
                     objects.detail_image_template = obj;
-                    lv_obj_set_pos(obj, 88, 7);
+                    lv_obj_set_pos(obj, 52, 6);
                     lv_obj_set_size(obj, 64, 64);
                     lv_img_set_src(obj, &img_weather_fog_64px);
                     lv_img_set_pivot(obj, 0, 0);
@@ -501,21 +501,21 @@ void create_screen_detail(lv_obj_t *tile) {
                     lv_obj_t *obj = lv_label_create(parent_obj, NULL);
 			lv_label_set_long_mode(obj, LV_LABEL_LONG_CROP);
                     objects.detail_label_pop_template = obj;
-                    lv_obj_set_pos(obj, 79, 39);
+                    lv_obj_set_pos(obj, 89, 12);
                     lv_obj_set_size(obj, 50, 19);
                     lv_label_set_static_text(obj, "55%");
                     lv_obj_set_style_local_text_font(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &ui_font_open_sans16);
                     lv_obj_set_style_local_text_color(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xff23a6ff & 0xFFFFFF));
-                    lv_label_set_align(obj, LV_LABEL_ALIGN_CENTER);
+                    lv_label_set_align(obj, LV_LABEL_ALIGN_LEFT);
                 }
                 {
                     // detailTempLabelTemplate
                     lv_obj_t *obj = lv_label_create(parent_obj, NULL);
 			lv_label_set_long_mode(obj, LV_LABEL_LONG_CROP);
                     objects.detail_temp_label_template = obj;
-                    lv_obj_set_pos(obj, 162, 26);
-                    lv_obj_set_size(obj, 98, 19);
-                    lv_label_set_static_text(obj, "11.3 - 15.2°C");
+                    lv_obj_set_pos(obj, 127, 12);
+                    lv_obj_set_size(obj, 55, 19);
+                    lv_label_set_static_text(obj, "15.2°C");
                     lv_obj_set_style_local_text_font(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &ui_font_open_sans16);
                 }
                 {
@@ -523,10 +523,34 @@ void create_screen_detail(lv_obj_t *tile) {
                     lv_obj_t *obj = lv_label_create(parent_obj, NULL);
 			lv_label_set_long_mode(obj, LV_LABEL_LONG_CROP);
                     objects.detail_description_label_template = obj;
-                    lv_obj_set_pos(obj, 162, 7);
+                    lv_obj_set_pos(obj, 182, 12);
                     lv_obj_set_size(obj, 127, 19);
                     lv_label_set_static_text(obj, "scattered clouds");
                     lv_obj_set_style_local_text_font(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &ui_font_open_sans16);
+                }
+                {
+                    // detailSeparatorTemplate
+                    lv_obj_t *obj = lv_line_create(parent_obj, NULL);
+                    static lv_point_t line_points[] = {
+                        { 0, 0 },
+                        { 320, 0 }
+                    };
+                    lv_line_set_points(obj, line_points, 2);
+                    objects.detail_separator_template = obj;
+                    lv_obj_set_pos(obj, 0, 1);
+                    lv_obj_set_size(obj, 320, 1);
+                    
+    		static lv_style_t style_obj;
+    		lv_style_init(&style_obj);
+    		lv_style_set_line_color(&style_obj, LV_STATE_DEFAULT, lv_color_hex(0xff373737));
+    		lv_obj_add_style(obj, LV_LINE_PART_MAIN, &style_obj);
+    
+                    
+    		static lv_style_t style_obj_2;
+    		lv_style_init(&style_obj_2);
+    		lv_style_set_line_width(&style_obj_2, LV_STATE_DEFAULT, 1);
+    		lv_obj_add_style(obj, LV_LINE_PART_MAIN, &style_obj_2);
+    ;
                 }
             }
         }

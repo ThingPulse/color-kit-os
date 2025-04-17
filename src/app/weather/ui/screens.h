@@ -52,6 +52,7 @@ typedef struct _objects_t {
     lv_obj_t *detail_label_pop_template;
     lv_obj_t *detail_temp_label_template;
     lv_obj_t *detail_description_label_template;
+    lv_obj_t *detail_separator_template;
 } objects_t;
 
 extern objects_t objects;

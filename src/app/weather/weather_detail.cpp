@@ -81,6 +81,9 @@ void weather_image_tile_setup( uint32_t tile_num ) {
         clone = lv_label_create(hour_forecast_container[i], src);
         hour_forecast_temp[i] = clone;
 
+        src = objects.detail_separator_template;
+        clone = lv_line_create(hour_forecast_container[i], src);
+
     }
 }
 
@@ -104,7 +107,7 @@ void update_weather_detail(weather_config_t *weather_config, weather_forcast_t *
 
         lv_label_set_text(hour_forecast_description[i], hourly_forecast[i].description);
 
-        snprintf( buf, sizeof( buf ),"%0.1f - %0.1f %s",  hourly_forecast[i].temp_min, hourly_forecast[i].temp_max, weather_units_symbol);
+        snprintf( buf, sizeof( buf ),"%0.1f°%s",  hourly_forecast[i].temp, weather_units_symbol);
         lv_label_set_text(hour_forecast_temp[i], buf);
 
     }

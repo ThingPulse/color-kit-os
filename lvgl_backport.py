@@ -46,6 +46,8 @@ CONVERSIONS = {
     r'\blv_obj_set_style_pad_bottom\(obj, (\w+), LV_PART_MAIN \| LV_STATE_DEFAULT\)': r'lv_obj_set_style_local_pad_bottom(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, \1)',
     r'\blv_obj_set_style_radius\(obj, (\w+), LV_PART_MAIN \| LV_STATE_DEFAULT\)': r'lv_obj_set_style_local_radius(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, \1)',
     r'\blv_obj_add_flag\(obj, LV_OBJ_FLAG_HIDDEN\)': r'lv_obj_set_hidden(obj, true)',
+    r'\blv_obj_set_style_border_color\((\w+),\s*([^\s,]+),\s*(LV_PART_MAIN\s*\|\s*LV_STATE_DEFAULT)\)': r'lv_obj_set_style_local_border_color(\1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, \2)',
+
 
 
     # Flags

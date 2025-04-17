@@ -33,23 +33,7 @@ const char* weather_lang_strings_en[] = {
     [STR_WANING_GIBBOUS]   = "Waning Gibbous",
     [STR_LAST_QUARTER]     = "Last Quarter",
     [STR_WANING_CRESCENT]  = "Waning Crescent",
-    [STR_DIR_N]            = "N",
-    [STR_DIR_NNE]          = "NNE",
-    [STR_DIR_NE]           = "NE",
-    [STR_DIR_ENE]          = "ENE",
-    [STR_DIR_E]            = "E",
-    [STR_DIR_ESE]          = "ESE",
-    [STR_DIR_SE]           = "SE",
-    [STR_DIR_SSE]          = "SSE",
-    [STR_DIR_S]            = "S",
-    [STR_DIR_SSW]          = "SSW",
-    [STR_DIR_SW]           = "SW",
-    [STR_DIR_WSW]          = "WSW",
-    [STR_DIR_W]            = "W",
-    [STR_DIR_WNW]          = "WNW",
-    [STR_DIR_NW]           = "NW",
-    [STR_DIR_NNW]          = "NNW",
-    [STR_FORECAST_DETAIL]  = "Today"
+    [STR_FORECAST_DETAIL]  = "Next 24h"
 };
 
 const char* weather_lang_strings_de[] = {
@@ -83,23 +67,7 @@ const char* weather_lang_strings_de[] = {
     [STR_WANING_GIBBOUS]   = "Abnehmender Mond",
     [STR_LAST_QUARTER]     = "Letztes Viertel",
     [STR_WANING_CRESCENT]  = "Abnehmende Sichel",
-    [STR_DIR_N]            = "N",
-    [STR_DIR_NNE]          = "NNO",
-    [STR_DIR_NE]           = "NO",
-    [STR_DIR_ENE]          = "ONO",
-    [STR_DIR_E]            = "O",
-    [STR_DIR_ESE]          = "OSO",
-    [STR_DIR_SE]           = "SO",
-    [STR_DIR_SSE]          = "SSO",
-    [STR_DIR_S]            = "S",
-    [STR_DIR_SSW]          = "SSW",
-    [STR_DIR_SW]           = "SW",
-    [STR_DIR_WSW]          = "WSW",
-    [STR_DIR_W]            = "W",
-    [STR_DIR_WNW]          = "WNW",
-    [STR_DIR_NW]           = "NW",
-    [STR_DIR_NNW]          = "NNW",
-    [STR_FORECAST_DETAIL]  = "Heute"
+    [STR_FORECAST_DETAIL]  = "Nächste 24h"
 };
 
 const char* get_string(string_id_t id) {
