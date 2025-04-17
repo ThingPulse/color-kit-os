@@ -56,6 +56,7 @@ lv_obj_t *weather_forecast_tile = NULL;
 uint32_t weather_forecast_tile_num;
 lv_obj_t * exit_btn = NULL;
 lv_obj_t * setup_btn = NULL;
+lv_obj_t * detail_btn = NULL;
 lv_obj_t * reload_btn = NULL;
 
 lv_obj_t *weather_forecast_location_label = NULL;
@@ -99,6 +100,7 @@ void weather_forecast_sync_Task( void * pvParameters );
 bool weather_forecast_wifictl_event_cb( EventBits_t event, void *arg );
 static void exit_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event );
 static void setup_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event );
+static void detail_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event );
 static void refresh_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event );
 
 
@@ -172,18 +174,19 @@ void weather_widget_setup() {
 void weather_forecast_tile_setup( uint32_t tile_num ) {
     log_i("weather_forecast_tile_setup");
 
-
-
     weather_forecast = (weather_forcast_t*)CALLOC_ASSERT( sizeof( weather_forcast_t ) * WEATHER_MAX_FORECAST , 1, "weather forecast calloc faild" );
 
     weather_forecast_tile_num = tile_num;
     weather_forecast_tile = mainbar_get_tile_obj( weather_forecast_tile_num );
     create_screen_main(weather_forecast_tile);
-    
+
     exit_btn = wf_add_exit_button( weather_forecast_tile, exit_weather_widget_event_cb );
     lv_obj_align(exit_btn, weather_forecast_tile, LV_ALIGN_IN_BOTTOM_LEFT, THEME_PADDING, -THEME_PADDING );
 
     setup_btn = wf_add_setup_button( weather_forecast_tile, setup_weather_widget_event_cb );
+    lv_obj_align(setup_btn, weather_forecast_tile, LV_ALIGN_IN_BOTTOM_RIGHT, -THEME_PADDING, -THEME_PADDING );
+
+    detail_btn = wf_add_setup_button( weather_forecast_tile, detail_weather_widget_event_cb );
     lv_obj_align(setup_btn, weather_forecast_tile, LV_ALIGN_IN_BOTTOM_RIGHT, -THEME_PADDING, -THEME_PADDING );
 
     reload_btn = wf_add_refresh_button( weather_forecast_tile, refresh_weather_widget_event_cb );
@@ -245,8 +248,8 @@ bool weather_button_event_cb( EventBits_t event, void *arg ) {
                                             lv_task_del(_weather_app_task);
                                     mainbar_jump_back();
                                     break;
-        case BUTTON_SETUP:          //weather_jump_to_setup();
-                                    weather_jump_to_image();
+        case BUTTON_SETUP:          weather_jump_to_setup();
+                                    //weather_jump_to_image();
                                     break;
         case BUTTON_REFRESH:        weather_sync_request();
                                     break;
@@ -264,6 +267,13 @@ static void exit_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event ) {
 static void setup_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event ) {
     switch( event ) {
         case( LV_EVENT_CLICKED ):       weather_jump_to_setup();
+                                        break;
+    }
+}
+
+static void detail_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event ) {
+    switch( event ) {
+        case( LV_EVENT_CLICKED ):       weather_jump_to_image();
                                         break;
     }
 }

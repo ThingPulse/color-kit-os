@@ -99,9 +99,9 @@ void weather_app_setup( void ) {
     weather_config.load();
 
     // get an app tile and copy mainstyle
-    weather_app_tile_num = mainbar_add_app_tile( 1, 2, "Weather App" );
+    weather_app_tile_num = mainbar_add_app_tile( 2, 2, "Weather App" );
     weather_app_setup_tile_num = weather_app_tile_num + 1;
-    weather_app_image_tile_num =  weather_app_setup_tile_num + 1;
+    weather_app_image_tile_num = weather_app_tile_num + 2;
 
     // init forecast and setup tile
     weather_forecast_tile_setup( weather_app_tile_num );

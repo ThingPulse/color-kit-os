@@ -6,6 +6,8 @@ import sys
 CONVERSIONS = {
     # Function names
     r'\bcreate_screen_main\(\)': r'create_screen_main(lv_obj_t *tile)',
+    r'\bcreate_screen_detail\(\)': r'create_screen_detail(lv_obj_t *tile)',
+
     #r'\blv_obj_t \*parent_obj = obj;': r'lv_obj_t *parent_obj = tile;',
     r'\blv_obj_set_scrollbar_mode\(obj, LV_SCROLLBAR_MODE_OFF\);': r'//lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);',
 
@@ -59,6 +61,7 @@ CONVERSIONS = {
     r'\blv_label_set_text\((\w+),\s*([^\)]+)\)': r'lv_label_set_static_text(\1, \2)',
     r'\bLV_TEXT_ALIGN_CENTER': r'LV_LABEL_ALIGN_CENTER',
     r'\bLV_SIZE_CONTENT': r'LV_SIZE_AUTO',
+    r'\bLV_TEXT_ALIGN_LEFT': r'LV_LABEL_ALIGN_LEFT',
 
     # Image
     #r'\blv_img_set_src\((\w+),\s*([^\)]+)\)': r'lv_img_set_file(\1, \2)',

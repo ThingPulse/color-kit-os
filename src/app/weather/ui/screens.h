@@ -9,6 +9,7 @@ extern "C" {
 
 typedef struct _objects_t {
     lv_obj_t *main;
+    lv_obj_t *detail;
     lv_obj_t *time_container;
     lv_obj_t *label_time;
     lv_obj_t *label_date;
@@ -44,16 +45,27 @@ typedef struct _objects_t {
     lv_obj_t *label_moonset;
     lv_obj_t *label_moon_phase;
     lv_obj_t *last_update;
+    lv_obj_t *detail_title_label;
+    lv_obj_t *detail_container_template;
+    lv_obj_t *detail_time_label_template;
+    lv_obj_t *detail_image_template;
+    lv_obj_t *detail_label_pop_template;
+    lv_obj_t *detail_temp_label_template;
+    lv_obj_t *detail_description_label_template;
 } objects_t;
 
 extern objects_t objects;
 
 enum ScreensEnum {
     SCREEN_ID_MAIN = 1,
+    SCREEN_ID_DETAIL = 2,
 };
 
 void create_screen_main(lv_obj_t *tile);
 void tick_screen_main();
+
+void create_screen_detail(lv_obj_t *tile);
+void tick_screen_detail();
 
 void create_screens();
 void tick_screen(int screen_index);
