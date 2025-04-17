@@ -120,7 +120,7 @@ int weather_fetch_today( weather_config_t *weather_config, weather_forcast_t *we
     return( httpcode );
 }
 
-int weather_fetch_forecast( weather_config_t *weather_config, weather_forcast_t * weather_forecast ) {
+int weather_fetch_forecast( weather_config_t *weather_config, weather_forcast_t * weather_forecast, weather_forcast_t * hourly_forecast ) {
     char url[512]="";
     int httpcode = -1;
     const char* weather_units_symbol = weather_config->imperial ? "F" : "C";
@@ -154,6 +154,14 @@ int weather_fetch_forecast( weather_config_t *weather_config, weather_forcast_t 
         if( doc.containsKey("cod") ) {
             httpcode = doc["cod"].as<uint32_t>();
             if ( httpcode == 200 ) {
+                for (int i = 0; i < MAX_FORECAST_HOURS; i++) {
+                    hourly_forecast[i].timestamp = doc["list"][i]["dt"].as<long>() | 0;
+                    strncpy( hourly_forecast[i].icon, doc["list"][i]["weather"][0]["icon"] | "n/a", sizeof(  hourly_forecast[i].icon ) );
+                    hourly_forecast[ i ].pop = doc["list"][i]["pop"].as<float>() * 100.0f;
+                    strncpy( hourly_forecast[i].description, doc["list"][i]["weather"][0]["description"] | "", sizeof(  hourly_forecast[i].description ) );
+                    hourly_forecast[i].temp_min = doc["list"][i]["main"]["temp_min"].as<float>();
+                    hourly_forecast[i].temp_max = doc["list"][i]["main"]["temp_max"].as<float>();
+                }
                 weather_forecast_raw_t daily_forecast[7];
                 weather_forecast[0].valide = true;
                 int hourly_forecast_count = doc["cnt"].as<uint32_t>();

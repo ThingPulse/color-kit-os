@@ -23,7 +23,7 @@
 #include "weather.h"
 #include "weather_fetch.h"
 #include "weather_forecast.h"
-#include "weather_image.h"
+#include "weather_detail.h"
 #include "weather_setup.h"
 #include "images/resolve_owm_icon.h"
 #include "gui/gui.h"

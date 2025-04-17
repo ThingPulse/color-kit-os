@@ -29,6 +29,7 @@
     #define WEATHER_FORECAST_BUFFER_SIZE    40000
 
     #define MAX_FORECAST_DAYS   4
+    #define MAX_FORECAST_HOURS  6
 
     /**
      * @brief fetch today weather information
@@ -47,7 +48,7 @@
      *
      * @return  200 ok, otherwise failed
      */
-    int weather_fetch_forecast( weather_config_t *weather_config, weather_forcast_t * weather_forecast );
+    int weather_fetch_forecast( weather_config_t *weather_config, weather_forcast_t * daily_forecast, weather_forcast_t * hourly_forecast );
 
         /**
      * @brief fetch forecast weather information

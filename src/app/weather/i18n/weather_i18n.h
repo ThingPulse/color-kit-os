@@ -59,6 +59,7 @@ typedef enum {
     STR_DIR_WNW,
     STR_DIR_NW,
     STR_DIR_NNW,
+    STR_FORECAST_DETAIL,
     STR_MAX
 } string_id_t;
 

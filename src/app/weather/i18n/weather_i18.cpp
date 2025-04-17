@@ -48,7 +48,8 @@ const char* weather_lang_strings_en[] = {
     [STR_DIR_W]            = "W",
     [STR_DIR_WNW]          = "WNW",
     [STR_DIR_NW]           = "NW",
-    [STR_DIR_NNW]          = "NNW"
+    [STR_DIR_NNW]          = "NNW",
+    [STR_FORECAST_DETAIL]  = "Today"
 };
 
 const char* weather_lang_strings_de[] = {
@@ -97,7 +98,8 @@ const char* weather_lang_strings_de[] = {
     [STR_DIR_W]            = "W",
     [STR_DIR_WNW]          = "WNW",
     [STR_DIR_NW]           = "NW",
-    [STR_DIR_NNW]          = "NNW"
+    [STR_DIR_NNW]          = "NNW",
+    [STR_FORECAST_DETAIL]  = "Heute"
 };
 
 const char* get_string(string_id_t id) {

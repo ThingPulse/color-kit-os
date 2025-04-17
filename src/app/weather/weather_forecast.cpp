@@ -40,6 +40,7 @@
 #include "sunmoon/SunMoonCalc.h"
 #include "sunmoon/util.h"
 #include "i18n/weather_i18n.h"
+#include "weather_detail.h"
 
 #ifdef NATIVE_64BIT
     #include "utils/logging.h"
@@ -56,7 +57,6 @@ lv_obj_t *weather_forecast_tile = NULL;
 uint32_t weather_forecast_tile_num;
 lv_obj_t * exit_btn = NULL;
 lv_obj_t * setup_btn = NULL;
-lv_obj_t * detail_btn = NULL;
 lv_obj_t * reload_btn = NULL;
 
 lv_obj_t *weather_forecast_location_label = NULL;
@@ -74,6 +74,7 @@ lv_obj_t * current_pressure_label = NULL;
 lv_obj_t * spinner = NULL;
 
 static weather_forcast_t *weather_forecast = NULL;
+static weather_forcast_t *hourly_forecast = NULL;
 static weather_forcast_t weather_today;
 
 static void weather_update_task( lv_task_t * task );
@@ -100,7 +101,6 @@ void weather_forecast_sync_Task( void * pvParameters );
 bool weather_forecast_wifictl_event_cb( EventBits_t event, void *arg );
 static void exit_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event );
 static void setup_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event );
-static void detail_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event );
 static void refresh_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event );
 
 
@@ -175,6 +175,7 @@ void weather_forecast_tile_setup( uint32_t tile_num ) {
     log_i("weather_forecast_tile_setup");
 
     weather_forecast = (weather_forcast_t*)CALLOC_ASSERT( sizeof( weather_forcast_t ) * WEATHER_MAX_FORECAST , 1, "weather forecast calloc faild" );
+    hourly_forecast = (weather_forcast_t*)CALLOC_ASSERT( sizeof( weather_forcast_t ) * MAX_FORECAST_HOURS , 1, "hourly forecast calloc faild" );
 
     weather_forecast_tile_num = tile_num;
     weather_forecast_tile = mainbar_get_tile_obj( weather_forecast_tile_num );
@@ -184,9 +185,6 @@ void weather_forecast_tile_setup( uint32_t tile_num ) {
     lv_obj_align(exit_btn, weather_forecast_tile, LV_ALIGN_IN_BOTTOM_LEFT, THEME_PADDING, -THEME_PADDING );
 
     setup_btn = wf_add_setup_button( weather_forecast_tile, setup_weather_widget_event_cb );
-    lv_obj_align(setup_btn, weather_forecast_tile, LV_ALIGN_IN_BOTTOM_RIGHT, -THEME_PADDING, -THEME_PADDING );
-
-    detail_btn = wf_add_setup_button( weather_forecast_tile, detail_weather_widget_event_cb );
     lv_obj_align(setup_btn, weather_forecast_tile, LV_ALIGN_IN_BOTTOM_RIGHT, -THEME_PADDING, -THEME_PADDING );
 
     reload_btn = wf_add_refresh_button( weather_forecast_tile, refresh_weather_widget_event_cb );
@@ -246,10 +244,9 @@ bool weather_button_event_cb( EventBits_t event, void *arg ) {
         case BUTTON_EXIT:           
                                     if( _weather_app_task )
                                             lv_task_del(_weather_app_task);
-                                    mainbar_jump_back();
+                                    mainbar_jump_to_maintile(true);
                                     break;
         case BUTTON_SETUP:          weather_jump_to_setup();
-                                    //weather_jump_to_image();
                                     break;
         case BUTTON_REFRESH:        weather_sync_request();
                                     break;
@@ -259,7 +256,7 @@ bool weather_button_event_cb( EventBits_t event, void *arg ) {
 
 static void exit_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event ) {
     switch( event ) {
-        case( LV_EVENT_CLICKED ):       mainbar_jump_back();
+        case( LV_EVENT_CLICKED ):       mainbar_jump_to_maintile(true);
                                         break;
     }
 }
@@ -267,13 +264,6 @@ static void exit_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event ) {
 static void setup_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event ) {
     switch( event ) {
         case( LV_EVENT_CLICKED ):       weather_jump_to_setup();
-                                        break;
-    }
-}
-
-static void detail_weather_widget_event_cb( lv_obj_t * obj, lv_event_t event ) {
-    switch( event ) {
-        case( LV_EVENT_CLICKED ):       weather_jump_to_image();
                                         break;
     }
 }
@@ -331,7 +321,7 @@ void weather_forecast_sync( void  ) {
     retval = weather_fetch_today( weather_config , &weather_today );
     //lv_obj_set_hidden(objects.today_container, true);
 
-    retval = weather_fetch_forecast( weather_get_config() , &weather_forecast[ 0 ] );
+    retval = weather_fetch_forecast( weather_get_config() , &weather_forecast[ 0 ], &hourly_forecast[0] );
 
     //lv_obj_set_hidden(objects.forecast_container, true);
 
@@ -363,6 +353,7 @@ void weather_forecast_sync( void  ) {
     }
 
     if (weather_forecast[0].valide) {
+        update_weather_detail(weather_config, hourly_forecast);
         lv_obj_set_hidden(objects.forecast_container, false);
         struct tm *forecastLocalTime; 
         for ( int i = 0; i < 4; i++) {
@@ -381,6 +372,8 @@ void weather_forecast_sync( void  ) {
     } else {
         lv_obj_set_hidden(objects.forecast_container, true);
     }
+
+
 
     time_t tnow = time(nullptr);
     struct tm *nowUtc = gmtime(&tnow);
