@@ -148,10 +148,12 @@ void framebuffer_setup( void ) {
         #elif defined ( CKGPRO ) || defined ( CKGRANDE )
             framebuffer_use_dma = true;
             tft.init();
+            tft.initDMA();
+            tft.startWrite();
             tft.setSwapBytes( true );
             tft.fillScreen( TFT_BLACK );
 
-            tft.initDMA();
+            
             ledcWrite(0, 0xFF );
         #else
             #error "no framebuffer init function implemented, please setup minimal drivers ( display/framebuffer/touch )"
@@ -442,29 +444,13 @@ static void framebuffer_flush_cb(lv_disp_drv_t *disp_drv, const lv_area_t *area,
                 tft.endWrite();
             }
         #elif defined( CKGPRO ) || defined ( CKGRANDE )
-            /*if (tft.getStartCount() == 0) {   // Processing if not yet started
-                tft.startWrite();
-            }
-            tft.pushImageDMA( area->x1
-                            , area->y1
-                            , area->x2 - area->x1 + 1
-                            , area->y2 - area->y1 + 1
-                            , ( lgfx::swap565_t* )&color_p->full);
-            tft.pushImage*/
-            /*tft.startWrite();
-            tft.pushImage( area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1), ( uint16_t *)color_p );
-            tft.flush();
-            tft.endWrite();*/
-            if ( framebuffer_use_dma ) {
-                tft.endWrite();
-                tft.startWrite();
-                tft.pushImageDMA( area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1), ( uint16_t *)color_p );
-            } else {
-                tft.startWrite();
-                tft.pushImage( area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1), ( uint16_t *)color_p );
-                tft.flush();
+
+            if (tft.getStartCount() == 0) {
                 tft.endWrite();
             }
+
+            tft.pushImageDMA( area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1), ( uint16_t *)color_p );
+
 
         #else
             #error "no LVGL display driver function implemented, please setup minimal drivers ( display/framebuffer/touch )"

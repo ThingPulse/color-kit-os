@@ -55,6 +55,7 @@ CONVERSIONS = {
     r'\bLV_OBJ_FLAG_SCROLL_ELASTIC': r'LV_CONT_FLAG_SCROLL_ELASTIC',
     r'\bLV_OBJ_FLAG_SCROLL_MOMENTUM': r'LV_CONT_FLAG_SCROLL_MOMENTUM',
     r'\bLV_OBJ_FLAG_SCROLL_CHAIN_HOR': r'LV_CONT_FLAG_SCROLL_CHAIN',
+    r'\bLV_LABEL_LONG_SCROLL': r'LV_LABEL_LONG_SROLL',
     
     # Scrollbar
     #r'\blv_obj_set_scrollbar_mode\((\w+),\s*LV_SCROLLBAR_MODE_OFF\)': r'lv_obj_set_style_local_pad_right(\1, LV_CONT_PART_SCROLLBAR, LV_STATE_DEFAULT, 0)',

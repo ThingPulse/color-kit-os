@@ -525,7 +525,8 @@ void create_screen_detail(lv_obj_t *tile) {
                     objects.detail_description_label_template = obj;
                     lv_obj_set_pos(obj, 182, 12);
                     lv_obj_set_size(obj, 127, 19);
-                    lv_label_set_static_text(obj, "scattered clouds");
+                    lv_label_set_long_mode(obj, LV_LABEL_LONG_SROLL);
+                    lv_label_set_static_text(obj, "scattered clouds that scroll");
                     lv_obj_set_style_local_text_font(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &ui_font_open_sans16);
                 }
                 {

@@ -2261,9 +2261,9 @@
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "scattered clouds",
+                  "text": "scattered clouds that scroll",
                   "textType": "literal",
-                  "longMode": "WRAP",
+                  "longMode": "SCROLL",
                   "recolor": false
                 },
                 {

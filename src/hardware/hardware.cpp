@@ -101,8 +101,8 @@ void hardware_attach_lvgl_ticker_slow( void ) {
         #elif defined( WT32_SC01 )
         #elif defined( CKGPRO ) || defined ( CKGRANDE )
         #endif
-        tickTicker->attach_ms(10, []() {
-            lv_tick_inc(10);
+        tickTicker->attach_ms(5, []() {
+            lv_tick_inc(5);
         });
     #endif
 }
@@ -223,7 +223,8 @@ void hardware_setup( void ) {
             /**
              * lvgl init
              */
-            lv_init();     
+            lv_init();   
+            
             /**
              * setup wire interface
              */

@@ -19,7 +19,7 @@ public:
     {
       auto cfg = _bus_instance.config();
 
-      cfg.freq_write = 40000000;
+      cfg.freq_write = 60000000;
       cfg.freq_read = 16000000;
       cfg.dma_channel = 1;
       cfg.pin_sclk = TFT_SCLK;
