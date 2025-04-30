@@ -7,6 +7,7 @@ CONVERSIONS = {
     # Function names
     r'\bcreate_screen_main\(\)': r'create_screen_main(lv_obj_t *tile)',
     r'\bcreate_screen_detail\(\)': r'create_screen_detail(lv_obj_t *tile)',
+    r'\bcreate_screen_setup\(\)': r'create_screen_setup(lv_obj_t *tile)',
 
     #r'\blv_obj_t \*parent_obj = obj;': r'lv_obj_t *parent_obj = tile;',
     r'\blv_obj_set_scrollbar_mode\(obj, LV_SCROLLBAR_MODE_OFF\);': r'//lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);',
@@ -17,6 +18,8 @@ CONVERSIONS = {
     r'\blv_label_create\((\w+)\);': r'lv_label_create(\1, NULL);\n\t\t\tlv_label_set_long_mode(obj, LV_LABEL_LONG_CROP);',
     r'\blv_img_create\((\w+)\)': r'lv_img_create(\1, NULL)',
     r'\blv_line_create\((\w+)\)': r'lv_line_create(\1, NULL)',
+    r'\blv_textarea_create\((\w+)\)': r'lv_textarea_create(\1, NULL)',
+
 
 
     # Style and property changes
@@ -46,7 +49,9 @@ CONVERSIONS = {
     r'\blv_obj_set_style_pad_bottom\(obj, (\w+), LV_PART_MAIN \| LV_STATE_DEFAULT\)': r'lv_obj_set_style_local_pad_bottom(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, \1)',
     r'\blv_obj_set_style_radius\(obj, (\w+), LV_PART_MAIN \| LV_STATE_DEFAULT\)': r'lv_obj_set_style_local_radius(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, \1)',
     r'\blv_obj_add_flag\(obj, LV_OBJ_FLAG_HIDDEN\)': r'lv_obj_set_hidden(obj, true)',
-    r'\blv_obj_set_style_border_color\((\w+),\s*([^\s,]+),\s*(LV_PART_MAIN\s*\|\s*LV_STATE_DEFAULT)\)': r'lv_obj_set_style_local_border_color(\1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, \2)',
+    r'\blv_textarea_set_password_mode': r'lv_textarea_set_pwd_mode',
+    r'\blv_obj_add_flag\(obj, LV_OBJ_FLAG_HIDDEN\)': r'lv_obj_set_hidden(obj, true)',
+
 
 
 
@@ -63,6 +68,7 @@ CONVERSIONS = {
     # Labels
     r'\blv_label_set_text\((\w+),\s*([^\)]+)\)': r'lv_label_set_static_text(\1, \2)',
     r'\bLV_TEXT_ALIGN_CENTER': r'LV_LABEL_ALIGN_CENTER',
+    r'\bLV_TEXT_ALIGN_RIGHT': r'LV_LABEL_ALIGN_RIGHT',
     r'\bLV_SIZE_CONTENT': r'LV_SIZE_AUTO',
     r'\bLV_TEXT_ALIGN_LEFT': r'LV_LABEL_ALIGN_LEFT',
 

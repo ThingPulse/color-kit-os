@@ -19,7 +19,7 @@ void create_screen_main(lv_obj_t *tile) {
     lv_obj_set_pos(obj, 0, 0);
     lv_obj_set_size(obj, 320, 480);
     lv_obj_set_click(obj, false);
-    //lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
+    //////////////////////////////////////////////////////lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
     lv_obj_set_style_local_bg_color(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xff000000));
     lv_obj_set_style_local_text_color(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xffffffff & 0xFFFFFF));
     lv_obj_set_style_local_border_width(obj, 0, LV_CONT_PART_MAIN, LV_STATE_DEFAULT);
@@ -440,7 +440,7 @@ void create_screen_detail(lv_obj_t *tile) {
     lv_obj_set_pos(obj, 0, 0);
     lv_obj_set_size(obj, 320, 480);
     lv_obj_set_click(obj, false);
-    //lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
+    //////////////////////////////////////////////////////lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
     lv_obj_set_style_local_bg_opa(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 180);
     lv_obj_set_style_local_bg_color(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xff000000));
     lv_obj_set_style_local_text_color(obj, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xffffffff & 0xFFFFFF));
@@ -564,12 +564,38 @@ void tick_screen_detail() {
 
 void create_screens() {
 // 
-//     lv_disp_t *dispp = lv_disp_get_default();
-//     lv_theme_t *theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), true, LV_FONT_DEFAULT);
-//     lv_disp_set_theme(dispp, theme);
-//     
-//     create_screen_main(lv_obj_t *tile);
-//     create_screen_detail(lv_obj_t *tile);
+// // 
+// // // 
+// // // // 
+// // // // // 
+// // // // // // 
+// // // // // // // 
+// // // // // // // // 
+// // // // // // // // // 
+// // // // // // // // // // 
+// // // // // // // // // // // 
+// // // // // // // // // // // // 
+// // // // // // // // // // // // // 
+// // // // // // // // // // // // // // 
+// // // // // // // // // // // // // // // 
+// // // // // // // // // // // // // // // // 
+// // // // // // // // // // // // // // // // // 
+// // // // // // // // // // // // // // // // // // 
+// // // // // // // // // // // // // // // // // // // 
+// // // // // // // // // // // // // // // // // // // // 
+// // // // // // // // // // // // // // // // // // // // // 
+// // // // // // // // // // // // // // // // // // // // // // 
+// // // // // // // // // // // // // // // // // // // // // // // 
+// // // // // // // // // // // // // // // // // // // // // // // // 
+// // // // // // // // // // // // // // // // // // // // // // // // // 
+// // // // // // // // // // // // // // // // // // // // // // // // // // 
+// // // // // // // // // // // // // // // // // // // // // // // // // // // 
+// // // // // // // // // // // // // // // // // // // // // // // // // // //     lv_disp_t *dispp = lv_disp_get_default();
+// // // // // // // // // // // // // // // // // // // // // // // // // // //     lv_theme_t *theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), true, LV_FONT_DEFAULT);
+// // // // // // // // // // // // // // // // // // // // // // // // // // //     lv_disp_set_theme(dispp, theme);
+// // // // // // // // // // // // // // // // // // // // // // // // // // //     
+// // // // // // // // // // // // // // // // // // // // // // // // // // //     create_screen_main(lv_obj_t *tile);
+// // // // // // // // // // // // // // // // // // // // // // // // // // //     create_screen_detail(lv_obj_t *tile);
 }
 
 typedef void (*tick_screen_func_t)();

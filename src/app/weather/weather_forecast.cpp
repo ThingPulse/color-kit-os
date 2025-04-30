@@ -79,7 +79,7 @@ static weather_forcast_t weather_today;
 
 static void weather_update_task( lv_task_t * task );
 
-lv_task_t * weather_tile_task;
+lv_task_t * weather_tile_task = NULL;
 
 icon_t * weather_widget = NULL;
 
@@ -115,7 +115,7 @@ string_id_t MOON_PHASE_KEYS[] = {STR_NEW_MOON, STR_WAXING_CRESCENT, STR_FIRST_QU
 
 string_id_t MONTH_KEYS[] = {    STR_JANUARY, STR_FEBRUARY, STR_MARCH,STR_APRIL,STR_MAY,STR_JUNE,STR_JULY,STR_AUGUST,  STR_SEPTEMBER,STR_OCTOBER,STR_NOVEMBER,STR_DECEMBER};
 
-lv_task_t * _weather_app_task = NULL;
+
 
 lv_obj_t* forecast_icons[4];
 lv_obj_t* forecast_temp_label[4];
@@ -233,8 +233,8 @@ static void weather_forecast_activate_cb( void ) {
     return;
     WeatherTaskData *data = (WeatherTaskData *)malloc(sizeof(WeatherTaskData));
     data->last_update_time = 0; // Initialize last update time
-    if( !_weather_app_task ) {
-            _weather_app_task = lv_task_create( weather_app_task, 10000, LV_TASK_PRIO_MID, data );
+    if( !weather_tile_task ) {
+        weather_tile_task = lv_task_create( weather_app_task, 10000, LV_TASK_PRIO_MID, data );
     }
 
 }
@@ -242,8 +242,8 @@ static void weather_forecast_activate_cb( void ) {
 bool weather_button_event_cb( EventBits_t event, void *arg ) {
     switch( event ) {
         case BUTTON_EXIT:           
-                                    if( _weather_app_task )
-                                            lv_task_del(_weather_app_task);
+                                    if( weather_tile_task )
+                                            lv_task_del(weather_tile_task);
                                     mainbar_jump_to_maintile(true);
                                     break;
         case BUTTON_SETUP:          weather_jump_to_setup();
