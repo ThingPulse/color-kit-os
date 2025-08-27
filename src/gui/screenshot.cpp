@@ -28,8 +28,11 @@
 #include "screenshot.h"
 #include "utils/alloc.h"
 #include "utils/filepath_convert.h"
+extern "C" {
 #include "gui/png_decoder/lv_png.h"
+}
 #include "hardware/motor.h"
+#include "lvgl.h"
 
 #ifdef NATIVE_64BIT
     #include <iostream>
@@ -46,7 +49,7 @@
 static raw_img_grey_t *raw_grey;
 static raw_img_rgb_t *raw_rgb;
 
-static void screenshot_disp_flush( lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p );
+static void screenshot_disp_flush( struct _lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p );
 
 void screenshot_setup( void ) {
     raw_grey = NULL;
@@ -54,8 +57,11 @@ void screenshot_setup( void ) {
 }
 
 void screenshot_take( void ) {
-    lv_disp_drv_t driver;
-    lv_disp_t *system_disp;
+    /*lv_disp_t *system_disp = lv_disp_get_default();
+    const lv_disp_drv_t *drv = lv_disp_get_drv(system_disp);
+    lv_disp_drv_t *drv = lv_disp_get_drv(system_disp);
+    lv_disp_flush_cb_t original_flush_cb = drv->flush_cb;*/
+
     /**
      * force reflush lvgl image cache
      */
@@ -86,12 +92,10 @@ void screenshot_take( void ) {
     /**
      * redirect display driver
      */
-    system_disp = lv_disp_get_default();
-    driver.flush_cb = system_disp->driver.flush_cb;
-    system_disp->driver.flush_cb = screenshot_disp_flush;
+    /*drv->flush_cb = screenshot_disp_flush;
     lv_obj_invalidate( lv_scr_act() );
-    lv_refr_now( system_disp );
-    system_disp->driver.flush_cb = driver.flush_cb;
+    lv_timer_handler();
+    drv->flush_cb = original_flush_cb;*/
 }
 
 void screenshot_save( void ) {
@@ -119,7 +123,7 @@ void screenshot_save( void ) {
         /**
          * save img buffer as png
          */
-        lv_8grey_as_png( filename, (const uint8_t*)raw_grey, RES_X_MAX, RES_Y_MAX );
+        //lv_8grey_as_png( filename, (const uint8_t*)raw_grey, RES_X_MAX, RES_Y_MAX );
         /**
          * free screenshot memory
          */
@@ -131,7 +135,7 @@ void screenshot_save( void ) {
         /**
          * save img buffer as png
          */
-        lv_rgb_as_png( filename, (const uint8_t*)raw_rgb, RES_X_MAX, RES_Y_MAX );
+        //lv_rgb_as_png( filename, (const uint8_t*)raw_rgb, RES_X_MAX, RES_Y_MAX );
         /**
          * free screenshot memory
          */
@@ -142,7 +146,7 @@ void screenshot_save( void ) {
     motor_vibe( 10, true );
 }
 
-static void screenshot_disp_flush( lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p ) {
+static void screenshot_disp_flush( struct _lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p ) {
 
     uint32_t x, y;
     lv_color_t *color = color_p;
@@ -158,30 +162,14 @@ static void screenshot_disp_flush( lv_disp_drv_t *disp_drv, const lv_area_t *are
      */
     for(y = area->y1; y <= area->y2; y++) {
         for(x = area->x1; x <= area->x2; x++) {
-            uint8_t r,g,b;
-            switch( LV_COLOR_DEPTH ) {
-                case 8:     r = LV_COLOR_GET_R( *color ) << 5;
-                            g = LV_COLOR_GET_G( *color ) << 5;
-                            b = LV_COLOR_GET_B( *color ) << 6;
-                            break;
-                case 16:    r = LV_COLOR_GET_R( *color ) << 3;
-                            g = LV_COLOR_GET_G( *color ) << 2;
-                            b = LV_COLOR_GET_B( *color ) << 3;
-                            break;
-                case 32:    r = LV_COLOR_GET_R( *color );
-                            g = LV_COLOR_GET_G( *color );
-                            b = LV_COLOR_GET_B( *color );
-                            break;
-                default:    r = g = b = 0;
-                            break;
-            }
             if ( raw_grey ) {
-                raw_grey->data[ ( y * lv_disp_get_hor_res( NULL ) ) + x ].grey = lv_color_brightness( *color );
+                raw_grey->data[ ( y * lv_disp_get_hor_res(lv_disp_get_default()) ) + x ].grey = lv_color_brightness( *color );
             }
             if ( raw_rgb ) {
-                raw_rgb->data[ y * lv_disp_get_hor_res( NULL ) + x ].r = r;
-                raw_rgb->data[ y * lv_disp_get_hor_res( NULL ) + x ].g = g;
-                raw_rgb->data[ y * lv_disp_get_hor_res( NULL ) + x ].b = b;
+                /*uint32_t color32 = lv_color_to_u32(*color);
+                raw_rgb->data[ y * lv_disp_get_hor_res(lv_disp_get_default()) + x ].r = (color32 >> 16) & 0xFF;
+                raw_rgb->data[ y * lv_disp_get_hor_res(lv_disp_get_default()) + x ].g = (color32 >> 8) & 0xFF;
+                raw_rgb->data[ y * lv_disp_get_hor_res(lv_disp_get_default()) + x ].b = color32 & 0xFF;*/
             }
             color++;
         }

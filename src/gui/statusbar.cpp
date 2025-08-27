@@ -3,7 +3,7 @@
  *   Copyright  2020  Dirk Brosswick
  *   Email: dirk.brosswick@googlemail.com
  ****************************************************************************/
- 
+
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -73,8 +73,8 @@ static lv_obj_t *statusbar_sound_icon = NULL;
 static lv_obj_t *statusbar_brightness_icon = NULL;
 static lv_style_t statusbarstyle[ STATUSBAR_STYLE_NUM ];
 
-lv_color_t statusbar_retracted_color = LV_COLOR_WHITE;
-lv_color_t statusbar_extended_color = LV_COLOR_BLACK;
+lv_color_t statusbar_retracted_color;
+lv_color_t statusbar_extended_color;
 
 LV_IMG_DECLARE(wifi_64px);
 LV_IMG_DECLARE(bluetooth_64px);
@@ -88,7 +88,7 @@ LV_FONT_DECLARE(Ubuntu_32px);
 
 lv_status_bar_t statusicon[ STATUSBAR_NUM ] = 
 {
-    { NULL, NULL, LV_ALIGN_IN_RIGHT_MID, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] },
+    { NULL, NULL, LV_ALIGN_RIGHT_MID, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] },
     { NULL, LV_SYMBOL_BATTERY_FULL, LV_ALIGN_OUT_LEFT_MID, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] },
     { NULL, LV_SYMBOL_BLUETOOTH, LV_ALIGN_OUT_LEFT_MID, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] },
     { NULL, LV_SYMBOL_WIFI, LV_ALIGN_OUT_LEFT_MID, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] },
@@ -102,14 +102,14 @@ lv_status_bar_t statusicon[ STATUSBAR_NUM ] =
 bool should_save_brightness_config = false;
 bool should_save_sound_config = false;
 
-void statusbar_event( lv_obj_t * statusbar, lv_event_t event );
-void statusbar_wifi_event_cb( lv_obj_t *wifi, lv_event_t event );
-void statusbar_bluetooth_event_cb( lv_obj_t *bluetooth, lv_event_t event );
-void statusbar_volume_slider_event_handler_cb( lv_obj_t *sound_slider, lv_event_t event );
+void statusbar_event( lv_event_t * e );
+void statusbar_wifi_event_cb( lv_event_t * e );
+void statusbar_bluetooth_event_cb( lv_event_t * e );
+void statusbar_volume_slider_event_handler_cb( lv_event_t * e );
 bool statusbar_gpsctl_event_cb( EventBits_t event, void *arg );
-void statusbar_sound_event_cb( lv_obj_t *sound, lv_event_t event );
-void statusbar_display_event_cb( lv_obj_t *display, lv_event_t event );
-void statusbar_brightness_slider_event_handler_cb( lv_obj_t *brightness_slider, lv_event_t event );
+void statusbar_sound_event_cb( lv_event_t * e );
+void statusbar_display_event_cb( lv_event_t * e );
+void statusbar_brightness_slider_event_handler_cb( lv_event_t * e );
 
 bool statusbar_soundctl_event_cb( EventBits_t event, void *arg );
 bool statusbar_blectl_event_cb( EventBits_t event, void *arg );
@@ -122,13 +122,13 @@ bool statusbar_style_event_cb( EventBits_t event, void *arg );
 void statusbar_wifi_set_state( bool state, const char *wifiname );
 void statusbar_wifi_set_ip_state( bool state, const char *ip );
 void statusbar_bluetooth_set_state( bool state );
-void statusbar_gps_event_cb( lv_obj_t *gps, lv_event_t event );
+void statusbar_gps_event_cb( lv_event_t * e );
 void statusbar_set_dark( bool dark_mode );
 
 void statusbar_update_time();
 
-lv_task_t * statusbar_task;
-void statusbar_update_task( lv_task_t * task );
+lv_timer_t * statusbar_task;
+void statusbar_update_task( lv_timer_t * task );
 
 void statusbar_setup( void )
 {
@@ -136,6 +136,9 @@ void statusbar_setup( void )
         log_e("statusbar already init");
         return;
     }
+
+    statusbar_retracted_color = lv_color_white();
+    statusbar_extended_color = lv_color_black();
 
 #if defined( BIG_THEME )
     const lv_font_t *statusbar_font = &lv_font_montserrat_32;
@@ -151,158 +154,149 @@ void statusbar_setup( void )
 
     /*Copy a built-in style to initialize the new style*/
     lv_style_init(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ] );
-    lv_style_set_radius(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ], LV_OBJ_PART_MAIN, 0);
-    lv_style_set_bg_color(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ], LV_OBJ_PART_MAIN, LV_COLOR_WHITE );
-    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ], LV_OBJ_PART_MAIN, LV_OPA_20);
-    lv_style_set_border_width(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ], LV_OBJ_PART_MAIN, 0);
-    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ], LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
-    lv_style_set_image_recolor(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ], LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
-    lv_style_set_text_font( &statusbarstyle[ STATUSBAR_STYLE_NORMAL ], LV_OBJ_PART_MAIN, statusbar_font );
+    lv_style_set_radius(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ],  0);
+    lv_style_set_bg_color(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ],  lv_color_white() );
+    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ],  LV_OPA_20);
+    lv_style_set_border_width(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ],  0);
+    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ],  lv_color_white());
+    lv_style_set_img_recolor(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ],  lv_color_white());
+    lv_style_set_text_font( &statusbarstyle[ STATUSBAR_STYLE_NORMAL ], statusbar_font );
 
-    lv_style_copy( &statusbarstyle[ STATUSBAR_STYLE_WHITE ], &statusbarstyle[ STATUSBAR_STYLE_NORMAL ] );
-    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], LV_OBJ_PART_MAIN, LV_OPA_0);
-    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], LV_OBJ_PART_MAIN, statusbar_retracted_color );
-    lv_style_set_image_recolor(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], LV_OBJ_PART_MAIN, statusbar_retracted_color );
+    lv_style_init( &statusbarstyle[ STATUSBAR_STYLE_WHITE ] );
+    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_WHITE ],  LV_OPA_0);
+    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_WHITE ],  statusbar_retracted_color );
+    lv_style_set_img_recolor(&statusbarstyle[ STATUSBAR_STYLE_WHITE ],  statusbar_retracted_color );
 
-    lv_style_copy( &statusbarstyle[ STATUSBAR_STYLE_BLACK ], &statusbarstyle[ STATUSBAR_STYLE_NORMAL ] );
-    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_BLACK ], LV_OBJ_PART_MAIN, LV_OPA_0);
-    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_BLACK ], LV_OBJ_PART_MAIN, LV_COLOR_BLACK);
-    lv_style_set_image_recolor(&statusbarstyle[ STATUSBAR_STYLE_BLACK ], LV_OBJ_PART_MAIN, LV_COLOR_BLACK);
+    lv_style_init( &statusbarstyle[ STATUSBAR_STYLE_BLACK ] );
+    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_BLACK ],  LV_OPA_0);
+    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_BLACK ],  lv_color_black());
+    lv_style_set_img_recolor(&statusbarstyle[ STATUSBAR_STYLE_BLACK ],  lv_color_black());
 
-    lv_style_copy( &statusbarstyle[ STATUSBAR_STYLE_RED ], &statusbarstyle[ STATUSBAR_STYLE_NORMAL ] );
-    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_RED ], LV_OBJ_PART_MAIN, LV_OPA_0);
-    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_RED ], LV_OBJ_PART_MAIN, LV_COLOR_RED);
-    lv_style_set_image_recolor(&statusbarstyle[ STATUSBAR_STYLE_RED ], LV_OBJ_PART_MAIN, LV_COLOR_RED);
+    lv_style_init( &statusbarstyle[ STATUSBAR_STYLE_RED ] );
+    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_RED ],  LV_OPA_0);
+    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_RED ],  lv_palette_main(LV_PALETTE_RED));
+    lv_style_set_img_recolor(&statusbarstyle[ STATUSBAR_STYLE_RED ],  lv_palette_main(LV_PALETTE_RED));
 
-    lv_style_copy( &statusbarstyle[ STATUSBAR_STYLE_GRAY ], &statusbarstyle[ STATUSBAR_STYLE_NORMAL ] );
-    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_GRAY ], LV_OBJ_PART_MAIN, LV_OPA_0);
-    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_GRAY ], LV_OBJ_PART_MAIN, LV_COLOR_GRAY);
-    lv_style_set_image_recolor(&statusbarstyle[ STATUSBAR_STYLE_GRAY ], LV_OBJ_PART_MAIN, LV_COLOR_GRAY);
+    lv_style_init( &statusbarstyle[ STATUSBAR_STYLE_GRAY ] );
+    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_GRAY ],  LV_OPA_0);
+    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_GRAY ],  lv_palette_main(LV_PALETTE_GREY));
+    lv_style_set_img_recolor(&statusbarstyle[ STATUSBAR_STYLE_GRAY ],  lv_palette_main(LV_PALETTE_GREY));
 
-    lv_style_copy( &statusbarstyle[ STATUSBAR_STYLE_GREEN ], &statusbarstyle[ STATUSBAR_STYLE_NORMAL ] );
-    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_GREEN ], LV_OBJ_PART_MAIN, LV_OPA_0);
-    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_GREEN ], LV_OBJ_PART_MAIN, LV_COLOR_GREEN);
-    lv_style_set_image_recolor(&statusbarstyle[ STATUSBAR_STYLE_GREEN ], LV_OBJ_PART_MAIN, LV_COLOR_GREEN);
+    lv_style_init( &statusbarstyle[ STATUSBAR_STYLE_GREEN ] );
+    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_GREEN ],  LV_OPA_0);
+    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_GREEN ],  lv_palette_main(LV_PALETTE_GREEN));
+    lv_style_set_img_recolor(&statusbarstyle[ STATUSBAR_STYLE_GREEN ],  lv_palette_main(LV_PALETTE_GREEN));
 
-    lv_style_copy( &statusbarstyle[ STATUSBAR_STYLE_YELLOW ], &statusbarstyle[ STATUSBAR_STYLE_NORMAL ] );
-    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_YELLOW ], LV_OBJ_PART_MAIN, LV_OPA_0);
-    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_YELLOW ], LV_OBJ_PART_MAIN, LV_COLOR_YELLOW);
-    lv_style_set_image_recolor(&statusbarstyle[ STATUSBAR_STYLE_YELLOW ], LV_OBJ_PART_MAIN, LV_COLOR_YELLOW);
+    lv_style_init( &statusbarstyle[ STATUSBAR_STYLE_YELLOW ] );
+    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_YELLOW ],  LV_OPA_0);
+    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_YELLOW ],  lv_palette_main(LV_PALETTE_YELLOW));
+    lv_style_set_img_recolor(&statusbarstyle[ STATUSBAR_STYLE_YELLOW ],  lv_palette_main(LV_PALETTE_YELLOW));
 
-    lv_style_copy( &statusbarstyle[ STATUSBAR_STYLE_BLUE ], &statusbarstyle[ STATUSBAR_STYLE_NORMAL ] );
-    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_BLUE ], LV_OBJ_PART_MAIN, LV_OPA_0);
-    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_BLUE ], LV_OBJ_PART_MAIN, LV_COLOR_BLUE);
-    lv_style_set_image_recolor(&statusbarstyle[ STATUSBAR_STYLE_BLUE ], LV_OBJ_PART_MAIN, LV_COLOR_BLUE);
+    lv_style_init( &statusbarstyle[ STATUSBAR_STYLE_BLUE ] );
+    lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_BLUE ],  LV_OPA_0);
+    lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_BLUE ],  lv_palette_main(LV_PALETTE_BLUE));
+    lv_style_set_img_recolor(&statusbarstyle[ STATUSBAR_STYLE_BLUE ],  lv_palette_main(LV_PALETTE_BLUE));
 
-    statusbar = lv_cont_create( lv_scr_act(), NULL );
-    lv_obj_set_width( statusbar, lv_disp_get_hor_res( NULL ) );
+    statusbar = lv_obj_create( lv_scr_act() );
+    lv_obj_set_width( statusbar, lv_disp_get_hor_res( lv_disp_get_default() ) );
     lv_obj_set_height( statusbar, STATUSBAR_HEIGHT );
-    lv_obj_reset_style_list( statusbar, LV_OBJ_PART_MAIN );
-    lv_obj_add_style( statusbar, LV_OBJ_PART_MAIN, &statusbarstyle[ STATUSBAR_STYLE_NORMAL ] );
-    lv_obj_align( statusbar, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0 );
-    lv_obj_set_event_cb( statusbar, statusbar_event );
+    lv_obj_remove_style_all(statusbar);
+    lv_obj_add_style( statusbar, &statusbarstyle[ STATUSBAR_STYLE_NORMAL ], 0 );
+    lv_obj_align( statusbar, LV_ALIGN_TOP_MID, 0, 0 );
+    lv_obj_add_event_cb( statusbar, statusbar_event, LV_EVENT_ALL, NULL );
 
     for( int i = 0 ; i < STATUSBAR_NUM ; i++ ) {
         if ( statusicon[i].symbol == NULL ) {
-            statusicon[i].icon = lv_label_create( statusbar, NULL);
+            statusicon[i].icon = lv_label_create( statusbar );
             lv_label_set_text( statusicon[i].icon, "100%" );
         }
         else {
-            statusicon[i].icon = lv_img_create( statusbar , NULL);
+            statusicon[i].icon = lv_img_create( statusbar );
             lv_img_set_src( statusicon[i].icon, statusicon[i].symbol );
         }
-        lv_obj_reset_style_list( statusicon[i].icon, LV_OBJ_PART_MAIN );
-        lv_obj_add_style( statusicon[i].icon, LV_OBJ_PART_MAIN, statusicon[i].style );
+        lv_obj_remove_style_all(statusicon[i].icon);
+        lv_obj_add_style( statusicon[i].icon, statusicon[i].style, 0 );
         if ( i == 0 ) {
-            lv_obj_align(statusicon[i].icon, statusbar, statusicon[i].align, STATUSBAR_ICON_X_OFFSET, 0 );
+            lv_obj_align(statusicon[i].icon, LV_ALIGN_TOP_RIGHT, STATUSBAR_ICON_X_OFFSET, 0 );
         }
         else {
-            lv_obj_align(statusicon[i].icon, statusicon[i-1].icon, statusicon[i].align, -5, 0);
+            lv_obj_align_to(statusicon[i].icon, statusicon[i-1].icon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
         }
     }
 
     static lv_style_t style;
-    lv_style_copy( &style, &statusbarstyle[ STATUSBAR_STYLE_GRAY ] );
+    lv_style_init( &style );
 
-    lv_style_set_image_recolor_opa( &style, LV_BTN_STATE_RELEASED, LV_OPA_100 );
-    lv_style_set_image_recolor( &style, LV_BTN_STATE_RELEASED, LV_COLOR_GREEN );
-    lv_style_set_image_recolor_opa( &style, LV_BTN_STATE_PRESSED, LV_OPA_100 );
-    lv_style_set_image_recolor( &style, LV_BTN_STATE_PRESSED, LV_COLOR_RED );
-    lv_style_set_image_recolor_opa( &style, LV_BTN_STATE_CHECKED_RELEASED, LV_OPA_100 );
-    lv_style_set_image_recolor( &style, LV_BTN_STATE_CHECKED_RELEASED, LV_COLOR_RED );
-    lv_style_set_image_recolor_opa( &style, LV_BTN_STATE_CHECKED_PRESSED, LV_OPA_100 );
-    lv_style_set_image_recolor( &style, LV_BTN_STATE_CHECKED_PRESSED, LV_COLOR_GREEN );
-
-    statusbar_wifi = wf_add_image_button_old( statusbar, wifi_64px, statusbar_wifi_event_cb, &style );
-    lv_imgbtn_set_checkable (statusbar_wifi, true );
-    lv_obj_align( statusbar_wifi, statusbar, LV_ALIGN_IN_TOP_MID, 0, STATUSBAR_HEIGHT );
-    lv_imgbtn_set_state( statusbar_wifi, LV_BTN_STATE_CHECKED_PRESSED );
+    statusbar_wifi = wf_add_image_button_old( statusbar, &wifi_64px, statusbar_wifi_event_cb, &style );
+    lv_obj_add_flag(statusbar_wifi, LV_OBJ_FLAG_CHECKABLE);
+    lv_obj_align( statusbar_wifi, LV_ALIGN_TOP_MID, 0, STATUSBAR_HEIGHT );
+    lv_obj_add_state(statusbar_wifi, LV_STATE_CHECKED | LV_STATE_PRESSED);
 
     /*Create a label on the Image button*/
-    statusbar_wifilabel = lv_label_create( statusbar, NULL);
-    lv_obj_reset_style_list( statusbar_wifilabel, LV_OBJ_PART_MAIN );
-    lv_obj_add_style( statusbar_wifilabel, LV_OBJ_PART_MAIN, &statusbarstyle[ STATUSBAR_STYLE_GREEN ] );
+    statusbar_wifilabel = lv_label_create( statusbar );
+    lv_obj_remove_style_all(statusbar_wifilabel);
+    lv_obj_add_style( statusbar_wifilabel, &statusbarstyle[ STATUSBAR_STYLE_GREEN ], 0 );
     lv_label_set_text( statusbar_wifilabel, "");
-    lv_obj_align( statusbar_wifilabel, statusbar_wifi, LV_ALIGN_OUT_BOTTOM_MID, 0, 0 );
+    lv_obj_align_to( statusbar_wifilabel, statusbar_wifi, LV_ALIGN_OUT_BOTTOM_MID, 0, 0 );
 
     /*Create a label on the Image button*/
-    statusbar_wifiiplabel = lv_label_create( statusbar, NULL);
-    lv_obj_reset_style_list( statusbar_wifiiplabel, LV_OBJ_PART_MAIN );
-    lv_obj_add_style( statusbar_wifiiplabel, LV_OBJ_PART_MAIN, &statusbarstyle[ STATUSBAR_STYLE_GREEN ] );
+    statusbar_wifiiplabel = lv_label_create( statusbar );
+    lv_obj_remove_style_all(statusbar_wifiiplabel);
+    lv_obj_add_style( statusbar_wifiiplabel, &statusbarstyle[ STATUSBAR_STYLE_GREEN ], 0 );
     lv_label_set_text(statusbar_wifiiplabel, "");
-    lv_obj_align(statusbar_wifiiplabel, statusbar_wifilabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 0 );
+    lv_obj_align_to(statusbar_wifiiplabel, statusbar_wifilabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 0 );
 
-    statusbar_bluetooth = wf_add_image_button_old( statusbar, bluetooth_64px, statusbar_bluetooth_event_cb, &style );
-    lv_imgbtn_set_checkable (statusbar_bluetooth, true );
-    lv_obj_align( statusbar_bluetooth, statusbar, LV_ALIGN_IN_TOP_RIGHT, -8, STATUSBAR_HEIGHT );
-    lv_imgbtn_set_state( statusbar_bluetooth, LV_BTN_STATE_CHECKED_PRESSED );
+    statusbar_bluetooth = wf_add_image_button_old( statusbar, &bluetooth_64px, statusbar_bluetooth_event_cb, &style );
+    lv_obj_add_flag(statusbar_bluetooth, LV_OBJ_FLAG_CHECKABLE);
+    lv_obj_align( statusbar_bluetooth, LV_ALIGN_TOP_RIGHT, -8, STATUSBAR_HEIGHT );
+    lv_obj_add_state(statusbar_bluetooth, LV_STATE_CHECKED | LV_STATE_PRESSED);
 
-    statusbar_gps = wf_add_image_button_old( statusbar, gps_64px, statusbar_gps_event_cb, &style );
-    lv_imgbtn_set_checkable (statusbar_gps, true );
-    lv_obj_align( statusbar_gps, statusbar, LV_ALIGN_IN_TOP_LEFT, 8, STATUSBAR_HEIGHT );
-    lv_imgbtn_set_state( statusbar_gps, LV_BTN_STATE_CHECKED_PRESSED );
+    statusbar_gps = wf_add_image_button_old( statusbar, &gps_64px, statusbar_gps_event_cb, &style );
+    lv_obj_add_flag(statusbar_gps, LV_OBJ_FLAG_CHECKABLE);
+    lv_obj_align( statusbar_gps, LV_ALIGN_TOP_LEFT, 8, STATUSBAR_HEIGHT );
+    lv_obj_add_state(statusbar_gps, LV_STATE_CHECKED | LV_STATE_PRESSED);
 
-    statusbar_timelabel = lv_label_create(statusbar, NULL );
-    lv_obj_reset_style_list( statusbar_timelabel, LV_OBJ_PART_MAIN );
-    lv_obj_add_style( statusbar_timelabel, LV_OBJ_PART_MAIN, &statusbarstyle[ STATUSBAR_STYLE_WHITE ] );
+    statusbar_timelabel = lv_label_create(statusbar );
+    lv_obj_remove_style_all(statusbar_timelabel);
+    lv_obj_add_style( statusbar_timelabel, &statusbarstyle[ STATUSBAR_STYLE_WHITE ], 0 );
     lv_label_set_text( statusbar_timelabel, "");
-    lv_obj_align( statusbar_timelabel, statusbar, LV_ALIGN_IN_LEFT_MID, 5, 0 );
+    lv_obj_align( statusbar_timelabel, LV_ALIGN_LEFT_MID, 5, 0 );
 
-    lv_obj_t *statusbar_volume_cont = lv_obj_create( statusbar, NULL );
-    lv_obj_add_style( statusbar_volume_cont, LV_OBJ_PART_MAIN, &style );
-    lv_obj_set_size( statusbar_volume_cont, lv_disp_get_hor_res( NULL ) , 36 );
-    lv_obj_align( statusbar_volume_cont, statusbar, LV_ALIGN_IN_BOTTOM_MID, 0, STATUSBAR_EXPAND_HEIGHT - STATUSBAR_HEIGHT );
-    statusbar_volume_slider = lv_slider_create( statusbar_volume_cont, NULL );
-    lv_obj_set_size( statusbar_volume_slider, lv_disp_get_hor_res( NULL ) - 100 , 10 );
-    lv_obj_align( statusbar_volume_slider, statusbar_volume_cont, LV_ALIGN_IN_RIGHT_MID, -30, 0 );
-    lv_obj_add_protect( statusbar_volume_slider, LV_PROTECT_CLICK_FOCUS);
-    lv_obj_add_style( statusbar_volume_slider, LV_SLIDER_PART_INDIC, ws_get_slider_style() );
-    lv_obj_add_style( statusbar_volume_slider, LV_SLIDER_PART_KNOB, ws_get_slider_style() );
+    lv_obj_t *statusbar_volume_cont = lv_obj_create( statusbar );
+    lv_obj_add_style( statusbar_volume_cont, &style, 0 );
+    lv_obj_set_size( statusbar_volume_cont, lv_disp_get_hor_res( lv_disp_get_default() ) , 36 );
+    lv_obj_align( statusbar_volume_cont, LV_ALIGN_BOTTOM_MID, 0, STATUSBAR_EXPAND_HEIGHT - STATUSBAR_HEIGHT );
+    statusbar_volume_slider = lv_slider_create( statusbar_volume_cont );
+    lv_obj_set_size( statusbar_volume_slider, lv_disp_get_hor_res( lv_disp_get_default() ) - 100 , 10 );
+    lv_obj_align( statusbar_volume_slider, LV_ALIGN_RIGHT_MID, -30, 0 );
+    lv_obj_add_flag( statusbar_volume_slider, LV_OBJ_FLAG_CLICK_FOCUSABLE);
+    lv_obj_add_style( statusbar_volume_slider, ws_get_slider_style(), LV_PART_INDICATOR );
+    lv_obj_add_style( statusbar_volume_slider, ws_get_slider_style(), LV_PART_KNOB );
     lv_slider_set_range( statusbar_volume_slider, 0, 100 );
-    lv_obj_set_event_cb( statusbar_volume_slider, statusbar_volume_slider_event_handler_cb ) ;
-    statusbar_sound_icon = lv_img_create( statusbar_volume_cont, NULL );
-    lv_obj_set_click( statusbar_sound_icon, true );
-    lv_obj_set_event_cb( statusbar_sound_icon, statusbar_sound_event_cb );
+    lv_obj_add_event_cb( statusbar_volume_slider, statusbar_volume_slider_event_handler_cb, LV_EVENT_ALL, NULL ) ;
+    statusbar_sound_icon = lv_img_create( statusbar_volume_cont );
+    lv_obj_add_flag( statusbar_sound_icon, LV_OBJ_FLAG_CLICKABLE );
+    lv_obj_add_event_cb( statusbar_sound_icon, statusbar_sound_event_cb, LV_EVENT_ALL, NULL );
     lv_img_set_src( statusbar_sound_icon, &sound_32px );
-    lv_obj_align( statusbar_sound_icon, statusbar_volume_cont, LV_ALIGN_IN_LEFT_MID, 15, 0 );
+    lv_obj_align( statusbar_sound_icon, LV_ALIGN_LEFT_MID, 15, 0 );
 
-    lv_obj_t *statusbar_brightness_cont = lv_obj_create( statusbar, NULL );
-    lv_obj_add_style( statusbar_brightness_cont, LV_OBJ_PART_MAIN, &style );
-    lv_obj_set_size( statusbar_brightness_cont, lv_disp_get_hor_res( NULL ) , 40 );
-    lv_obj_align( statusbar_brightness_cont, statusbar_volume_cont, LV_ALIGN_OUT_TOP_MID, 0, 0 );
-    statusbar_brightness_slider = lv_slider_create( statusbar_brightness_cont, NULL );
-    lv_obj_set_size( statusbar_brightness_slider, lv_disp_get_hor_res( NULL ) - 100 , 10 );
-    lv_obj_align( statusbar_brightness_slider, statusbar_brightness_cont, LV_ALIGN_IN_RIGHT_MID, -30, 0 );
+    lv_obj_t *statusbar_brightness_cont = lv_obj_create( statusbar );
+    lv_obj_add_style( statusbar_brightness_cont, &style, 0 );
+    lv_obj_set_size( statusbar_brightness_cont, lv_disp_get_hor_res( lv_disp_get_default() ) , 40 );
+    lv_obj_align_to( statusbar_brightness_cont, statusbar_volume_cont, LV_ALIGN_OUT_TOP_MID, 0, 0 );
+    statusbar_brightness_slider = lv_slider_create( statusbar_brightness_cont );
+    lv_obj_set_size( statusbar_brightness_slider, lv_disp_get_hor_res( lv_disp_get_default() ) - 100 , 10 );
+    lv_obj_align( statusbar_brightness_slider, LV_ALIGN_RIGHT_MID, -30, 0 );
     lv_slider_set_range( statusbar_brightness_slider, DISPLAY_MIN_BRIGHTNESS, DISPLAY_MAX_BRIGHTNESS );
-    lv_obj_add_protect( statusbar_brightness_slider, LV_PROTECT_CLICK_FOCUS);
-    lv_obj_add_style( statusbar_brightness_slider, LV_SLIDER_PART_INDIC, ws_get_slider_style() );
-    lv_obj_add_style( statusbar_brightness_slider, LV_SLIDER_PART_KNOB, ws_get_slider_style() );
-    lv_obj_set_event_cb( statusbar_brightness_slider, statusbar_brightness_slider_event_handler_cb ) ;
-    statusbar_brightness_icon = lv_img_create( statusbar_brightness_cont, NULL );
-    lv_obj_set_click( statusbar_brightness_icon, true );
-    lv_obj_set_event_cb( statusbar_brightness_icon, statusbar_display_event_cb );
+    lv_obj_add_flag( statusbar_brightness_slider, LV_OBJ_FLAG_CLICK_FOCUSABLE);
+    lv_obj_add_style( statusbar_brightness_slider, ws_get_slider_style(), LV_PART_INDICATOR );
+    lv_obj_add_style( statusbar_brightness_slider, ws_get_slider_style(), LV_PART_KNOB );
+    lv_obj_add_event_cb( statusbar_brightness_slider, statusbar_brightness_slider_event_handler_cb, LV_EVENT_ALL, NULL ) ;
+    statusbar_brightness_icon = lv_img_create( statusbar_brightness_cont );
+    lv_obj_add_flag( statusbar_brightness_icon, LV_OBJ_FLAG_CLICKABLE );
+    lv_obj_add_event_cb( statusbar_brightness_icon, statusbar_display_event_cb, LV_EVENT_ALL, NULL );
     lv_img_set_src( statusbar_brightness_icon, &brightness_32px );
-    lv_obj_align( statusbar_brightness_icon, statusbar_brightness_cont, LV_ALIGN_IN_LEFT_MID, 15, 0 );
+    lv_obj_align( statusbar_brightness_icon, LV_ALIGN_LEFT_MID, 15, 0 );
 
     lv_slider_set_value( statusbar_brightness_slider, display_get_brightness(), LV_ANIM_OFF );
     lv_slider_set_value( statusbar_volume_slider, sound_get_volume_config(), LV_ANIM_OFF );
@@ -336,19 +330,19 @@ void statusbar_setup( void )
     gpsctl_register_cb( GPSCTL_ENABLE | GPSCTL_DISABLE | GPSCTL_FIX | GPSCTL_NOFIX, statusbar_gpsctl_event_cb, "statusbar gps" );
     styles_register_cb( STYLE_DARKMODE | STYLE_LIGHTMODE, statusbar_style_event_cb, "statusbar style event" );
 
-    statusbar_task = lv_task_create( statusbar_update_task, 250, LV_TASK_PRIO_MID, NULL );
+    statusbar_task = lv_timer_create( statusbar_update_task, 250, NULL );
 
     if( sound_get_available() ) {
         sound_register_cb( SOUNDCTL_ENABLED | SOUNDCTL_VOLUME, statusbar_soundctl_event_cb, "statusbar sound");
     }
     else {
-        lv_obj_set_hidden( statusbar_volume_cont, true );
+        lv_obj_add_flag( statusbar_volume_cont, LV_OBJ_FLAG_HIDDEN );
     }
 
     statusbar_hide( false );
 }
 
-void statusbar_update_task( lv_task_t * task ) {
+void statusbar_update_task( lv_timer_t * task ) {
     /*
      * check if statusbar ready
      */
@@ -367,12 +361,12 @@ void statusbar_update_task( lv_task_t * task ) {
 
 bool statusbar_style_event_cb( EventBits_t event, void *arg ) {
     switch( event ) {
-        case STYLE_LIGHTMODE:   statusbar_retracted_color = LV_COLOR_WHITE;
-                                statusbar_extended_color = LV_COLOR_BLACK;
+        case STYLE_LIGHTMODE:   statusbar_retracted_color = lv_color_white();
+                                statusbar_extended_color = lv_color_black();
                                 statusbar_set_dark( false );
                                 break;
-        case STYLE_DARKMODE:    statusbar_retracted_color = LV_COLOR_BLACK;
-                                statusbar_extended_color = LV_COLOR_BLACK;
+        case STYLE_DARKMODE:    statusbar_retracted_color = lv_color_black();
+                                statusbar_extended_color = lv_color_black();
                                 statusbar_set_dark( true );
     }
     
@@ -434,12 +428,12 @@ bool statusbar_gpsctl_event_cb( EventBits_t event, void *arg ) {
         case GPSCTL_DISABLE:  
             statusbar_hide_icon( STATUSBAR_GPS );
             statusbar_style_icon( STATUSBAR_GPS, STATUSBAR_STYLE_GRAY );
-            lv_imgbtn_set_state( statusbar_gps, LV_BTN_STATE_CHECKED_RELEASED );
+            lv_obj_add_state(statusbar_gps, LV_STATE_CHECKED);
             break;
         case GPSCTL_ENABLE:  
             statusbar_show_icon( STATUSBAR_GPS );
             statusbar_style_icon( STATUSBAR_GPS, STATUSBAR_STYLE_GRAY );
-            lv_imgbtn_set_state( statusbar_gps, LV_BTN_STATE_RELEASED );
+            lv_obj_clear_state(statusbar_gps, LV_STATE_CHECKED);
             break;
         case GPSCTL_FIX:  
             statusbar_show_icon( STATUSBAR_GPS );
@@ -600,10 +594,10 @@ bool statusbar_blectl_event_cb( EventBits_t event, void *arg ) {
     switch( event ) {
         case BLECTL_ON:             statusbar_show_icon( STATUSBAR_BLUETOOTH );
                                     statusbar_style_icon( STATUSBAR_BLUETOOTH, STATUSBAR_STYLE_GRAY );
-                                    lv_imgbtn_set_state( statusbar_bluetooth, LV_BTN_STATE_RELEASED );
+                                    lv_obj_clear_state(statusbar_bluetooth, LV_STATE_CHECKED);
                                     break;
         case BLECTL_OFF:            statusbar_hide_icon( STATUSBAR_BLUETOOTH );
-                                    lv_imgbtn_set_state( statusbar_bluetooth, LV_BTN_STATE_CHECKED_RELEASED );
+                                    lv_obj_add_state(statusbar_bluetooth, LV_STATE_CHECKED);
                                     break;
         case BLECTL_CONNECT:        statusbar_style_icon( STATUSBAR_BLUETOOTH, STATUSBAR_STYLE_WHITE );
                                     break;
@@ -661,7 +655,10 @@ bool statusbar_wifictl_event_cb( EventBits_t event, void *arg ) {
     return( true );
 }
 
-void statusbar_volume_slider_event_handler_cb(lv_obj_t *volume_slider, lv_event_t event) {
+void statusbar_volume_slider_event_handler_cb(lv_event_t * e) {
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t * volume_slider = lv_event_get_target(e);
+
     /*
      * check if statusbar ready
      */
@@ -670,7 +667,7 @@ void statusbar_volume_slider_event_handler_cb(lv_obj_t *volume_slider, lv_event_
         return;
     }
 
-    if(event == LV_EVENT_VALUE_CHANGED) {
+    if(code == LV_EVENT_VALUE_CHANGED) {
         if( lv_slider_get_value( volume_slider ) == 0){
             sound_set_enabled_config( false );
             sound_set_volume_config( 1 );
@@ -685,7 +682,10 @@ void statusbar_volume_slider_event_handler_cb(lv_obj_t *volume_slider, lv_event_
     }
 }
 
-void statusbar_brightness_slider_event_handler_cb(lv_obj_t *brightness_slider, lv_event_t event) {
+void statusbar_brightness_slider_event_handler_cb(lv_event_t * e) {
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t * brightness_slider = lv_event_get_target(e);
+
     /*
      * check if statusbar ready
      */
@@ -694,7 +694,7 @@ void statusbar_brightness_slider_event_handler_cb(lv_obj_t *brightness_slider, l
         return;
     }
 
-    if(event == LV_EVENT_VALUE_CHANGED) {
+    if(code == LV_EVENT_VALUE_CHANGED) {
         log_d("Brightness value: %d\n", lv_slider_get_value( brightness_slider ));
         display_set_brightness( lv_slider_get_value( brightness_slider ));
         should_save_brightness_config = true;
@@ -702,7 +702,9 @@ void statusbar_brightness_slider_event_handler_cb(lv_obj_t *brightness_slider, l
 }
 
 
-void statusbar_display_event_cb( lv_obj_t *display, lv_event_t event ){
+void statusbar_display_event_cb( lv_event_t * e ){
+    lv_event_code_t code = lv_event_get_code(e);
+
     /*
      * check if statusbar ready
      */
@@ -711,7 +713,7 @@ void statusbar_display_event_cb( lv_obj_t *display, lv_event_t event ){
         return;
     }
 
-    switch ( event ) {
+    switch ( code ) {
         case ( LV_EVENT_LONG_PRESSED ):             
             statusbar_expand( false );
 //            mainbar_jump_to_tilenumber( display_get_setup_tile_num(), LV_ANIM_OFF);
@@ -720,7 +722,9 @@ void statusbar_display_event_cb( lv_obj_t *display, lv_event_t event ){
     statusbar_refresh_update = true;
 }
 
-void statusbar_sound_event_cb( lv_obj_t *sound, lv_event_t event ) {
+void statusbar_sound_event_cb( lv_event_t * e ) {
+    lv_event_code_t code = lv_event_get_code(e);
+
     /*
      * check if statusbar ready
      */
@@ -731,7 +735,7 @@ void statusbar_sound_event_cb( lv_obj_t *sound, lv_event_t event ) {
 
     static uint8_t volume;
 
-    switch ( event ) {
+    switch ( code ) {
         case ( LV_EVENT_PRESSED ):             
             if ( sound_get_enabled_config() ) {
                 volume = sound_get_volume_config();
@@ -750,7 +754,10 @@ void statusbar_sound_event_cb( lv_obj_t *sound, lv_event_t event ) {
     statusbar_refresh_update = true;
 }
 
-void statusbar_wifi_event_cb( lv_obj_t *wifi, lv_event_t event ) {
+void statusbar_wifi_event_cb( lv_event_t * e ) {
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t * wifi = lv_event_get_target(e);
+
     /*
      * check if statusbar ready
      */
@@ -759,15 +766,14 @@ void statusbar_wifi_event_cb( lv_obj_t *wifi, lv_event_t event ) {
         return;
     }
 
-    switch ( event ) {
+    switch ( code ) {
         case ( LV_EVENT_VALUE_CHANGED ):
-            switch ( lv_imgbtn_get_state( wifi ) ) {
-                case( LV_BTN_STATE_CHECKED_RELEASED ):  wifictl_off();
+            if(lv_obj_has_state(wifi, LV_STATE_CHECKED)) {
+                wifictl_off();
                                                         wifictl_set_autoon( false );
-                                                        break;
-                case( LV_BTN_STATE_RELEASED ):          wifictl_on();
+            } else {
+                wifictl_on();
                                                         wifictl_set_autoon( true );
-                                                        break;
             }
             statusbar_refresh_update = true;
             break;
@@ -779,7 +785,10 @@ void statusbar_wifi_event_cb( lv_obj_t *wifi, lv_event_t event ) {
     statusbar_refresh_update = true;
 }
 
-void statusbar_gps_event_cb( lv_obj_t *gps, lv_event_t event ) {
+void statusbar_gps_event_cb( lv_event_t * e ) {
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t * gps = lv_event_get_target(e);
+
     /*
      * check if statusbar ready
      */
@@ -788,13 +797,13 @@ void statusbar_gps_event_cb( lv_obj_t *gps, lv_event_t event ) {
         return;
     }
 
-    switch ( event ) {
+    switch ( code ) {
         case ( LV_EVENT_VALUE_CHANGED ):
-            switch ( lv_imgbtn_get_state( gps ) ) {
-                case( LV_BTN_STATE_CHECKED_RELEASED ):  gpsctl_off();
-                                                        break;
-                case( LV_BTN_STATE_RELEASED ):          gpsctl_on();
-                                                        break;
+            if(lv_obj_has_state(gps, LV_STATE_CHECKED)) {
+                gpsctl_off();
+            }
+            else {
+                gpsctl_on();
             }
             statusbar_refresh_update = true;
             break;
@@ -806,7 +815,10 @@ void statusbar_gps_event_cb( lv_obj_t *gps, lv_event_t event ) {
     }
 }
 
-void statusbar_bluetooth_event_cb( lv_obj_t *bluetooth, lv_event_t event ) {
+void statusbar_bluetooth_event_cb( lv_event_t * e ) {
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t * bluetooth = lv_event_get_target(e);
+
     /*
      * check if statusbar ready
      */
@@ -815,17 +827,13 @@ void statusbar_bluetooth_event_cb( lv_obj_t *bluetooth, lv_event_t event ) {
         return;
     }
 
-    switch ( event ) {
+    switch ( code ) {
         case ( LV_EVENT_VALUE_CHANGED ):
-            switch ( lv_imgbtn_get_state( bluetooth ) ) {
-                case( LV_BTN_STATE_CHECKED_RELEASED ):   
-                    blectl_off();
-                    break;
-                case( LV_BTN_STATE_RELEASED ):    
-                    blectl_on();
-                    break;
-                default:
-                    break;
+            if(lv_obj_has_state(bluetooth, LV_STATE_CHECKED)) {
+                blectl_off();
+            }
+            else {
+                blectl_on();
             }
             statusbar_refresh_update = true;
             break;
@@ -847,15 +855,15 @@ void statusbar_wifi_set_state( bool state, const char *wifiname ) {
     }
 
     if( state ) {
-        lv_imgbtn_set_state( statusbar_wifi, LV_BTN_STATE_RELEASED );
+        lv_obj_clear_state(statusbar_wifi, LV_STATE_CHECKED);
     }
     else {
-        lv_imgbtn_set_state( statusbar_wifi, LV_BTN_STATE_CHECKED_RELEASED );
+        lv_obj_add_state(statusbar_wifi, LV_STATE_CHECKED);
     }
     lv_label_set_text( statusbar_wifilabel, wifiname );
     lv_label_set_text( statusbar_wifiiplabel, "" );
-    lv_obj_align( statusbar_wifilabel, statusbar_wifi, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
-    lv_obj_align( statusbar_wifiiplabel, statusbar_wifilabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+    lv_obj_align_to( statusbar_wifilabel, statusbar_wifi, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+    lv_obj_align_to( statusbar_wifiiplabel, statusbar_wifilabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 }
 
 void statusbar_wifi_set_ip_state( bool state, const char *ip ) {
@@ -868,7 +876,7 @@ void statusbar_wifi_set_ip_state( bool state, const char *ip ) {
     }
 
     lv_label_set_text( statusbar_wifiiplabel, ip );
-    lv_obj_align( statusbar_wifiiplabel, statusbar_wifilabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+    lv_obj_align_to( statusbar_wifiiplabel, statusbar_wifilabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 }
 
 void statusbar_bluetooth_set_state( bool state ) {
@@ -881,10 +889,10 @@ void statusbar_bluetooth_set_state( bool state ) {
     }
 
     if ( state ) {
-        lv_imgbtn_set_state( statusbar_bluetooth, LV_BTN_STATE_RELEASED );
+        lv_obj_clear_state(statusbar_bluetooth, LV_STATE_CHECKED);
     }
     else {
-        lv_imgbtn_set_state( statusbar_bluetooth, LV_BTN_STATE_PRESSED );
+        lv_obj_add_state(statusbar_bluetooth, LV_STATE_PRESSED);
     }
 }
 
@@ -901,7 +909,7 @@ void statusbar_hide_icon( statusbar_icon_t icon ) {
         return;
     }
 
-    lv_obj_set_hidden( statusicon[ icon ].icon, true );
+    lv_obj_add_flag( statusicon[ icon ].icon, LV_OBJ_FLAG_HIDDEN );
     statusbar_refresh_update = true;
 }
 
@@ -918,7 +926,7 @@ void statusbar_show_icon( statusbar_icon_t icon ) {
         return;
     }
 
-    lv_obj_set_hidden( statusicon[ icon ].icon, false );
+    lv_obj_clear_flag( statusicon[ icon ].icon, LV_OBJ_FLAG_HIDDEN );
     statusbar_refresh_update = true;
 }
 
@@ -951,22 +959,24 @@ void statusbar_refresh( void ) {
     lv_obj_t *last_visible = NULL;
 
     for ( int i = 0 ; i < STATUSBAR_NUM ; i++ ) {
-        if ( !lv_obj_get_hidden( statusicon[ i ].icon ) ) {
+        if ( !lv_obj_has_flag( statusicon[ i ].icon, LV_OBJ_FLAG_HIDDEN ) ) {
             if ( last_visible == NULL ) {
                 if ( !statusbar_expanded ) {
-                    lv_obj_align(statusicon[i].icon, statusbar, statusicon[i].align, STATUSBAR_ICON_X_OFFSET, 0 );
+                    lv_obj_align(statusicon[i].icon, LV_ALIGN_TOP_RIGHT, STATUSBAR_ICON_X_OFFSET, 0 );
                 }
             } else {
-                lv_obj_align( statusicon[ i ].icon, last_visible, statusicon[ i ].align, -5, 0);
+                lv_obj_align_to( statusicon[ i ].icon, last_visible, LV_ALIGN_OUT_LEFT_MID, -5, 0);
             }
-            lv_obj_reset_style_list( statusicon[ i ].icon, LV_OBJ_PART_MAIN );
-            lv_obj_add_style( statusicon[ i ].icon, LV_OBJ_PART_MAIN, statusicon[i].style );
+            lv_obj_remove_style_all(statusicon[ i ].icon);
+            lv_obj_add_style( statusicon[ i ].icon, statusicon[i].style, 0 );
             last_visible = statusicon[ i ].icon;
         }
     }
 }
 
-void statusbar_event( lv_obj_t * statusbar, lv_event_t event ) {
+void statusbar_event( lv_event_t * e ) {
+    lv_event_code_t code = lv_event_get_code(e);
+
     /*
      * check if statusbar ready
      */
@@ -977,7 +987,7 @@ void statusbar_event( lv_obj_t * statusbar, lv_event_t event ) {
 
     static bool expand = false;
 
-    switch( event ) {
+    switch( code ) {
         case LV_EVENT_PRESSED:
             if ( expand ) {
                 statusbar_expand( false );
@@ -1009,22 +1019,22 @@ bool statusbar_get_force_dark( void ) {
 
 void statusbar_set_dark( bool dark_mode ) {
     if ( dark_mode || force_dark_mode ) {
-        lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ], LV_OBJ_PART_MAIN, LV_OPA_90);
-        lv_obj_reset_style_list( statusbar, LV_OBJ_PART_MAIN );
-        lv_obj_add_style( statusbar, LV_OBJ_PART_MAIN, &statusbarstyle[ STATUSBAR_STYLE_NORMAL ] );
+        lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ], LV_OPA_90);
+        lv_obj_remove_style_all(statusbar);
+        lv_obj_add_style( statusbar, &statusbarstyle[ STATUSBAR_STYLE_NORMAL ], 0 );
 
-        lv_style_set_bg_color(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], LV_OBJ_PART_MAIN, statusbar_extended_color );
-        lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], LV_OBJ_PART_MAIN, statusbar_extended_color );
-        lv_style_set_image_recolor(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], LV_OBJ_PART_MAIN, statusbar_extended_color );
+        lv_style_set_bg_color(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], statusbar_extended_color );
+        lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], statusbar_extended_color );
+        lv_style_set_img_recolor(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], statusbar_extended_color );
     }
     else {
-        lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ], LV_OBJ_PART_MAIN, LV_OPA_20);
-        lv_obj_reset_style_list( statusbar, LV_OBJ_PART_MAIN );
-        lv_obj_add_style( statusbar, LV_OBJ_PART_MAIN, &statusbarstyle[ STATUSBAR_STYLE_NORMAL ] );
+        lv_style_set_bg_opa(&statusbarstyle[ STATUSBAR_STYLE_NORMAL ], LV_OPA_20);
+        lv_obj_remove_style_all(statusbar);
+        lv_obj_add_style( statusbar, &statusbarstyle[ STATUSBAR_STYLE_NORMAL ], 0 );
 
-        lv_style_set_bg_color(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], LV_OBJ_PART_MAIN, statusbar_retracted_color );
-        lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], LV_OBJ_PART_MAIN, statusbar_retracted_color );
-        lv_style_set_image_recolor(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], LV_OBJ_PART_MAIN, statusbar_retracted_color );
+        lv_style_set_bg_color(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], statusbar_retracted_color );
+        lv_style_set_text_color(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], statusbar_retracted_color );
+        lv_style_set_img_recolor(&statusbarstyle[ STATUSBAR_STYLE_WHITE ], statusbar_retracted_color );
     }
 }
 
@@ -1069,15 +1079,16 @@ void statusbar_hide( bool hide ) {
     }
 
     #if defined( LILYGO_WATCH_2021 )
-        lv_obj_set_hidden( statusbar, true );
+        lv_obj_add_flag( statusbar, LV_OBJ_FLAG_HIDDEN );
         statusbar_refresh_update = true;
     #else
-        lv_obj_set_hidden( statusbar, hide );
+        if(hide) lv_obj_add_flag( statusbar, LV_OBJ_FLAG_HIDDEN );
+        else lv_obj_clear_flag( statusbar, LV_OBJ_FLAG_HIDDEN );
         statusbar_refresh_update = true;
     #endif
 }
 
 bool statusbar_get_hidden_state( void ) {
     statusbar_refresh_update = true;
-    return( lv_obj_get_hidden( statusbar ) );
+    return lv_obj_has_flag( statusbar, LV_OBJ_FLAG_HIDDEN );
 }

@@ -3,7 +3,7 @@
  *   Copyright  2020  Dirk Brosswick
  *   Email: dirk.brosswick@googlemail.com
  ****************************************************************************/
- 
+
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@
     TaskHandle_t _update_Task;
 #endif
 
-lv_task_t *_update_progress_task;
+lv_timer_t *_update_progress_task;
 void update_Task( void * pvParameters );
 
 icon_t *update_setup_icon = NULL;
@@ -103,7 +103,7 @@ void update_tile_setup( void ) {
 
     update_setup_tile_setup( update_tile_num + 1 );
 
-    lv_obj_add_style( update_settings_tile, LV_OBJ_PART_MAIN, SETUP_STYLE );
+    lv_obj_add_style( update_settings_tile, SETUP_STYLE, 0 );
 
     update_setup_icon = setup_register( "update", &update_64px, enter_update_setup_event_cb );
     setup_hide_indicator( update_setup_icon );
@@ -120,21 +120,21 @@ void update_tile_setup( void ) {
     lv_obj_t *update_firmware_version_cont = wf_add_label( update_settings_tile, __FIRMWARE__ , SETUP_STYLE );
     lv_obj_align( update_firmware_version_cont, update_version_cont, LV_ALIGN_OUT_BOTTOM_MID, 0, 8 );
 
-    update_btn = lv_btn_create( update_settings_tile, NULL);
+    update_btn = lv_btn_create( update_settings_tile );
     lv_obj_set_event_cb( update_btn, update_event_handler );
-    lv_obj_add_style( update_btn, LV_BTN_PART_MAIN, ws_get_button_style() );
+    lv_obj_add_style( update_btn, ws_get_button_style(), 0 );
     lv_obj_align( update_btn, update_firmware_version_cont, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
-    update_btn_label = lv_label_create( update_btn, NULL );
+    update_btn_label = lv_label_create( update_btn );
     lv_label_set_text( update_btn_label, "update");
 
-    update_status_label = lv_label_create( update_settings_tile, NULL);
-    lv_obj_add_style( update_status_label, LV_OBJ_PART_MAIN, SETUP_STYLE  );
+    update_status_label = lv_label_create( update_settings_tile );
+    lv_obj_add_style( update_status_label, SETUP_STYLE, 0  );
     lv_label_set_text( update_status_label, "" );
     lv_obj_align( update_status_label, update_btn, LV_ALIGN_OUT_BOTTOM_MID, 0, 5 );
 
-    update_progressbar = lv_bar_create( update_settings_tile, NULL );
-    lv_obj_set_size( update_progressbar, lv_disp_get_hor_res( NULL ) - 80, 20 );
-    lv_obj_add_style( update_progressbar, LV_OBJ_PART_MAIN, SETUP_STYLE );
+    update_progressbar = lv_bar_create( update_settings_tile );
+    lv_obj_set_size( update_progressbar, lv_disp_get_hor_res( lv_disp_get_default() ) - 80, 20 );
+    lv_obj_add_style( update_progressbar, SETUP_STYLE, 0 );
     lv_obj_align( update_progressbar, update_status_label, LV_ALIGN_OUT_BOTTOM_MID, 0, 5 );
     lv_bar_set_anim_time( update_progressbar, 2000 );
     lv_bar_set_value( update_progressbar, 0, LV_ANIM_ON );
@@ -156,14 +156,14 @@ void update_tile_setup( void ) {
 }
 
 void update_update_activate_cb( void ) {
-    _update_progress_task = lv_task_create( update_progress_task, 250,  LV_TASK_PRIO_LOWEST, NULL );
+    _update_progress_task = lv_timer_create( update_progress_task, 250,  NULL );
 }
 
 void update_update_hibernate_cb( void ) {
-    lv_task_del( _update_progress_task );
+    lv_timer_del( _update_progress_task );
 }
 
-void update_progress_task( lv_task_t *task ) {
+void update_progress_task( lv_timer_t *task ) {
     if ( progress > 0 ) {
         char msg[16]="";
         lv_bar_set_value( update_progressbar, progress, LV_ANIM_ON );
@@ -183,13 +183,13 @@ bool update_http_ota_event_cb( EventBits_t event, void *arg ) {
         case HTTP_OTA_PROGRESS:
             progress = *(float *)arg;
             break;
-        case HTTP_OTA_START:        
+        case HTTP_OTA_START:
             statusbar_show_icon( STATUSBAR_WARNING );
             statusbar_style_icon( STATUSBAR_WARNING, STATUSBAR_STYLE_YELLOW );   
             lv_label_set_text( update_status_label, (char *)arg );
             lv_obj_align( update_status_label, update_btn, LV_ALIGN_OUT_BOTTOM_MID, 0, 5 );
             break;
-        case HTTP_OTA_FINISH:        
+        case HTTP_OTA_FINISH:
             statusbar_show_icon( STATUSBAR_WARNING );
             statusbar_style_icon( STATUSBAR_WARNING, STATUSBAR_STYLE_GREEN );   
             lv_label_set_text( update_status_label, (char *)arg );
@@ -220,24 +220,23 @@ bool update_wifictl_event_cb( EventBits_t event, void *arg ) {
     return( true );
 }
 
-static void enter_update_setup_setup_event_cb( lv_obj_t * obj, lv_event_t event ) {
-    switch( event ) {
-        case( LV_EVENT_CLICKED ):
-            mainbar_jump_to_tilenumber( update_tile_num + 1, LV_ANIM_OFF );
-            break;
+static void enter_update_setup_setup_event_cb( lv_event_t * e ) {
+    lv_event_code_t code = lv_event_get_code(e);
+    if( code == LV_EVENT_CLICKED ) {
+        mainbar_jump_to_tilenumber( update_tile_num + 1, LV_ANIM_OFF );
     }
 }
 
-static void enter_update_setup_event_cb( lv_obj_t * obj, lv_event_t event ) {
-    switch( event ) {
-        case( LV_EVENT_CLICKED ):       
-            mainbar_jump_to_tilenumber( update_tile_num, LV_ANIM_OFF );
-            break;
+static void enter_update_setup_event_cb( lv_event_t * e ) {
+    lv_event_code_t code = lv_event_get_code(e);
+    if( code == LV_EVENT_CLICKED ) {
+        mainbar_jump_to_tilenumber( update_tile_num, LV_ANIM_OFF );
     }
 }
 
-static void update_event_handler(lv_obj_t * obj, lv_event_t event) {
-    if( event == LV_EVENT_CLICKED ) {
+static void update_event_handler(lv_event_t * e) {
+    lv_event_code_t code = lv_event_get_code(e);
+    if( code == LV_EVENT_CLICKED ) {
 
     #ifdef NATIVE_64BIT
         if ( update_event & ( UPDATE_GET_VERSION_REQUEST | UPDATE_REQUEST ) ) {
@@ -327,7 +326,7 @@ void update_Task( void * pvParameters ) {
     }
 
     update_event = update_event & ~( UPDATE_REQUEST | UPDATE_GET_VERSION_REQUEST );
-    lv_disp_trig_activity(NULL);
+    lv_disp_trig_activity(lv_disp_get_default());
     lv_obj_invalidate( lv_scr_act() );
 #else
     log_i("start update task, heap: %d", ESP.getFreeHeap() );
@@ -409,7 +408,7 @@ void update_Task( void * pvParameters ) {
     }
     xEventGroupClearBits( update_event, UPDATE_REQUEST | UPDATE_GET_VERSION_REQUEST );
     gui_take();
-    lv_disp_trig_activity(NULL);
+    lv_disp_trig_activity(lv_disp_get_default());
     lv_obj_invalidate( lv_scr_act() );
     gui_give();
     log_i("finish update task, heap: %d", ESP.getFreeHeap() );

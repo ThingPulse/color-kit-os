@@ -147,10 +147,10 @@ void gui_setup( void ) {
     /*
      * Create an blank wallpaper
      */
-    img_bin = lv_img_create( lv_scr_act() , NULL );
-    lv_obj_set_width( img_bin, lv_disp_get_hor_res( NULL ) );
-    lv_obj_set_height( img_bin, lv_disp_get_ver_res( NULL ) );
-    lv_obj_align( img_bin, NULL, LV_ALIGN_CENTER, 0, 0 );
+    img_bin = lv_img_create( lv_scr_act() );
+    lv_obj_set_width( img_bin, lv_disp_get_hor_res( lv_disp_get_default() ) );
+    lv_obj_set_height( img_bin, lv_disp_get_ver_res( lv_disp_get_default() ) );
+    lv_obj_align( img_bin, LV_ALIGN_CENTER, 0, 0 );
 
     log_i("mainbar setup");
     mainbar_setup();
@@ -203,7 +203,7 @@ void gui_setup( void ) {
     /*
      * trigger an activity
      */
-    lv_disp_trig_activity( NULL );
+    lv_disp_trig_activity( lv_disp_get_default() );
     /*
      * setup background image
      */
@@ -268,9 +268,9 @@ bool gui_powermgm_event_cb( EventBits_t event, void *arg ) {
                                         #ifdef NATIVE_64BIT
                                         #else
                                             lv_obj_invalidate( lv_scr_act() );
-                                            lv_refr_now( NULL );
+                                            lv_refr_now( lv_disp_get_default() );
                                             hardware_detach_lvgl_ticker();
-                                            lv_task_enable( false );
+                                            lv_timer_enable( false );
                                         #endif
                                         break;
         case POWERMGM_WAKEUP:           /*
@@ -280,9 +280,9 @@ bool gui_powermgm_event_cb( EventBits_t event, void *arg ) {
                                         #ifdef NATIVE_64BIT
                                         #else
                                             hardware_attach_lvgl_ticker();
-                                            lv_task_enable( true );
+                                            lv_timer_enable( true );
                                         #endif
-                                        lv_disp_trig_activity( NULL );
+                                        lv_disp_trig_activity( lv_disp_get_default() );
                                         break;
         case POWERMGM_SILENCE_WAKEUP:   /*
                                          * resume LVGL ticker
@@ -291,9 +291,9 @@ bool gui_powermgm_event_cb( EventBits_t event, void *arg ) {
                                         #ifdef NATIVE_64BIT
                                         #else
                                             hardware_attach_lvgl_ticker();
-                                            lv_task_enable( true );
+                                            lv_timer_enable( true );
                                         #endif
-                                        lv_disp_trig_activity( NULL );
+                                        lv_disp_trig_activity( lv_disp_get_default() );
                                         break;
         case POWERMGM_DISABLE_INTERRUPTS:
                                         /*
@@ -324,26 +324,26 @@ void gui_set_background_image ( uint32_t background_image ) {
     switch ( background_image ) {
         case 0:
             lv_img_set_src( img_bin, &bg );
-            lv_obj_align( img_bin, NULL, LV_ALIGN_CENTER, 0, 0 );
-            lv_obj_set_hidden( img_bin, false );
+            lv_obj_align( img_bin, LV_ALIGN_CENTER, 0, 0 );
+            lv_obj_clear_flag( img_bin, LV_OBJ_FLAG_HIDDEN );
             break;
         case 1:
             lv_img_set_src( img_bin, &bg1 );
-            lv_obj_align( img_bin, NULL, LV_ALIGN_CENTER, 0, 0 );
-            lv_obj_set_hidden( img_bin, false );
+            lv_obj_align( img_bin, LV_ALIGN_CENTER, 0, 0 );
+            lv_obj_clear_flag( img_bin, LV_OBJ_FLAG_HIDDEN );
             break;
         case 2:
             lv_img_set_src( img_bin, &bg2 );
-            lv_obj_align( img_bin, NULL, LV_ALIGN_CENTER, 0, 0 );
-            lv_obj_set_hidden( img_bin, false );
+            lv_obj_align( img_bin, LV_ALIGN_CENTER, 0, 0 );
+            lv_obj_clear_flag( img_bin, LV_OBJ_FLAG_HIDDEN );
             break;
         case 3:
             lv_img_set_src( img_bin, &bg3 );
-            lv_obj_align( img_bin, NULL, LV_ALIGN_CENTER, 0, 0 );
-            lv_obj_set_hidden( img_bin, false );
+            lv_obj_align( img_bin, LV_ALIGN_CENTER, 0, 0 );
+            lv_obj_clear_flag( img_bin, LV_OBJ_FLAG_HIDDEN );
             break;
         case 4:
-            lv_obj_set_hidden( img_bin, true );
+            lv_obj_add_flag( img_bin, LV_OBJ_FLAG_HIDDEN );
             break;
         case 5: {
             FILE* file;
@@ -354,17 +354,17 @@ void gui_set_background_image ( uint32_t background_image ) {
                 log_d("set custom background image from spiffs");
                 fclose( file );
                 lv_img_set_src( img_bin, filename );
-                lv_obj_align( img_bin, NULL, LV_ALIGN_CENTER, 0, 0 );
-                lv_obj_set_hidden( img_bin, false );
+                lv_obj_align( img_bin, LV_ALIGN_CENTER, 0, 0 );
+                lv_obj_clear_flag( img_bin, LV_OBJ_FLAG_HIDDEN );
             }
             else {
                 log_d("not custom background image found on spiffs, set to black");
-                lv_obj_set_hidden( img_bin, true );
+                lv_obj_add_flag( img_bin, LV_OBJ_FLAG_HIDDEN );
             }
             break;
         }
         default:
-            lv_obj_set_hidden( img_bin, true ); 
+            lv_obj_add_flag( img_bin, LV_OBJ_FLAG_HIDDEN ); 
     }
 }
 
@@ -373,16 +373,16 @@ bool gui_powermgm_loop_event_cb( EventBits_t event, void *arg ) {
 
     #else
         switch ( event ) {
-            case POWERMGM_WAKEUP:           if ( lv_disp_get_inactive_time( NULL ) >= display_get_timeout() * 1000  && display_get_timeout() != DISPLAY_MAX_TIMEOUT )
+            case POWERMGM_WAKEUP:           if ( lv_disp_get_inactive_time( lv_disp_get_default() ) >= display_get_timeout() * 1000  && display_get_timeout() != DISPLAY_MAX_TIMEOUT )
                                                 powermgm_set_event( POWERMGM_STANDBY_REQUEST );
                                             break;
-            case POWERMGM_SILENCE_WAKEUP:   if ( lv_disp_get_inactive_time( NULL ) >= display_get_timeout() * 1000 )
+            case POWERMGM_SILENCE_WAKEUP:   if ( lv_disp_get_inactive_time( lv_disp_get_default() ) >= display_get_timeout() * 1000 )
                                                 powermgm_set_event( POWERMGM_STANDBY_REQUEST );
                                             break;
         }
     #endif
 
-    lv_task_handler();
+    lv_timer_handler();
 
     if ( force_redraw ) {
         force_redraw = !force_redraw;

@@ -3,7 +3,7 @@
  *   Copyright  2020  Dirk Brosswick
  *   Email: dirk.brosswick@googlemail.com
  ****************************************************************************/
- 
+
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@
     #include <unistd.h>
     #include "utils/logging.h"
 
-    lv_task_t * wifictl_lv_task;
-    void wifictl_Task( lv_task_t * task );
+    lv_timer_t * wifictl_lv_task;
+    void wifictl_Task( lv_timer_t * task );
 
     static EventBits_t wifictl_status;
 #else
@@ -83,7 +83,7 @@ void wifictl_setup( void ) {
     wifictl_config = new wifictl_config_t();
     wifictl_config->load();
 #ifdef NATIVE_64BIT
-    wifictl_lv_task = lv_task_create( wifictl_Task, 500, LV_TASK_PRIO_MID, NULL );
+    wifictl_lv_task = lv_timer_create( wifictl_Task, 500, NULL );
 #else
     /*
      * create wifictl event group
@@ -619,7 +619,7 @@ void wifictl_start_wps( void ) {
 }
 
 #ifdef NATIVE_64BIT
-void wifictl_Task( lv_task_t * task ) {
+void wifictl_Task( lv_timer_t * task ) {
     /*
     * check if init
     */

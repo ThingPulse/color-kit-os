@@ -5,7 +5,7 @@
 
 /*********************
  *      INCLUDES
- *********************/
+ *********************/ 
 #ifdef LV_LVGL_H_INCLUDE_SIMPLE
 #include <lvgl.h>
 #else
@@ -19,7 +19,7 @@
 
 /*********************
  *      DEFINES
- *********************/
+ *********************/ 
 
 /**********************
  *      TYPEDEFS
@@ -28,9 +28,9 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static lv_res_t decoder_info(struct _lv_img_decoder * decoder, const void * src, lv_img_header_t * header);
-static lv_res_t decoder_open(lv_img_decoder_t * dec, lv_img_decoder_dsc_t * dsc);
-static void decoder_close(lv_img_decoder_t * dec, lv_img_decoder_dsc_t * dsc);
+static lv_res_t decoder_info(lv_img_decoder_t * decoder, const void * src, lv_img_header_t * header);
+static lv_res_t decoder_open(lv_img_decoder_t * decoder, lv_img_decoder_dsc_t * dsc);
+static void decoder_close(lv_img_decoder_t * decoder, lv_img_decoder_dsc_t * dsc);
 static void convert_color_depth(uint8_t * img, uint32_t px_cnt);
 
 /**********************
@@ -86,7 +86,7 @@ void lv_4grey_as_png( const char* filename, const unsigned char* image, unsigned
  * @param header store the info here
  * @return LV_RES_OK: no error; LV_RES_INV: can't get the info
  */
-static lv_res_t decoder_info(struct _lv_img_decoder * decoder, const void * src, lv_img_header_t * header)
+static lv_res_t decoder_info(lv_img_decoder_t * decoder, const void * src, lv_img_header_t * header)
 {
     (void) decoder; /*Unused*/
      lv_img_src_t src_type = lv_img_src_get_type(src);          /*Get the source type*/
@@ -105,7 +105,7 @@ static lv_res_t decoder_info(struct _lv_img_decoder * decoder, const void * src,
              lv_fs_file_t f;
              lv_fs_res_t res = lv_fs_open(&f, fn, LV_FS_MODE_RD);
              if(res != LV_FS_RES_OK) return -1;
-             lv_fs_seek(&f, 16);
+             lv_fs_seek(&f, 16, LV_FS_SEEK_SET);
              uint32_t rn;
              lv_fs_read(&f, &size, 8, &rn);
              if(rn != 8) return LV_RES_INV;
@@ -121,7 +121,7 @@ static lv_res_t decoder_info(struct _lv_img_decoder * decoder, const void * src,
 #endif
              /*Save the data in the header*/
              header->always_zero = 0;
-             header->cf = LV_IMG_CF_RAW_ALPHA;
+             header->cf = LV_IMG_CF_TRUE_COLOR_ALPHA;
              /*The width and height are stored in Big endian format so convert them to little endian*/
              header->w = (lv_coord_t) ((size[0] & 0xff000000) >> 24) +  ((size[0] & 0x00ff0000) >> 8);
              header->h = (lv_coord_t) ((size[1] & 0xff000000) >> 24) +  ((size[1] & 0x00ff0000) >> 8);
@@ -230,37 +230,10 @@ static void decoder_close(lv_img_decoder_t * decoder, lv_img_decoder_dsc_t * dsc
  */
 static void convert_color_depth(uint8_t * img, uint32_t px_cnt)
 {
-#if LV_COLOR_DEPTH == 32
     lv_color32_t * img_argb = (lv_color32_t*)img;
-    lv_color_t c;
     lv_color_t * img_c = (lv_color_t *) img;
     uint32_t i;
     for(i = 0; i < px_cnt; i++) {
-        c = LV_COLOR_MAKE(img_argb[i].ch.red, img_argb[i].ch.green, img_argb[i].ch.blue);
-        img_c[i].ch.red = c.ch.blue;
-        img_c[i].ch.blue = c.ch.red;
+        img_c[i] = lv_color_make(img_argb[i].ch.red, img_argb[i].ch.green, img_argb[i].ch.blue);
     }
-#elif LV_COLOR_DEPTH == 16
-    lv_color32_t * img_argb = (lv_color32_t*)img;
-    lv_color_t c;
-    uint32_t i;
-    for(i = 0; i < px_cnt; i++) {
-        c = LV_COLOR_MAKE(img_argb[i].ch.blue, img_argb[i].ch.green, img_argb[i].ch.red);
-        img[i*3 + 2] = img_argb[i].ch.alpha;
-        img[i*3 + 1] = c.full >> 8;
-        img[i*3 + 0] = c.full & 0xFF;
-    }
-#elif LV_COLOR_DEPTH == 8
-    lv_color32_t * img_argb = (lv_color32_t*)img;
-       lv_color_t c;
-       uint32_t i;
-       for(i = 0; i < px_cnt; i++) {
-           c = LV_COLOR_MAKE(img_argb[i].red, img_argb[i].green, img_argb[i].blue);
-           img[i*3 + 1] = img_argb[i].alpha;
-           img[i*3 + 0] = c.full
-       }
-#endif
 }
-
-
-

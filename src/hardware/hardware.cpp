@@ -126,6 +126,7 @@ void hardware_setup( void ) {
          * lvgl init
          */
         lv_init();
+        log_i("LV init");
         // Workaround for sdl2 `-m32` crash
         // https://bugs.launchpad.net/ubuntu/+source/libsdl2/+bug/1775067/comments/7
         #ifndef WIN32

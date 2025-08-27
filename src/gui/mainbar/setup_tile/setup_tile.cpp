@@ -80,7 +80,8 @@ void setup_tile_setup( void ) {
         mainbar_add_tile_button_cb( setup_tile_num[ tiles ], setup_tile_button_event_cb );
     }
 
-    lv_style_copy( &setup_style, ws_get_mainbar_style() );
+    lv_style_init(&setup_style);
+    lv_style_set_bg_color(&setup_style, lv_color_black());
 
     for ( int setup = 0 ; setup < MAX_SETUP_ICON ; setup++ ) {
         // set x, y and mark it as inactive
@@ -89,18 +90,18 @@ void setup_tile_setup( void ) {
         setup_entry[ setup ].active = false;
         // create app icon container
         setup_entry[ setup ].icon_cont = mainbar_obj_create( setup_cont[ setup / ( MAX_SETUP_ICON_HORZ * MAX_SETUP_ICON_VERT ) ] );
-        lv_obj_reset_style_list( setup_entry[ setup ].icon_cont, LV_OBJ_PART_MAIN );
+        lv_obj_remove_style_all( setup_entry[ setup ].icon_cont );
         lv_obj_set_size( setup_entry[ setup ].icon_cont, SETUP_ICON_X_SIZE, SETUP_ICON_Y_SIZE );
-        lv_obj_align( setup_entry[ setup ].icon_cont , setup_cont[ setup / ( MAX_SETUP_ICON_HORZ * MAX_SETUP_ICON_VERT ) ], LV_ALIGN_IN_TOP_LEFT, setup_entry[ setup ].x, setup_entry[ setup ].y );
+        lv_obj_align( setup_entry[ setup ].icon_cont, LV_ALIGN_TOP_LEFT, setup_entry[ setup ].x, setup_entry[ setup ].y );
         // create app label
-        setup_entry[ setup ].label = lv_label_create( setup_cont[ setup / ( MAX_SETUP_ICON_HORZ * MAX_SETUP_ICON_VERT ) ], NULL );
+        setup_entry[ setup ].label = lv_label_create( setup_cont[ setup / ( MAX_SETUP_ICON_HORZ * MAX_SETUP_ICON_VERT ) ] );
         mainbar_add_slide_element(setup_entry[ setup ].label);
-        lv_obj_reset_style_list( setup_entry[ setup ].label, LV_OBJ_PART_MAIN );
+        lv_obj_remove_style_all( setup_entry[ setup ].label );
         lv_obj_set_size( setup_entry[ setup ].label, SETUP_LABEL_X_SIZE, SETUP_LABEL_Y_SIZE );
-        lv_obj_align( setup_entry[ setup ].label , setup_entry[ setup ].icon_cont, LV_ALIGN_OUT_BOTTOM_MID, 0, 0 );
+        lv_obj_align_to( setup_entry[ setup ].label , setup_entry[ setup ].icon_cont, LV_ALIGN_OUT_BOTTOM_MID, 0, 0 );
 
-        lv_obj_set_hidden( setup_entry[ setup ].icon_cont, true );
-        lv_obj_set_hidden( setup_entry[ setup ].label, true );
+        lv_obj_add_flag( setup_entry[ setup ].icon_cont, LV_OBJ_FLAG_HIDDEN );
+        lv_obj_add_flag( setup_entry[ setup ].label, LV_OBJ_FLAG_HIDDEN );
 
         //log_d("icon screen/x/y: %d/%d/%d", setup / ( MAX_SETUP_ICON_HORZ * MAX_SETUP_ICON_VERT ), setup_entry[ setup ].x, setup_entry[ setup ].y );
     }
@@ -135,7 +136,7 @@ lv_obj_t *setup_tile_register_setup( void ) {
     for( int setup = 0 ; setup < MAX_SETUP_ICON ; setup++ ) {
         if ( setup_entry[ setup ].active == false ) {
             setup_entry[ setup ].active = true;
-            lv_obj_set_hidden( setup_entry[ setup ].icon_cont, false );
+            lv_obj_clear_flag( setup_entry[ setup ].icon_cont, LV_OBJ_FLAG_HIDDEN );
             return( setup_entry[ setup ].icon_cont );
         }
     }

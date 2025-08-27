@@ -37,6 +37,7 @@ touch_config_t touch_config;
     #include "utils/logging.h"
     #include "indev/mouse.h"
     #include "indev/mousewheel.h"
+    #include "sdl/sdl.h"
 #else
     #include <Arduino.h>
     #if defined( M5PAPER )
@@ -100,7 +101,7 @@ callback_t *touch_callback = NULL;
 lv_indev_t *touch_indev = NULL;
 bool touched = false;
 
-static bool touch_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
+static void touch_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
 bool touch_powermgm_loop_event_cb( EventBits_t event, void *arg );
 bool touch_powermgm_event_cb( EventBits_t event, void *arg );
 
@@ -114,7 +115,7 @@ void touch_setup( void ) {
     /**
      * init SDL mouse
      */
-    mouse_init();
+    //mouse_init();
 #else
     #if defined( M5PAPER )
         /**
@@ -543,11 +544,11 @@ bool touch_getXY( int16_t &x, int16_t &y ) {
     return( true );
 }
 
-static bool touch_read(lv_indev_drv_t * drv, lv_indev_data_t*data) {
+static void touch_read(lv_indev_drv_t * drv, lv_indev_data_t*data) {
     bool retval = false;
     
     #ifdef NATIVE_64BIT
-        retval = mouse_read( drv, data );
+        //sdl_mouse_read( drv, data );
     #else
         #if defined( M5PAPER )
             if ( M5.TP.avaliable() ) {
@@ -683,5 +684,5 @@ static bool touch_read(lv_indev_drv_t * drv, lv_indev_data_t*data) {
         data->state = LV_INDEV_STATE_REL;
     }
 
-    return( retval );
+    return;
 }

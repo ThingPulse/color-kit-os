@@ -49,11 +49,11 @@ lv_obj_t * lv_qrcode_create(lv_obj_t * parent, lv_coord_t size, lv_color_t dark_
 #if LV_VERSION_CHECK(6,0,0)
    lv_mem_assert(buf);
 #else
-   LV_ASSERT_MEM(buf);
+   LV_ASSERT_MALLOC(buf);
 #endif
    if(buf == NULL) return NULL;
 
-   lv_obj_t * canvas = lv_canvas_create(parent, NULL);
+   lv_obj_t * canvas = lv_canvas_create(parent);
    if(canvas == NULL) return NULL;
 
    lv_canvas_set_buffer(canvas, buf, size, size, LV_IMG_CF_INDEXED_1BIT);
@@ -78,7 +78,7 @@ lv_res_t lv_qrcode_update(lv_obj_t * qrcode, const void * data, uint32_t data_le
 #if LV_VERSION_CHECK(7,0,0)
     lv_canvas_fill_bg(qrcode, c, LV_OPA_COVER);
 #else
-    lv_canvas_fill_bg(qrcode, c);
+    lv_canvas_fill_bg(qrcode, c, LV_OPA_COVER);
 #endif
 
     if(data_len > qrcodegen_BUFFER_LEN_MAX) return LV_RES_INV;

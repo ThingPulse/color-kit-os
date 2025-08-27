@@ -98,24 +98,24 @@ icon_t *app_register( const char* appname, const lv_img_dsc_t *icon, lv_event_cb
     app->active = true;
     // setup label
     lv_label_set_text( app->label, appname );
-    lv_obj_align( app->label , app->icon_cont, LV_ALIGN_OUT_BOTTOM_MID, 0, 0 );
-    lv_label_set_align( app->label, LV_LABEL_ALIGN_CENTER );
-    lv_obj_set_hidden( app->icon_cont, false );
-    lv_obj_set_hidden( app->label, false );
+    lv_obj_align( app->label , LV_ALIGN_OUT_BOTTOM_MID, 0, 0 );
+    lv_obj_set_style_text_align( app->label, LV_TEXT_ALIGN_CENTER, 0 );
+    lv_obj_clear_flag( app->icon_cont, LV_OBJ_FLAG_HIDDEN );
+    lv_obj_clear_flag( app->label, LV_OBJ_FLAG_HIDDEN );
     // setup icon and set event callback
-    app->icon_img = lv_imgbtn_create( app->icon_cont , NULL );
-    lv_imgbtn_set_src( app->icon_img, LV_BTN_STATE_RELEASED, icon);
-    lv_imgbtn_set_src( app->icon_img, LV_BTN_STATE_PRESSED, icon);
-    lv_imgbtn_set_src( app->icon_img, LV_BTN_STATE_CHECKED_RELEASED, icon);
-    lv_imgbtn_set_src( app->icon_img, LV_BTN_STATE_CHECKED_PRESSED, icon);
-    lv_obj_reset_style_list( app->icon_img, LV_OBJ_PART_MAIN );
-    lv_obj_align( app->icon_img , app->icon_cont, LV_ALIGN_CENTER, 0, 0 );
-    lv_obj_set_event_cb( app->icon_img, event_cb );
+    app->icon_img = lv_imgbtn_create( app->icon_cont );
+    lv_imgbtn_set_src( app->icon_img, LV_IMGBTN_STATE_RELEASED, icon, NULL, NULL);
+    lv_imgbtn_set_src( app->icon_img, LV_IMGBTN_STATE_PRESSED, icon, NULL, NULL);
+    lv_imgbtn_set_src( app->icon_img, LV_IMGBTN_STATE_CHECKED_RELEASED, icon, NULL, NULL);
+    lv_imgbtn_set_src( app->icon_img, LV_IMGBTN_STATE_CHECKED_PRESSED, icon, NULL, NULL);
+    
+    lv_obj_align( app->icon_img , LV_ALIGN_CENTER, 0, 0 );
+    lv_obj_add_event_cb( app->icon_img, event_cb, LV_EVENT_ALL, NULL );
     // setup icon indicator
-    app->icon_indicator = lv_img_create( app->icon_cont, NULL );
+    app->icon_indicator = lv_img_create( app->icon_cont );
     lv_img_set_src( app->icon_indicator, &info_ok_16px );
-    lv_obj_align( app->icon_indicator, app->icon_cont, LV_ALIGN_IN_TOP_RIGHT, 0, 0 );
-    lv_obj_set_hidden( app->icon_indicator, true );
+    lv_obj_align( app->icon_indicator, LV_ALIGN_TOP_RIGHT, 0, 0 );
+    lv_obj_add_flag( app->icon_indicator, LV_OBJ_FLAG_HIDDEN );
     mainbar_add_slide_element( app->icon_img );
     
     lv_obj_invalidate( lv_scr_act() );
@@ -148,8 +148,8 @@ void app_set_indicator( icon_t *app, icon_indicator_t indicator ) {
         case ICON_INDICATOR_N:      lv_img_set_src( app->icon_indicator, &info_n_16px );
                                     break;
     }
-    lv_obj_align( app->icon_indicator, app->icon_cont, LV_ALIGN_IN_TOP_RIGHT, 0, 0 );
-    lv_obj_set_hidden( app->icon_indicator, false );
+    lv_obj_align( app->icon_indicator, LV_ALIGN_TOP_RIGHT, 0, 0 );
+    lv_obj_clear_flag( app->icon_indicator, LV_OBJ_FLAG_HIDDEN );
     lv_obj_invalidate( lv_scr_act() );
 }
 
@@ -162,7 +162,7 @@ void app_hide_indicator( icon_t *app ) {
         return;
     }
 
-    lv_obj_set_hidden( app->icon_indicator, true );
+    lv_obj_add_flag( app->icon_indicator, LV_OBJ_FLAG_HIDDEN );
     lv_obj_invalidate( lv_scr_act() );
 }
 
@@ -175,12 +175,12 @@ void app_set_icon( icon_t *app, lv_obj_t *icon ) {
         return;
     }
 
-    lv_imgbtn_set_src( app->icon_img, LV_BTN_STATE_RELEASED, icon);
-    lv_imgbtn_set_src( app->icon_img, LV_BTN_STATE_PRESSED, icon);
-    lv_imgbtn_set_src( app->icon_img, LV_BTN_STATE_CHECKED_RELEASED, icon);
-    lv_imgbtn_set_src( app->icon_img, LV_BTN_STATE_CHECKED_PRESSED, icon);
-    lv_obj_reset_style_list( app->icon_img, LV_OBJ_PART_MAIN );
-    lv_obj_align( app->icon_img , app->icon_cont, LV_ALIGN_IN_TOP_LEFT, 0, 0 );
+    lv_imgbtn_set_src( app->icon_img, LV_IMGBTN_STATE_RELEASED, icon, NULL, NULL);
+    lv_imgbtn_set_src( app->icon_img, LV_IMGBTN_STATE_PRESSED, icon, NULL, NULL);
+    lv_imgbtn_set_src( app->icon_img, LV_IMGBTN_STATE_CHECKED_RELEASED, icon, NULL, NULL);
+    lv_imgbtn_set_src( app->icon_img, LV_IMGBTN_STATE_CHECKED_PRESSED, icon, NULL, NULL);
+    
+    lv_obj_align( app->icon_img, LV_ALIGN_TOP_LEFT, 0, 0 );
     lv_obj_invalidate( lv_scr_act() );
 }
 

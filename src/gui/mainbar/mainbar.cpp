@@ -50,7 +50,6 @@ mainbar_history_t *mainbar_history = NULL;
 static lv_obj_t *mainbar = NULL;
 
 static lv_tile_t *tile = NULL;
-static lv_point_t *tile_pos_table = NULL;
 static uint32_t tile_entrys = 0;
 static uint32_t app_tile_x_pos = MAINBAR_APP_TILE_X_START;
 static uint32_t app_tile_y_pos = MAINBAR_APP_TILE_Y_START;
@@ -60,6 +59,16 @@ bool mainbar_button_event_cb( EventBits_t event, void *arg );
 bool mainbar_powermgm_event_cb( EventBits_t event, void *arg );
 bool mainbar_rtcctl_event_cb( EventBits_t event, void *arg );
 void mainbar_add_current_tile_to_history( void );
+
+static uint32_t get_tile_act_id(lv_obj_t* tileview) {
+    lv_obj_t* act_tile = lv_tileview_get_tile_act(tileview);
+    for(uint32_t i = 0; i < tile_entrys; i++) {
+        if(tile[i].tile == act_tile) {
+            return i;
+        }
+    }
+    return 0;
+}
 
 void mainbar_setup( void ) {
     /*
@@ -72,10 +81,9 @@ void mainbar_setup( void ) {
 
     mainbar_history = (mainbar_history_t*)MALLOC_ASSERT( sizeof( mainbar_history_t ), "error while alloc" );
 
-    mainbar = lv_tileview_create( lv_scr_act(), NULL);
-    lv_tileview_set_edge_flash( mainbar, false);
-    lv_obj_add_style( mainbar, LV_OBJ_PART_MAIN, ws_get_mainbar_style() );
-    lv_page_set_scrlbar_mode( mainbar, LV_SCRLBAR_MODE_OFF);
+    mainbar = lv_tileview_create( lv_scr_act());
+    lv_obj_set_scrollbar_mode(mainbar, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_add_style( mainbar, ws_get_mainbar_style(), 0 );
     powermgm_register_cb_with_prio( POWERMGM_STANDBY, mainbar_powermgm_event_cb, "mainbar powermgm", CALL_CB_FIRST );
     powermgm_register_cb_with_prio( POWERMGM_WAKEUP | POWERMGM_SILENCE_WAKEUP, mainbar_powermgm_event_cb, "mainbar powermgm", CALL_CB_LAST );
     rtcctl_register_cb( RTCCTL_ALARM_OCCURRED, mainbar_rtcctl_event_cb, "mainbar rtcctl" );
@@ -85,7 +93,6 @@ void mainbar_setup( void ) {
 }
 
 bool mainbar_button_event_cb( EventBits_t event, void *arg ) {
-    lv_coord_t x,y;
     uint32_t current_tile = -1;
     /*
      * check if mainbar already initialized
@@ -94,12 +101,7 @@ bool mainbar_button_event_cb( EventBits_t event, void *arg ) {
     /**
      * get the current tile number
      */
-    lv_tileview_get_tile_act( mainbar, &x, &y );
-    for ( int i = 0 ; i < tile_entrys; i++ ) {
-        if ( tile_pos_table[ i ].x == x && tile_pos_table[ i ].y == y ) {
-            current_tile = i;
-        }
-    }
+    current_tile = get_tile_act_id(mainbar);
     /**
      * call button callback for the current tile if exist
      */
@@ -118,7 +120,7 @@ bool mainbar_button_event_cb( EventBits_t event, void *arg ) {
     /**
      * trigger activity
      */
-    lv_disp_trig_activity( NULL );
+    lv_disp_trig_activity( lv_disp_get_default() );
     
     return( true );
 }
@@ -133,18 +135,17 @@ void mainbar_add_current_tile_to_history( lv_anim_enable_t anim ) {
         /**
          * get current tile
          */
-        lv_coord_t x,y;
-        lv_tileview_get_tile_act( mainbar, &x, &y );
+        uint32_t act_tile_id = get_tile_act_id(mainbar);
         /**
          * store tile pos in history
          */
         mainbar_history->entrys++;
-        mainbar_history->tile[ mainbar_history->entrys ].x = x;
-        mainbar_history->tile[ mainbar_history->entrys ].y = y;
+        mainbar_history->tile[ mainbar_history->entrys ].x = tile[act_tile_id].x;
+        mainbar_history->tile[ mainbar_history->entrys ].y = tile[act_tile_id].y;
         mainbar_history->statusbar[ mainbar_history->entrys ] = statusbar_get_hidden_state();
         mainbar_history->anim[ mainbar_history->entrys ] = anim;
         mainbar_history->powermgm_state[ mainbar_history->entrys ] = powermgm_get_event( POWERMGM_SILENCE_WAKEUP | POWERMGM_STANDBY | POWERMGM_WAKEUP );
-        MAINBAR_INFO_LOG("store tile to history: %d, %d, %d, %x, %d", x, y, statusbar_get_hidden_state(), powermgm_get_event( POWERMGM_SILENCE_WAKEUP | POWERMGM_STANDBY | POWERMGM_WAKEUP ), anim );
+        MAINBAR_INFO_LOG("store tile to history: %d, %d, %d, %x, %d", tile[act_tile_id].x, tile[act_tile_id].y, statusbar_get_hidden_state(), powermgm_get_event( POWERMGM_SILENCE_WAKEUP | POWERMGM_STANDBY | POWERMGM_WAKEUP ), anim );
     }
 }
 
@@ -163,7 +164,6 @@ void mainbar_clear_history( void ) {
 }
 
 void mainbar_jump_back( void ) {
-    lv_coord_t x,y;
     /*
      * check if mainbar already initialized
      */
@@ -173,12 +173,22 @@ void mainbar_jump_back( void ) {
         /**
          * get the current tile pos for later use
          */
-        lv_tileview_get_tile_act( mainbar, &x, &y );
+        uint32_t current_tile = get_tile_act_id(mainbar);
         /**
          * jump back
          */
         MAINBAR_INFO_LOG("jump back to tile: %d, %d, %d", mainbar_history->tile[ mainbar_history->entrys ].x, mainbar_history->tile[ mainbar_history->entrys ].y, mainbar_history->statusbar[ mainbar_history->entrys ] );
-        lv_tileview_set_tile_act( mainbar, mainbar_history->tile[ mainbar_history->entrys ].x, mainbar_history->tile[ mainbar_history->entrys ].y, mainbar_history->anim[ mainbar_history->entrys ] );
+        lv_obj_t* target_tile = NULL;
+        for ( int i = 0 ; i < tile_entrys; i++ ) {
+            if ( tile[i].x == mainbar_history->tile[ mainbar_history->entrys ].x && tile[i].y == mainbar_history->tile[ mainbar_history->entrys ].y ) {
+                target_tile = tile[i].tile;
+                break;
+            }
+        }
+        if (target_tile) {
+            lv_obj_scroll_to_view_recursive(target_tile, mainbar_history->anim[ mainbar_history->entrys ]);
+        }
+
         statusbar_hide( mainbar_history->statusbar[ mainbar_history->entrys ] );
         gui_force_redraw( true );
         /**
@@ -203,36 +213,29 @@ void mainbar_jump_back( void ) {
         /**
          * search for the hibernate cb
          */
-        for ( int tile_number = 0 ; tile_number < tile_entrys; tile_number++ ) {
-            if ( tile_pos_table[ tile_number ].x == x && tile_pos_table[ tile_number ].y == y ) {
-                /**
-                 * call hibernate callback for the current tile if exist
-                 */
-                if ( tile[ tile_number ].hibernate_cb != NULL ) {
-                    for( int i = 0 ; i < tile[ tile_number ].hibernate_cb_entry_count ; i++ ) {
-                        if ( tile[ tile_number ].hibernate_cb[ i ] != NULL ) {
-                            MAINBAR_INFO_LOG("call hibernate cb [%d] for tile: %d", i, tile_number );                            
-                            tile[ tile_number ].hibernate_cb[ i ]();
-                        }
-                    }
+        if ( tile[ current_tile ].hibernate_cb != NULL ) {
+            for( int i = 0 ; i < tile[ current_tile ].hibernate_cb_entry_count ; i++ ) {
+                if ( tile[ current_tile ].hibernate_cb[ i ] != NULL ) {
+                    MAINBAR_INFO_LOG("call hibernate cb [%d] for tile: %d", i, current_tile );                            
+                    tile[ current_tile ].hibernate_cb[ i ]();
                 }
             }
         }
         /**
          * search for the activation cb
          */
-        for ( int tile_number = 0 ; tile_number < tile_entrys; tile_number++ ) {
-            if ( tile_pos_table[ tile_number ].x == mainbar_history->tile[ mainbar_history->entrys ].x && tile_pos_table[ tile_number ].y == mainbar_history->tile[ mainbar_history->entrys ].y ) {
-                /**
-                 * call hibernate callback for the current tile if exist
-                 */
-                if ( tile[ tile_number ].activate_cb != NULL ) {
-                    for( int i = 0 ; i < tile[ tile_number ].activate_cb_entry_count ; i++ ) {
-                        if ( tile[ tile_number ].activate_cb[ i ] != NULL ) {
-                            MAINBAR_INFO_LOG("call activation cb [%d] for tile: %d", i, tile_number );
-                            tile[ tile_number ].activate_cb[ i ]();
-                        }
-                    }
+        uint32_t new_tile_id = 0;
+        for ( int i = 0 ; i < tile_entrys; i++ ) {
+            if ( tile[i].x == mainbar_history->tile[ mainbar_history->entrys ].x && tile[i].y == mainbar_history->tile[ mainbar_history->entrys ].y ) {
+                new_tile_id = i;
+                break;
+            }
+        }
+        if ( tile[ new_tile_id ].activate_cb != NULL ) {
+            for( int i = 0 ; i < tile[ new_tile_id ].activate_cb_entry_count ; i++ ) {
+                if ( tile[ new_tile_id ].activate_cb[ i ] != NULL ) {
+                    MAINBAR_INFO_LOG("call activation cb [%d] for tile: %d", i, new_tile_id );
+                    tile[ new_tile_id ].activate_cb[ i ]();
                 }
             }
         }
@@ -278,19 +281,14 @@ uint32_t mainbar_add_tile( uint16_t x, uint16_t y, const char *id, lv_style_t *s
 
     tile_entrys++;
 
-    if ( tile_pos_table == NULL ) {
-        tile_pos_table = ( lv_point_t * )MALLOC_ASSERT( sizeof( lv_point_t ) * tile_entrys, "tile_pos_table malloc faild" );
+    if ( tile == NULL ) {
         tile = ( lv_tile_t * )MALLOC_ASSERT( sizeof( lv_tile_t ) * tile_entrys, "tile malloc faild" );
     }
     else {
-        tile_pos_table = ( lv_point_t * )REALLOC_ASSERT( tile_pos_table, sizeof( lv_point_t ) * tile_entrys, "tile_pos_table realloc faild" );
         tile = ( lv_tile_t * )REALLOC_ASSERT( tile, sizeof( lv_tile_t ) * tile_entrys, "tile realloc faild" );
     }
 
-    tile_pos_table[ tile_entrys - 1 ].x = x;
-    tile_pos_table[ tile_entrys - 1 ].y = y;
-
-    lv_obj_t *my_tile = lv_cont_create( mainbar, NULL);  
+    lv_obj_t *my_tile = lv_tileview_add_tile( mainbar, x, y, LV_ANIM_OFF );
     tile[ tile_entrys - 1 ].tile = my_tile;
     tile[ tile_entrys - 1 ].activate_cb_entry_count = 0;
     tile[ tile_entrys - 1 ].activate_cb = NULL;
@@ -300,12 +298,8 @@ uint32_t mainbar_add_tile( uint16_t x, uint16_t y, const char *id, lv_style_t *s
     tile[ tile_entrys - 1 ].x = x;
     tile[ tile_entrys - 1 ].y = y;
     tile[ tile_entrys - 1 ].id = id;
-    lv_obj_set_size( tile[ tile_entrys - 1 ].tile, lv_disp_get_hor_res( NULL ), LV_VER_RES);
-    lv_obj_add_style( tile[ tile_entrys - 1 ].tile, LV_OBJ_PART_MAIN, style );
-    lv_obj_set_pos( tile[ tile_entrys - 1 ].tile, tile_pos_table[ tile_entrys - 1 ].x * lv_disp_get_hor_res( NULL ) , tile_pos_table[ tile_entrys - 1 ].y * LV_VER_RES );
-    lv_tileview_add_element( mainbar, tile[ tile_entrys - 1 ].tile );
-    lv_tileview_set_valid_positions( mainbar, tile_pos_table, tile_entrys );
-    MAINBAR_INFO_LOG("add tile: x=%d, y=%d, id=%s", tile_pos_table[ tile_entrys - 1 ].x, tile_pos_table[ tile_entrys - 1 ].y, tile[ tile_entrys - 1 ].id );
+    lv_obj_add_style( tile[ tile_entrys - 1 ].tile, style, 0 );
+    MAINBAR_INFO_LOG("add tile: x=%d, y=%d, id=%s", x, y, id );
 
     return( tile_entrys - 1 );
 }
@@ -386,7 +380,7 @@ uint32_t mainbar_add_app_tile( uint16_t x, uint16_t y, const char *id ) {
     /*
      * prevent tile x pos goes out of range ( uint16_t )
      */
-    if( ( app_tile_x_pos + x ) * lv_disp_get_hor_res( NULL ) > 32000 ) {
+    if( ( app_tile_x_pos + x ) * lv_disp_get_hor_res( lv_disp_get_default() ) > 32000 ) {
         MAINBAR_INFO_LOG("max horz resolution, jump next vert line");
         app_tile_x_pos = 0;
         app_tile_y_pos = app_tile_y_pos + MAINBAR_APP_TILE_Y_START;
@@ -417,7 +411,7 @@ uint32_t mainbar_add_setup_tile( uint16_t x, uint16_t y, const char *id ) {
     /*
      * prevent tile x pos goes out of range ( uint16_t )
      */
-    if( ( app_tile_x_pos + x ) * lv_disp_get_hor_res( NULL ) > 32000 ) {
+    if( ( app_tile_x_pos + x ) * lv_disp_get_hor_res( lv_disp_get_default() ) > 32000 ) {
         MAINBAR_INFO_LOG("max horz resolution, jump next vert line");
         app_tile_x_pos = 0;
         app_tile_y_pos = app_tile_y_pos + MAINBAR_APP_TILE_Y_START;
@@ -472,7 +466,6 @@ void mainbar_jump_to_maintile( lv_anim_enable_t anim ) {
 }
 
 void mainbar_jump_to_tilenumber( uint32_t tile_number, lv_anim_enable_t anim, bool statusbar ) {
-    lv_coord_t x,y;
     uint32_t current_tile = 0;
     /*
      * check if mainbar already initialized
@@ -481,24 +474,17 @@ void mainbar_jump_to_tilenumber( uint32_t tile_number, lv_anim_enable_t anim, bo
     /**
      * get the current tile number
      */
-    lv_tileview_get_tile_act( mainbar, &x, &y );
-    for ( int i = 0 ; i < tile_entrys; i++ ) {
-        if ( tile_pos_table[ i ].x == x && tile_pos_table[ i ].y == y ) {
-            current_tile = i;
-            /**
-             * ignore tile jump if we a on destination
-             */
-            if( current_tile == tile_number ) {
-                MAINBAR_INFO_LOG("the destination tile is the current tile");
-                return;
-            }
-        }
-    }
+    current_tile = get_tile_act_id(mainbar);
     /**
      * check if tile alread in mainbar history to prevent loops
      */
+    if( current_tile == tile_number ) {
+        MAINBAR_INFO_LOG("the destination tile is the current tile");
+        return;
+    }
+
     for ( int i = 0 ; i < mainbar_history->entrys; i++ ) {
-        if ( mainbar_history->tile[ i ].x == x && mainbar_history->tile[ i ].y == y ) {
+        if ( tile[i].x == tile[current_tile].x && tile[i].y == tile[current_tile].y ) {
             MAINBAR_INFO_LOG("current tile already in mainbar_history");
             return;
         }
@@ -516,7 +502,7 @@ void mainbar_jump_to_tilenumber( uint32_t tile_number, lv_anim_enable_t anim, bo
          * jump into tile
          */
         MAINBAR_INFO_LOG("jump to tile %d from tile %d", tile_number, current_tile );
-        lv_tileview_set_tile_act( mainbar, tile_pos_table[ tile_number ].x, tile_pos_table[ tile_number ].y, anim );
+        lv_obj_scroll_to_view_recursive(tile[tile_number].tile, anim);
         gui_force_redraw( true );
         /**
          * call hibernate callback for the current tile if exist
@@ -556,8 +542,7 @@ lv_obj_t * mainbar_obj_create(lv_obj_t *parent) {
      */
     ASSERT( mainbar, "main not initialized" );
 
-    lv_obj_t * child = lv_obj_create( parent, NULL );
-    lv_tileview_add_element( mainbar, child );
+    lv_obj_t * child = lv_obj_create( parent );
 
     return child;
 }
@@ -567,6 +552,4 @@ void mainbar_add_slide_element(lv_obj_t *element) {
      * check if mainbar already initialized
      */
     ASSERT( mainbar, "mainbar not initialized" );
-
-    lv_tileview_add_element( mainbar, element );
 }

@@ -23,9 +23,9 @@
 
     #include "config.h"
     #ifdef LV_LVGL_H_INCLUDE_SIMPLE
-        #include "lv_core/lv_obj.h"
+        #include "lvgl.h"
     #else
-        #include "lvgl/src/lv_core/lv_obj.h"
+        #include "lvgl/lvgl.h"
     #endif
 
     #include "widget_styles.h"
@@ -57,39 +57,12 @@
     #define     SYSTEM_ICON_STYLE           ws_get_system_icon_style()
     #define     SYSTEM_ICON_LABEL_STYLE     ws_get_system_icon_label_style()
 
-/**
- * @brief   Creates and adds container (lv_cont) to parent object as a layout member.
- *
- * @param   parent  pointer to parent object which the new container will be added in
- * @param   layout  defines container's object layout
- * @param   hor_fit defines how the container fit parent in width
- * @param   ver_fit defines how the container fit parent in height
- * @param   add_padding true means that CLICKABLE_PADDING will be added among the container borders and its internal objects
- *
- * @return  returns pointer to the added object
- */
-lv_obj_t * wf_add_container(lv_obj_t *parent, lv_layout_t layout,lv_fit_t hor_fit=LV_FIT_TIGHT, lv_fit_t ver_fit=LV_FIT_TIGHT, bool add_padding=false, lv_style_t *style=NULL );
 
-/**
- * @brief   Creates and adds a main container to a tile
- *
- * @param   parent_tile pointer to tile object
- * @param   layout  defines container's object layout
- *
- * @return  returns pointer to the added object
- */
-lv_obj_t * wf_add_tile_container(lv_obj_t *parent_tile, lv_layout_t layout);
-lv_obj_t * wf_add_tile_container(lv_obj_t *parent_tile, lv_layout_t layout, lv_style_t *style );
+lv_obj_t * wf_add_container(lv_obj_t *parent_tile, int layout, int hor_fit, int ver_fit, bool add_padding = true, lv_style_t *style = NULL );
+lv_obj_t * wf_add_tile_container(lv_obj_t *parent_tile, int layout, lv_style_t *style = NULL );
+lv_obj_t * wf_add_tile_container(lv_obj_t *parent_tile, int layout);
+lv_obj_t * wf_add_tile_footer_container(lv_obj_t *tile, int layout);
 
-/**
- * @brief   Creates and add a container placed on on a tile bottom (out of main tile container)
- *
- * @param   parent_tile pointer to tile object
- * @param   layout  defines container's object layout
- *
- * @return  returns pointer to the added object
- */
-lv_obj_t * wf_add_tile_footer_container(lv_obj_t *parent_tile, lv_layout_t layout);
 
 /**
  * @brief   Creates and adds a label object to a container
@@ -114,7 +87,7 @@ lv_obj_t * wf_add_label_container(lv_obj_t *parent, char const * text);
 lv_obj_t * wf_add_label_container(lv_obj_t *parent, char const * text, lv_style_t *style );
 /**
  * @brief set a printf formated label and align it
- * 
+ *
  * @param label         label lv_obj_t
  * @param base          parent widget
  * @param align         align like LV_ALIGN_....
@@ -126,7 +99,7 @@ lv_obj_t * wf_add_label_container(lv_obj_t *parent, char const * text, lv_style_
 void wf_label_printf( lv_obj_t *label, lv_obj_t *base, lv_align_t align, lv_coord_t x, lv_coord_t y, const char *format, ... );
 /**
  * @brief set a printf formated label
- * 
+ *
  * @param label         label lv_obj_t
  * @param format        format string
  * @param ...           format options list
@@ -136,7 +109,7 @@ void wf_label_printf( lv_obj_t *label, const char *format, ... );
  * @brief   Creates and adds a roller object to a container
  *
  * @param   parent  pointer to a parent container
- * @param   data    pointer to data (entries are separated by \\n)
+ * @param   data    pointer to data (entries are separated by \n)
  * @param   mode    LV_ROLLER_MODE_NORMAL or LV_ROLLER_MODE_INIFINITE
  * @param   row_count   number of visible rows
  *
@@ -179,7 +152,7 @@ lv_obj_t * wf_add_labeled_list(lv_obj_t *parent, char const * text, lv_obj_t ** 
  *
  * @return  returns pointer to the added object
  */
-lv_obj_t * wf_add_image_button(lv_obj_t *parent, lv_img_dsc_t const &image, lv_event_cb_t event_cb, lv_style_t *style=NULL);
+lv_obj_t * wf_add_image_button(lv_obj_t *parent, const lv_img_dsc_t * image, lv_event_cb_t event_cb, lv_style_t *style=NULL);
 /**
  * @brief   Creates and adds an image button to a container and used overleyed images
  *
@@ -190,35 +163,35 @@ lv_obj_t * wf_add_image_button(lv_obj_t *parent, lv_img_dsc_t const &image, lv_e
  *
  * @return  returns pointer to the added object
  */
-lv_obj_t * wf_add_image_button_old(lv_obj_t *parent, lv_img_dsc_t const &image, lv_event_cb_t event_cb, lv_style_t *style);
+lv_obj_t * wf_add_image_button_old(lv_obj_t *parent, const lv_img_dsc_t * image, lv_event_cb_t event_cb, lv_style_t *style);
 /**
  * @brief set a new style on image button
- * 
+ *
  * @param button    button
  * @param style    style to apply
  */
 void wf_image_button_set_style( lv_obj_t *button, lv_style_t *style );
 /**
  * @brief fade a img button in from 0 to full size
- * 
+ *
  * @param button    button
  * @param duration  duration time in ms
  * @param duration  delayed start time in ms
  */
-void wf_image_button_fade_in( lv_obj_t *button, uint32_t duration, uint32_t  );
+void wf_image_button_fade_in( lv_obj_t *button, uint32_t duration, uint32_t delay );
 
 /**
  * @brief fade a img button in from full size to 0
- * 
+ *
  * @param button    button
  * @param duration  duration time in ms
  * @param duration  delayed start time in ms
  */
-void wf_image_button_fade_out( lv_obj_t *button, uint32_t duration, uint32_t  );
+void wf_image_button_fade_out( lv_obj_t *button, uint32_t duration, uint32_t delay );
 
 /**
  * @brief enabled/disabled image button anim
- * 
+ *
  * @param enable    true means enabled, false disabled
  */
 void wf_enable_anim( bool enable );
@@ -243,7 +216,7 @@ lv_obj_t * wf_add_exit_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_exit_button(lv_obj_t *parent, lv_style_t *style=NULL);
-lv_img_dsc_t const &wf_get_exit_img( void );
+const lv_img_dsc_t * wf_get_exit_img( void );
 
 /**
  * @brief   Creates and adds an add button to a container
@@ -255,7 +228,7 @@ lv_img_dsc_t const &wf_get_exit_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_add_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL );
-lv_img_dsc_t const &wf_get_add_img( void );
+const lv_img_dsc_t * wf_get_add_img( void );
 
 /**
  * @brief   Creates and adds an trash button to a container
@@ -267,7 +240,7 @@ lv_img_dsc_t const &wf_get_add_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_trash_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL );
-lv_img_dsc_t const &wf_get_trash_img( void );
+const lv_img_dsc_t * wf_get_trash_img( void );
 
 /**
  * @brief   Creates and adds an menu button to a container
@@ -279,7 +252,7 @@ lv_img_dsc_t const &wf_get_trash_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_menu_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL );
-lv_img_dsc_t const &wf_get_menu_img( void );
+const lv_img_dsc_t * wf_get_menu_img( void );
 
 /**
  * @brief   Creates and adds an refresh button to a container
@@ -291,7 +264,7 @@ lv_img_dsc_t const &wf_get_menu_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_refresh_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL );
-lv_img_dsc_t const &wf_get_refresh_img( void );
+const lv_img_dsc_t * wf_get_refresh_img( void );
 
 /**
  * @brief   Creates and adds an setup button to a container
@@ -303,7 +276,7 @@ lv_img_dsc_t const &wf_get_refresh_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_setup_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL);
-lv_img_dsc_t const &wf_get_setup_img( void );
+const lv_img_dsc_t * wf_get_setup_img( void );
 
 /**
  * @brief   Creates and adds an close button to a container
@@ -315,7 +288,7 @@ lv_img_dsc_t const &wf_get_setup_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_close_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL);
-lv_img_dsc_t const &wf_get_close_img( void );
+const lv_img_dsc_t * wf_get_close_img( void );
 
 /**
  * @brief   Creates and adds an check button to a container
@@ -327,7 +300,7 @@ lv_img_dsc_t const &wf_get_close_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_check_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL);
-lv_img_dsc_t const &wf_get_check_img( void );
+const lv_img_dsc_t * wf_get_check_img( void );
 
 /**
  * @brief   Creates and adds an download button to a container
@@ -339,7 +312,7 @@ lv_img_dsc_t const &wf_get_check_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_download_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL);
-lv_img_dsc_t const &wf_get_download_img( void );
+const lv_img_dsc_t * wf_get_download_img( void );
 
 /**
  * @brief   Creates and adds an equal button to a container
@@ -351,7 +324,7 @@ lv_img_dsc_t const &wf_get_download_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_equal_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL);
-lv_img_dsc_t const &wf_get_equal_img( void );
+const lv_img_dsc_t * wf_get_equal_img( void );
 
 /**
  * @brief   Creates and adds an zoom in button to a container
@@ -364,7 +337,7 @@ lv_img_dsc_t const &wf_get_equal_img( void );
  */
 
 lv_obj_t * wf_add_zoom_in_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL );
-lv_img_dsc_t const &wf_get_zoom_in_img( void );
+const lv_img_dsc_t * wf_get_zoom_in_img( void );
 
 /**
  * @brief   Creates and adds an zoom out button to a container
@@ -376,7 +349,7 @@ lv_img_dsc_t const &wf_get_zoom_in_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_zoom_out_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *styl = NULL );
-lv_img_dsc_t const &wf_get_zoom_out_img( void );
+const lv_img_dsc_t * wf_get_zoom_out_img( void );
 
 /**
  * @brief   Creates and adds an right button to a container
@@ -388,7 +361,7 @@ lv_img_dsc_t const &wf_get_zoom_out_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_right_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL );
-lv_img_dsc_t const &wf_get_right_img( void );
+const lv_img_dsc_t * wf_get_right_img( void );
 
 /**
  * @brief   Creates and adds an left button to a container
@@ -400,7 +373,7 @@ lv_img_dsc_t const &wf_get_right_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_left_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL );
-lv_img_dsc_t const &wf_get_left_img( void );
+const lv_img_dsc_t * wf_get_left_img( void );
 
 /**
  * @brief   Creates and adds an up button to a container
@@ -412,7 +385,7 @@ lv_img_dsc_t const &wf_get_left_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_up_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL );
-lv_img_dsc_t const &wf_get_up_img( void );
+const lv_img_dsc_t * wf_get_up_img( void );
 
 /**
  * @brief   Creates and adds an down button to a container
@@ -424,7 +397,7 @@ lv_img_dsc_t const &wf_get_up_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_down_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL );
-lv_img_dsc_t const &wf_get_down_img( void );
+const lv_img_dsc_t * wf_get_down_img( void );
 
 /**
  * @brief   Creates and adds an location button to a container
@@ -436,7 +409,7 @@ lv_img_dsc_t const &wf_get_down_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_location_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL );
-lv_img_dsc_t const &wf_get_location_img( void );
+const lv_img_dsc_t * wf_get_location_img( void );
 
 /**
  * @brief   Creates and adds an play button to a container
@@ -448,7 +421,7 @@ lv_img_dsc_t const &wf_get_location_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_play_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL );
-lv_img_dsc_t const &wf_get_play_img( void );
+const lv_img_dsc_t * wf_get_play_img( void );
 
 /**
  * @brief   Creates and adds an stop button to a container
@@ -460,7 +433,7 @@ lv_img_dsc_t const &wf_get_play_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_stop_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL );
-lv_img_dsc_t const &wf_get_stop_img( void );
+const lv_img_dsc_t * wf_get_stop_img( void );
 
 /**
  * @brief   Creates and adds an eject button to a container
@@ -472,7 +445,7 @@ lv_img_dsc_t const &wf_get_stop_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_eject_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL );
-lv_img_dsc_t const &wf_get_eject_img( void );
+const lv_img_dsc_t * wf_get_eject_img( void );
 
 /**
  * @brief   Creates and adds an reply button to a container
@@ -484,7 +457,7 @@ lv_img_dsc_t const &wf_get_eject_img( void );
  * @return  returns pointer to the added object
  */
 lv_obj_t * wf_add_reply_button(lv_obj_t *parent, lv_event_cb_t event_cb, lv_style_t *style = NULL );
-lv_img_dsc_t const &wf_get_reply_img( void );
+const lv_img_dsc_t * wf_get_reply_img( void );
 
 /**
  * @brief   Creates and adds an labeled button to a container
@@ -542,7 +515,7 @@ lv_obj_t * wf_add_settings_header(lv_obj_t *parent, char const * title, lv_style
  *
  * @return  returns pointer to the added object
  */
-lv_obj_t * wf_add_image(lv_obj_t *parent, lv_img_dsc_t const &image);
+lv_obj_t * wf_add_image(lv_obj_t *parent, const lv_img_dsc_t * image);
 
 /**
  * @brief create and adds a list to a container

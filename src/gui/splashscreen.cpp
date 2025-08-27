@@ -24,9 +24,7 @@
 #include "splashscreen.h"
 #include "hardware/display.h"
 #include "hardware/framebuffer.h"
-#include "gui/png_decoder/lv_png.h"
-#include "gui/sjpg_decoder/lv_sjpg.h"
-#include "widget_factory.h"
+#include "gui/widget_factory.h"
 
 #ifdef NATIVE_64BIT
     #include "utils/logging.h"
@@ -46,22 +44,19 @@
 lv_obj_t *logo = NULL;
 lv_obj_t *preload = NULL;
 lv_obj_t *preload_label = NULL;
-lv_style_t style;
 
 LV_IMG_DECLARE(thingpulse_300px);
 
 void splash_screen_stage_one( void ) {
 
-    lv_split_jpeg_init();
-    lv_png_init();
     lv_img_cache_set_size(250);
 
-    lv_obj_t *background = lv_bar_create(lv_scr_act(), NULL);
-    lv_obj_set_size( background, lv_disp_get_hor_res( NULL ), lv_disp_get_ver_res( NULL ) );
-    lv_obj_add_style( background, LV_OBJ_PART_MAIN, BACKGROUND_STYLE );
-    lv_obj_align( background, NULL, LV_ALIGN_CENTER, 0, 0 );
+    lv_obj_t *background = lv_bar_create(lv_scr_act());
+    lv_obj_set_size( background, lv_disp_get_hor_res( lv_disp_get_default() ), lv_disp_get_ver_res( lv_disp_get_default() ) );
+    lv_obj_add_style( background, BACKGROUND_STYLE, 0 );
+    lv_obj_align( background, LV_ALIGN_CENTER, 0, 0 );
 
-    logo = lv_img_create( background , NULL );
+    logo = lv_img_create( background );
 
     // load boot logo from spiffs if exsist
     FILE* file;
@@ -76,27 +71,30 @@ void splash_screen_stage_one( void ) {
         log_i("use default boot logo");
         lv_img_set_src( logo, &thingpulse_300px );
     }
-    lv_obj_align( logo, NULL, LV_ALIGN_CENTER, 0, 0 );
-    //lv_obj_add_style( logo, LV_OBJ_PART_MAIN, SYSTEM_ICON_STYLE );
+    lv_obj_align( logo, LV_ALIGN_CENTER, 0, 0 );
 
-    preload = lv_bar_create( lv_scr_act(), NULL );
-    lv_obj_set_size( preload, lv_disp_get_hor_res( NULL ) - 80, 20 );
-    lv_obj_add_style( preload, LV_OBJ_PART_MAIN, SYSTEM_ICON_STYLE );
-    lv_obj_align( preload, logo, LV_ALIGN_OUT_BOTTOM_MID, 0, 30 );
-    lv_bar_set_anim_time( preload, 2000);
+    static lv_style_t style_preload;
+    lv_style_init(&style_preload);
+    lv_style_set_anim_time(&style_preload, 2000);
+
+    preload = lv_bar_create( lv_scr_act() );
+    lv_obj_set_size( preload, lv_disp_get_hor_res( lv_disp_get_default() ) - 80, 20 );
+    lv_obj_add_style( preload, SYSTEM_ICON_STYLE, 0 );
+    lv_obj_add_style(preload, &style_preload, LV_PART_INDICATOR);
+    lv_obj_align_to( preload, logo, LV_ALIGN_OUT_BOTTOM_MID, 0, 30 );
     lv_bar_set_value( preload, 0, LV_ANIM_ON);
-    lv_obj_set_hidden( preload, true );
+    lv_obj_add_flag( preload, LV_OBJ_FLAG_HIDDEN );
 
-    preload_label = lv_label_create( lv_scr_act(), NULL );
+    preload_label = lv_label_create( lv_scr_act() );
     lv_label_set_text( preload_label, "booting" );
-    lv_obj_add_style( preload_label, LV_OBJ_PART_MAIN, SYSTEM_ICON_LABEL_STYLE );
-    lv_obj_align( preload_label, preload, LV_ALIGN_OUT_BOTTOM_MID, 0, 5 );
+    lv_obj_add_style( preload_label, SYSTEM_ICON_LABEL_STYLE, 0 );
+    lv_obj_align_to( preload_label, preload, LV_ALIGN_OUT_BOTTOM_MID, 0, 5 );
 
-    lv_disp_trig_activity( NULL );
+    lv_disp_trig_activity( lv_disp_get_default() );
 
     lv_obj_move_foreground( preload_label );
 
-    lv_task_handler();
+    lv_timer_handler();
 
     #ifdef NATIVE_64BIT
     #else
@@ -119,13 +117,13 @@ void splash_screen_stage_one( void ) {
 
 void splash_screen_stage_update( const char* msg, int value ) {
     lv_obj_move_foreground( preload );
-    lv_disp_trig_activity( NULL );
-    lv_task_handler();
+    lv_disp_trig_activity( lv_disp_get_default() );
+    lv_timer_handler();
     delay(100);
-    lv_bar_set_value( preload, 0, LV_ANIM_ON );
+    lv_bar_set_value( preload, value, LV_ANIM_ON );
     lv_label_set_text( preload_label, msg );
-    lv_obj_align( preload_label, preload, LV_ALIGN_OUT_BOTTOM_MID, 0, 5 );
-    lv_task_handler();
+    lv_obj_align_to( preload_label, preload, LV_ALIGN_OUT_BOTTOM_MID, 0, 5 );
+    lv_timer_handler();
     delay(500);
 }
 
@@ -150,5 +148,5 @@ void splash_screen_stage_finish( void ) {
     lv_obj_del( logo );
     lv_obj_del( preload );
     lv_obj_del( preload_label );
-    lv_task_handler();
+    lv_timer_handler();
 }
