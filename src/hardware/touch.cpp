@@ -177,7 +177,7 @@ void touch_setup( void ) {
     /**
      * setup lvgl pointer driver
      */
-    lv_indev_drv_t indev_drv;
+    static lv_indev_drv_t indev_drv;
     lv_indev_drv_init( &indev_drv );
     indev_drv.type = LV_INDEV_TYPE_POINTER;
     indev_drv.read_cb = touch_read;
@@ -548,7 +548,7 @@ static void touch_read(lv_indev_drv_t * drv, lv_indev_data_t*data) {
     bool retval = false;
     
     #ifdef NATIVE_64BIT
-        //sdl_mouse_read( drv, data );
+        sdl_mouse_read( drv, data );
     #else
         #if defined( M5PAPER )
             if ( M5.TP.avaliable() ) {
@@ -662,6 +662,7 @@ static void touch_read(lv_indev_drv_t * drv, lv_indev_data_t*data) {
          */
         data->point.x = temp_x + ( lv_disp_get_hor_res( NULL ) / 2 );
         data->point.y = temp_y + ( lv_disp_get_ver_res( NULL ) / 2 );
+        log_i("Touch: %d, %d", data->point.x, data->point.y);
     }
     /**
      * check limits
