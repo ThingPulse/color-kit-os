@@ -34,9 +34,9 @@
     #define SDL_MAIN_HANDLED
     #include <unistd.h>
     #include <SDL2/SDL.h>
-    #include "utils/logging.h"
-    #include "display/monitor.h"
     #include "sdl/sdl.h"
+    #include "display/monitor.h"
+    #include "utils/logging.h"
 #else
     #include <Arduino.h>
     #if defined( M5PAPER )
@@ -77,8 +77,8 @@
 
 static bool framebuffer_drawing = true;                             /** @brief disable */
 static bool framebuffer_use_dma = false;
-lv_color_t *framebuffer_1 = NULL;                                     /** @brief pointer to a full size framebuffer */
-lv_color_t *framebuffer_2 = NULL;                                     /** @brief pointer to a full size framebuffer */
+static lv_color_t *framebuffer_1 = NULL;                                     /** @brief pointer to a full size framebuffer */
+static lv_color_t *framebuffer_2 = NULL;                                     /** @brief pointer to a full size framebuffer */
 uint32_t framebuffer_size = FRAMEBUFFER_BUFFER_SIZE;                /** @brief framebuffer size */
 
 bool framebuffer_powermgm_event_cb( EventBits_t event, void *arg );
@@ -87,15 +87,14 @@ static void framebuffer_flush_cb( lv_disp_drv_t *disp_drv, const lv_area_t *area
 
 void framebuffer_setup( void ) {
     static lv_disp_draw_buf_t disp_buf;
-    lv_disp_drv_t disp_drv;
+    static lv_disp_drv_t disp_drv;
 
     #ifdef NATIVE_64BIT
         /**
          * setup SDL
          */
-         //SDL_Init(SDL_INIT_VIDEO);
-         //sdl_init();
-        
+        //lv_monitor_init();
+        sdl_init();
     #else
         #if defined( M5PAPER )
             /**
@@ -208,17 +207,11 @@ void framebuffer_setup( void ) {
     disp_drv.ver_res = RES_Y_MAX;
     lv_disp_drv_register( &disp_drv );
 
-    static lv_indev_drv_t indev_drv;
-    lv_indev_drv_init(&indev_drv);            /*Basic initialization*/
-    indev_drv.type = LV_INDEV_TYPE_POINTER;
-    indev_drv.read_cb = sdl_mouse_read;       /*This function will be called periodically (by the library) to get the mouse position and state*/
-    lv_indev_drv_register(&indev_drv);
-
     /**
      * setup powermgm events and loop
      */
-    //powermgm_register_cb( POWERMGM_STANDBY | POWERMGM_SILENCE_WAKEUP| POWERMGM_WAKEUP , framebuffer_powermgm_event_cb, "powermgm framebuffer" );
-    //powermgm_register_loop_cb( POWERMGM_SILENCE_WAKEUP | POWERMGM_STANDBY | POWERMGM_WAKEUP , framebuffer_powermgm_loop_cb, "powermgm framebuffer loop" );
+    powermgm_register_cb( POWERMGM_STANDBY | POWERMGM_SILENCE_WAKEUP| POWERMGM_WAKEUP , framebuffer_powermgm_event_cb, "powermgm framebuffer" );
+    powermgm_register_loop_cb( POWERMGM_SILENCE_WAKEUP | POWERMGM_STANDBY | POWERMGM_WAKEUP , framebuffer_powermgm_loop_cb, "powermgm framebuffer loop" );
 }
 
 bool framebuffer_powermgm_event_cb( EventBits_t event, void *arg ) {
@@ -480,5 +473,5 @@ static void framebuffer_flush_cb(lv_disp_drv_t *disp_drv, const lv_area_t *area,
             #error "no LVGL display driver function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif
     #endif
-    //lv_disp_flush_ready( disp_drv );
+    lv_disp_flush_ready( disp_drv );
 }

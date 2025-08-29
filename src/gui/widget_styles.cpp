@@ -370,7 +370,6 @@ static void define_styles(){
     lv_style_set_text_color( &mainbar_style, lv_color_white() );
     /* setup dropdown list theme */
     lv_style_init( &mainbar_dropdown_style );
-    memcpy( &mainbar_dropdown_style, &mainbar_style, sizeof(lv_style_t) );
     lv_style_set_bg_color( &mainbar_dropdown_style, lv_color_make( 0xa0, 0xa0, 0xa0 ) );
     lv_style_set_bg_opa( &mainbar_dropdown_style, LV_OPA_100);
     lv_style_set_border_width( &mainbar_dropdown_style, 0 );
@@ -390,14 +389,12 @@ static void define_styles(){
     lv_style_set_text_font( &app_style, app_font );
     /* app opa style */
     lv_style_init( &app_opa_style );
-    memcpy( &app_opa_style, &mainbar_style, sizeof(lv_style_t) );
     lv_style_set_bg_color( &app_opa_style, lv_color_black() );
     lv_style_set_bg_opa( &app_opa_style, LV_OPA_100);
     lv_style_set_border_width( &app_opa_style, 0);
     lv_style_set_text_font( &app_opa_style, app_font );
     /* setup dropdown list theme */
     lv_style_init( &app_dropdown_style );
-    memcpy( &app_dropdown_style, &mainbar_dropdown_style, sizeof(lv_style_t) );
     lv_style_set_bg_color( &app_dropdown_style, lv_color_make( 0xa0, 0xa0, 0xa0 ) );
     lv_style_set_bg_opa( &app_dropdown_style, LV_OPA_100);
     lv_style_set_border_width( &app_dropdown_style, 0 );
@@ -408,24 +405,20 @@ static void define_styles(){
      * setup theme
      */
     lv_style_init( &setup_tile_style );
-    memcpy( &setup_tile_style, &mainbar_style, sizeof(lv_style_t) );
     lv_style_set_bg_color( &setup_tile_style, lv_palette_main(LV_PALETTE_GREY) );
     lv_style_set_bg_opa( &setup_tile_style, LV_OPA_100 );
     lv_style_set_border_width( &setup_tile_style, 0 );
     lv_style_set_img_recolor( &setup_tile_style, lv_color_white() );
     lv_style_set_img_recolor_opa( &setup_tile_style, LV_OPA_100 );
-    lv_style_set_img_opa( &setup_tile_style, LV_OPA_100 );
     lv_style_set_text_color( &setup_tile_style, lv_color_white() );
     lv_style_set_text_font( &setup_tile_style, setup_font );
     /* setup header theme */
     lv_style_init( &setup_header_tile_style );
-    memcpy( &setup_header_tile_style, &setup_tile_style, sizeof(lv_style_t) );
     lv_style_set_bg_color( &setup_header_tile_style, lv_palette_main(LV_PALETTE_GREY) );
     lv_style_set_text_color( &setup_header_tile_style, lv_color_white() );
     lv_style_set_text_font( &setup_header_tile_style, setup_header_font );
     /* setup dropdown list theme */
     lv_style_init( &setup_dropdown_style );
-    memcpy( &setup_dropdown_style, &mainbar_style, sizeof(lv_style_t) );
     lv_style_set_bg_color( &setup_dropdown_style, lv_color_make( 0xa0, 0xa0, 0xa0 ) );
     lv_style_set_bg_opa( &setup_dropdown_style, LV_OPA_100);
     lv_style_set_border_width( &setup_dropdown_style, 0 );
@@ -438,14 +431,12 @@ static void define_styles(){
     lv_style_init( &system_icon_style );
     lv_style_set_img_recolor( &system_icon_style, lv_color_white() );
     lv_style_set_img_recolor_opa( &system_icon_style, LV_OPA_100 );
-    lv_style_set_img_opa( &system_icon_style, LV_OPA_100 );
     /**
      * general app icon style
      */
     lv_style_init( &app_icon_style );
     lv_style_set_img_recolor( &app_icon_style, lv_color_white() );
     lv_style_set_img_recolor_opa( &app_icon_style, LV_OPA_0 );
-    lv_style_set_img_opa( &app_icon_style, LV_OPA_100 );
     lv_style_set_radius( &app_icon_style, 20 );
     lv_style_set_bg_color( &app_icon_style, lv_palette_main(LV_PALETTE_GREY) );
     lv_style_set_bg_opa( &app_icon_style, LV_OPA_40 );
@@ -472,7 +463,6 @@ static void define_styles(){
      * general img button style
      */
     lv_style_init(&img_button_style);
-    memcpy(&img_button_style, &mainbar_style, sizeof(lv_style_t));
     /**
      * general label style
      */
@@ -506,7 +496,6 @@ static void define_styles(){
      * general popup style
      */
     lv_style_init( &popup_style );
-    memcpy( &popup_style, &mainbar_style, sizeof(lv_style_t) );
     lv_style_set_bg_color( &popup_style, lv_palette_main(LV_PALETTE_GREY));
     lv_style_set_bg_opa( &popup_style, LV_OPA_100);
     lv_style_set_border_width( &popup_style, 0);
