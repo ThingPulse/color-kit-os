@@ -26,8 +26,8 @@
     #include "config.h"
 
     #ifdef NATIVE_64BIT
-            #define FRAMEBUFFER_BUFFER_W        LV_HOR_RES_MAX
-            #define FRAMEBUFFER_BUFFER_H        LV_VER_RES_MAX
+            #define FRAMEBUFFER_BUFFER_W        TFT_WIDTH
+            #define FRAMEBUFFER_BUFFER_H        TFT_HEIGHT
     #else
         #if defined( M5PAPER )
             #define FRAMEBUFFER_BUFFER_W        RES_X_MAX

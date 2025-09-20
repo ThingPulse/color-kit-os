@@ -87,6 +87,6 @@
      * 
      * @return  true if position valid and touch pressed, false if not valid
      */
-    bool touch_getXY( int16_t &x, int16_t &y );
+    bool touch_getXY( int32_t &x, int32_t &y );
     
 #endif // _TOUCH_H

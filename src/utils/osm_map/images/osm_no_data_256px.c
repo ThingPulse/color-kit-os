@@ -1605,11 +1605,11 @@ const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_OSM_NO_DA
 };
 
 const lv_img_dsc_t osm_no_data_256px = {
-  .header.always_zero = 0,
+
   .header.w = 256,
   .header.h = 256,
   .data_size = 25482,
-  .header.cf = LV_IMG_CF_RAW_ALPHA,
+  .header.cf = LV_COLOR_FORMAT_A8,
   .data = osm_no_data_256px_map,
 };
 

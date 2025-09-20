@@ -95,8 +95,8 @@ osm_location_t *osm_map_create_location_obj( void ) {
         osm_location->tile_server_source_update = false;    
         osm_location->tile_server = NULL;
         osm_location->current_tile_url = NULL;
-        osm_location->osm_map_data.header.always_zero = 0;
-        osm_location->osm_map_data.header.cf = LV_IMG_CF_RAW_ALPHA;
+        //osm_location->osm_map_data.header..always_zero = 0;
+        osm_location->osm_map_data.header.cf = LV_COLOR_FORMAT_A8;
         osm_location->osm_map_data.header.w = 256;
         osm_location->osm_map_data.header.h = 256;
         osm_location->osm_map_data.data = NULL;
@@ -486,7 +486,7 @@ osm_location_t *osm_map_update_tile_image( osm_location_t *osm_location ) {
          */
         osm_location->osm_map_data.data = uri_load_dsc->data;
         osm_location->osm_map_data.data_size = uri_load_dsc->size;
-        lv_img_cache_invalidate_src( &osm_location->osm_map_data );
+        //lv_img_cache_invalidate_src( &osm_location->osm_map_data );
     }
     else {
         /**
@@ -494,7 +494,7 @@ osm_location_t *osm_map_update_tile_image( osm_location_t *osm_location ) {
          */
         osm_location->osm_map_data.data = osm_no_data_256px.data;
         osm_location->osm_map_data.data_size = osm_no_data_256px.data_size;
-        lv_img_cache_invalidate_src( &osm_location->osm_map_data );
+        //lv_img_cache_invalidate_src( &osm_location->osm_map_data );
     }
     /**
      * leave critical section

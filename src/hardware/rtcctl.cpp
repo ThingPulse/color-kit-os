@@ -79,6 +79,7 @@ void rtcctl_store_data( void );
 callback_t *rtcctl_callback = NULL;
 
 void rtcctl_setup( void ) {
+
 #ifdef NATIVE_64BIT
 
 #else
@@ -121,7 +122,6 @@ void rtcctl_setup( void ) {
 
     #endif
 #endif
-
     powermgm_register_cb( POWERMGM_SILENCE_WAKEUP | POWERMGM_STANDBY | POWERMGM_WAKEUP | POWERMGM_ENABLE_INTERRUPTS | POWERMGM_DISABLE_INTERRUPTS , rtcctl_powermgm_event_cb, "powermgm rtcctl" );
     powermgm_register_loop_cb( POWERMGM_SILENCE_WAKEUP | POWERMGM_STANDBY | POWERMGM_WAKEUP, rtcctl_powermgm_loop_cb, "powermgm rtcctl loop" );
     timesync_register_cb( TIME_SYNC_OK, rtcctl_timesync_event_cb, "timesync rtcctl" );

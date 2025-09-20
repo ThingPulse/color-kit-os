@@ -1,9 +1,9 @@
 #include "lvgl.h"
-#include "gui/gui.h"
-#include "gui/app.h"
 
 #include "hardware/hardware.h"
 #include "hardware/powermgm.h"
+#include "system/homescreen.h"
+#include "system/ui/screens.h"
 
 
 #if defined( NATIVE_64BIT )
@@ -30,11 +30,12 @@ void setup() {
     /**
      * gui setup
      */
-    gui_setup();
+    create_home_screen();
+
     /**
      * apps autocall setup
      */
-    app_autocall_all_setup_functions();
+    //app_autocall_all_setup_functions();
     /**
      * post hardware setup
      */
@@ -43,4 +44,6 @@ void setup() {
 
 void loop(){
     powermgm_loop();
+    lv_task_handler();
+
 }

@@ -34,7 +34,7 @@
     #define SDL_MAIN_HANDLED
     #include <unistd.h>
     #include <SDL2/SDL.h>
-    #include "display/monitor.h"
+    //#include "display/monitor.h"
     #include "utils/logging.h"
 #else
     #include <Arduino.h>
@@ -82,17 +82,17 @@ uint32_t framebuffer_size = FRAMEBUFFER_BUFFER_SIZE;                /** @brief f
 
 bool framebuffer_powermgm_event_cb( EventBits_t event, void *arg );
 bool framebuffer_powermgm_loop_cb( EventBits_t event, void *arg );
-static void framebuffer_flush_cb( lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p );
+static void framebuffer_flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map);
 
 void framebuffer_setup( void ) {
-    static lv_disp_buf_t disp_buf;
-    lv_disp_drv_t disp_drv;
+    static lv_draw_buf_t disp_buf;
+    //lv_disp_drv_t disp_drv;
 
     #ifdef NATIVE_64BIT
         /**
          * setup SDL
          */
-        monitor_init();
+        //monitor_init();
     #else
         #if defined( M5PAPER )
             /**
@@ -155,57 +155,57 @@ void framebuffer_setup( void ) {
 
             
             ledcWrite(0, 0xFF );
+            log_i("Setup display");
+            
         #else
             #error "no framebuffer init function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif
     #endif
-    /*
-     * allocate new framebuffer
-     */
-    if ( !framebuffer_1 ) {
-        if ( framebuffer_use_dma ) {
-            framebuffer_1 = (lv_color_t*)calloc( sizeof(lv_color_t), FRAMEBUFFER_BUFFER_W * FRAMEBUFFER_BUFFER_H );
-        }
-        else {
-            framebuffer_1 = (lv_color_t*)CALLOC( sizeof(lv_color_t), FRAMEBUFFER_BUFFER_W * FRAMEBUFFER_BUFFER_H );
-        }
-        ASSERT( framebuffer_1, "framebuffer malloc failed" );
-        /**
-         * log info about framebuffer
-         */
-        #ifdef NATIVE_64BIT
-            log_d("framebuffer 1: 0x%p (%ld bytes, %dx%dpx)", framebuffer_1, FRAMEBUFFER_BUFFER_W * FRAMEBUFFER_BUFFER_H * sizeof(lv_color_t), FRAMEBUFFER_BUFFER_W, FRAMEBUFFER_BUFFER_H );
-        #else
-            log_i("framebuffer 1: 0x%p (%d bytes, %dx%dpx)", framebuffer_1, FRAMEBUFFER_BUFFER_W * FRAMEBUFFER_BUFFER_H * sizeof(lv_color_t), FRAMEBUFFER_BUFFER_W, FRAMEBUFFER_BUFFER_H );
-        #endif
-    }
-    if ( !framebuffer_2 ) {
-        if ( framebuffer_use_dma ) {
-            framebuffer_2 = (lv_color_t*)calloc( sizeof(lv_color_t), FRAMEBUFFER_BUFFER_W * FRAMEBUFFER_BUFFER_H );
-        }
-        else {
-            framebuffer_2 = (lv_color_t*)CALLOC( sizeof(lv_color_t), FRAMEBUFFER_BUFFER_W * FRAMEBUFFER_BUFFER_H );
-        }
-        ASSERT( framebuffer_2, "framebuffer malloc failed" );
-        /**
-         * log info about framebuffer
-         */
-        #ifdef NATIVE_64BIT
-            log_d("framebuffer 2: 0x%p (%ld bytes, %dx%dpx)", framebuffer_2, FRAMEBUFFER_BUFFER_W * FRAMEBUFFER_BUFFER_H * sizeof(lv_color_t), FRAMEBUFFER_BUFFER_W, FRAMEBUFFER_BUFFER_H );
-        #else
-            log_i("framebuffer 2: 0x%p (%d bytes, %dx%dpx)", framebuffer_2, FRAMEBUFFER_BUFFER_W * FRAMEBUFFER_BUFFER_H * sizeof(lv_color_t), FRAMEBUFFER_BUFFER_W, FRAMEBUFFER_BUFFER_H );
-        #endif
-    }
+
     /*
      * set LVGL driver
      */
-    lv_disp_buf_init( &disp_buf, framebuffer_1, framebuffer_2, FRAMEBUFFER_BUFFER_W * FRAMEBUFFER_BUFFER_H );
+    /*lv_disp_draw_buf_init( &disp_buf, framebuffer_1, framebuffer_2, FRAMEBUFFER_BUFFER_W * FRAMEBUFFER_BUFFER_H );
     lv_disp_drv_init( &disp_drv );
     disp_drv.flush_cb = framebuffer_flush_cb;
-    disp_drv.buffer = &disp_buf;
+    disp_drv.draw_buf = &disp_buf;
     disp_drv.hor_res = RES_X_MAX;
     disp_drv.ver_res = RES_Y_MAX;
-    lv_disp_drv_register( &disp_drv );
+    lv_disp_drv_register( &disp_drv );*/
+    
+    lv_display_t *disp = lv_display_create(TFT_WIDTH, TFT_HEIGHT);
+    lv_display_set_flush_cb(disp, framebuffer_flush_cb);
+    lv_display_set_color_format(disp, LV_COLOR_FORMAT_RGB565);
+
+        /*
+     * allocate new framebuffer
+     */
+    #ifdef NATIVE_64BIT
+        lv_color_t * framebuffer_1 = (lv_color_t*)calloc( sizeof(lv_color_t), FRAMEBUFFER_BUFFER_W * FRAMEBUFFER_BUFFER_H );
+        lv_color_t * framebuffer_2 = (lv_color_t*)calloc( sizeof(lv_color_t), FRAMEBUFFER_BUFFER_W * FRAMEBUFFER_BUFFER_H );
+    #else
+        size_t DRAW_BUF_SIZE = 0;
+        #ifdef BOARD_HAS_PSRAM
+        assert(ESP.getFreePsram());
+
+        if ( ESP.getPsramSize() >= 4000000 )
+            // >4Mb PSRAM
+            DRAW_BUF_SIZE = TFT_WIDTH * TFT_HEIGHT * sizeof(lv_color_t);
+        else
+            // 2Mb PSRAM
+            DRAW_BUF_SIZE = ( TFT_WIDTH * TFT_HEIGHT * sizeof(lv_color_t) / 8);
+
+        log_i("LVGL: allocating %u bytes PSRAM for draw buffer",DRAW_BUF_SIZE * 2);
+        lv_color_t * drawBuf1 = (lv_color_t *)heap_caps_aligned_alloc(16, DRAW_BUF_SIZE, MALLOC_CAP_SPIRAM);
+        lv_color_t * drawBuf2 = (lv_color_t *)heap_caps_aligned_alloc(16, DRAW_BUF_SIZE, MALLOC_CAP_SPIRAM);
+        lv_display_set_buffers(disp, drawBuf1, drawBuf2, DRAW_BUF_SIZE, LV_DISPLAY_RENDER_MODE_PARTIAL);
+        #else
+        DRAW_BUF_SIZE =  TFT_WIDTH * TFT_HEIGHT / 10  * sizeof(lv_color_t);
+        log_v("LVGL: allocating %u bytes RAM for draw buffer",DRAW_BUF_SIZE);
+        lv_color_t * drawBuf1[DRAW_BUF_SIZE / 4];
+        lv_display_set_buffers(display, drawBuf1, NULL, DRAW_BUF_SIZE, LV_DISPLAY_RENDER_MODE_PARTIAL);
+        #endif
+    #endif
 
     /**
      * setup powermgm events and loop
@@ -302,9 +302,9 @@ void framebuffer_refresh( void ) {
     #endif
 }
 
-static void framebuffer_flush_cb(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p) {
+static void framebuffer_flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *color_p) {
     if( !framebuffer_drawing )
-            lv_disp_flush_ready( disp_drv );
+            lv_disp_flush_ready( disp );
 
     #ifdef NATIVE_64BIT
         /**
@@ -328,7 +328,7 @@ static void framebuffer_flush_cb(lv_disp_drv_t *disp_drv, const lv_area_t *area,
             }     
             monitor_flush( disp_drv, area, color_p );
         #else
-            monitor_flush( disp_drv, area, color_p );
+            //monitor_flush( disp_drv, area, color_p );
         #endif
     #else
         #if defined( M5PAPER )
@@ -445,16 +445,17 @@ static void framebuffer_flush_cb(lv_disp_drv_t *disp_drv, const lv_area_t *area,
             }
         #elif defined( CKGPRO ) || defined ( CKGRANDE )
 
-            if (tft.getStartCount() == 0) {
-                tft.endWrite();
-            }
-
-            tft.pushImageDMA( area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1), ( uint16_t *)color_p );
+            uint32_t w = ( area->x2 - area->x1 + 1 );
+            uint32_t h = ( area->y2 - area->y1 + 1 );
+        
+            tft.setAddrWindow(area->x1, area->y1, w, h);
+            tft.pushImageDMA(area->x1, area->y1, area->x2 - area->x1 + 1, area->y2 - area->y1 + 1, (uint16_t*)color_p);
+        
 
 
         #else
             #error "no LVGL display driver function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif
     #endif
-    lv_disp_flush_ready( disp_drv );
+    lv_disp_flush_ready( disp );
 }

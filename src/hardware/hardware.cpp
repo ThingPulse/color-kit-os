@@ -20,18 +20,29 @@
 #include "sensor.h"
 #include "device.h"
 #include "compass.h"
+#include "lvgl.h"
 
 #include "utils/fakegps.h"
-#include "gui/splashscreen.h"
-#include "gui/screenshot.h"
+#include "system/splashscreen.h"
+//#include "gui/screenshot.h"
 
 #ifdef NATIVE_64BIT
     #include "lvgl.h"
     #include <unistd.h>
+    #include <stdio.h>
+    #include <stdlib.h>
     #define SDL_MAIN_HANDLED        /*To fix SDL's "undefined reference to WinMain" issue*/
     #include <SDL2/SDL.h>
     #include "utils/logging.h"
+    #include "drivers/sdl/lv_sdl_mouse.h"
+    #include "drivers/sdl/lv_sdl_mousewheel.h"
+    #include "drivers/sdl/lv_sdl_keyboard.h"
 
+
+    static lv_display_t *lvDisplay;
+    static lv_indev_t *lvMouse;
+    static lv_indev_t *lvMousewheel;
+    static lv_indev_t *lvKeyboard;
     /**
      * A task to measure the elapsed time for LittlevGL
      * @param data unused
@@ -47,6 +58,7 @@
         }
         return 0;
     }
+
 #else
     #include <Arduino.h>
     #include <SPIFFS.h>
@@ -131,10 +143,27 @@ void hardware_setup( void ) {
         #ifndef WIN32
             setenv("DBUS_FATAL_WARNINGS", "0", 1);
         #endif
+
+        lvDisplay = lv_sdl_window_create(TFT_WIDTH, TFT_HEIGHT);
+        lv_sdl_window_set_title(lvDisplay, "PlatformIO Emulator");
+        lvMouse = lv_sdl_mouse_create();
+        lvMousewheel = lv_sdl_mousewheel_create();
+        lvKeyboard = lv_sdl_keyboard_create();
+
+        /*lv_display_set_flush_cb(disp, flush_cb);
+        lv_display_set_draw_buffers(disp, buffer, NULL, LV_HOR_RES_MAX * LV_VER_RES_MAX * 4, LV_DISPLAY_RENDER_MODE_DIRECT);
+    
+        /* Simple demo widget */
+        /*lv_obj_t * label = lv_label_create(lv_scr_act());
+        lv_label_set_text(label, "Hello LVGL 8.4.0 on macOS!");
+        lv_obj_center(label);*/
+
+        
         /* Tick init.
         * You have to call 'lv_tick_inc()' in periodically to inform LittelvGL about how much time were elapsed
         * Create an SDL thread to do this*/
         SDL_CreateThread( tick_thread, "tick", NULL );
+
     #else
         esp_pthread_cfg_t cfg = esp_pthread_get_default_config();
         cfg.stack_size = ( 8 * 1024 );
@@ -258,8 +287,9 @@ void hardware_setup( void ) {
     button_setup();
     motor_setup();
     display_setup();
-    screenshot_setup();
-    compass_setup();
+
+    //screenshot_setup();
+    //compass_setup();
     /**
      * splashscreen setup
      */
@@ -288,9 +318,7 @@ void hardware_setup( void ) {
     pmu_setup();
     bma_setup();
     wifictl_setup();
-    log_v("XXXX wifictl setup done");
     touch_setup();
-    log_v("XXXX touch setup done");
     rtcctl_setup();
     timesync_setup();
     sensor_setup();

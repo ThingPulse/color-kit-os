@@ -22,6 +22,7 @@
 #include "config.h"
 #include "alloc.h"
 #include "msg_chain.h"
+#include <string.h>
 
 #ifdef NATIVE_64BIT
     #include <time.h>

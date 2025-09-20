@@ -1,0 +1,13 @@
+#include "settingsscreen.h"
+#include "ui/screens.h"
+#include "ui/actions.h"
+
+#ifdef NATIVE_64BIT
+    #include "utils/logging.h"
+#else
+    #include <Arduino.h>
+#endif
+
+void action_open_home_screen(lv_event_t * e) {
+    lv_screen_load(objects.homescreen);
+}

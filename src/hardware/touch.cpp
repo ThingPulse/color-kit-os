@@ -35,8 +35,6 @@ touch_config_t touch_config;
 
 #ifdef NATIVE_64BIT
     #include "utils/logging.h"
-    #include "indev/mouse.h"
-    #include "indev/mousewheel.h"
 #else
     #include <Arduino.h>
     #if defined( M5PAPER )
@@ -83,7 +81,6 @@ touch_config_t touch_config;
             touch_send_event_cb( TOUCH_UPDATE, (void*)NULL );
             log_i("Powermgt request");
         }
-        log_i("Touch");
     }
 
     static SemaphoreHandle_t xSemaphores = NULL;
@@ -100,7 +97,7 @@ callback_t *touch_callback = NULL;
 lv_indev_t *touch_indev = NULL;
 bool touched = false;
 
-static bool touch_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
+static void touch_read(lv_indev_t * indev, lv_indev_data_t * data);
 bool touch_powermgm_loop_event_cb( EventBits_t event, void *arg );
 bool touch_powermgm_event_cb( EventBits_t event, void *arg );
 
@@ -114,7 +111,7 @@ void touch_setup( void ) {
     /**
      * init SDL mouse
      */
-    mouse_init();
+    //mouse_init();
 #else
     #if defined( M5PAPER )
         /**
@@ -176,11 +173,10 @@ void touch_setup( void ) {
     /**
      * setup lvgl pointer driver
      */
-    lv_indev_drv_t indev_drv;
-    lv_indev_drv_init( &indev_drv );
-    indev_drv.type = LV_INDEV_TYPE_POINTER;
-    indev_drv.read_cb = touch_read;
-    lv_indev_drv_register( &indev_drv );
+    lv_indev_t * indev = lv_indev_create();
+    lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
+    lv_indev_set_read_cb(indev, touch_read);
+    //lv_indev_set_user_data(indev, touch_read);  // optional
     /*
      * register powermgm callback function
      */
@@ -435,7 +431,7 @@ void touch_set_y_scale( float value ) {
     touch_config.save();
 }
 
-bool touch_getXY( int16_t &x, int16_t &y ) {
+bool touch_getXY( int32_t &x, int32_t &y ) {
     
     /**
      * disable touch when we are in standby or silence wakeup
@@ -543,11 +539,11 @@ bool touch_getXY( int16_t &x, int16_t &y ) {
     return( true );
 }
 
-static bool touch_read(lv_indev_drv_t * drv, lv_indev_data_t*data) {
+static void touch_read(lv_indev_t * indev, lv_indev_data_t * data) {
     bool retval = false;
     
     #ifdef NATIVE_64BIT
-        retval = mouse_read( drv, data );
+
     #else
         #if defined( M5PAPER )
             if ( M5.TP.avaliable() ) {
@@ -645,7 +641,10 @@ static bool touch_read(lv_indev_drv_t * drv, lv_indev_data_t*data) {
         #elif defined( WT32_SC01 )
             data->state = touch_getXY( data->point.x, data->point.y ) ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
         #elif defined( CKGPRO ) || defined ( CKGRANDE )
-            data->state = touch_getXY( data->point.x, data->point.y ) ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
+            int32_t touchX = 0, touchY = 0;
+            data->state = touch_getXY( touchX, touchY ) ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
+            data->point.x = touchX;
+            data->point.y = touchY;
         #else
             #error "no LVGL Input driver function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif
@@ -680,8 +679,8 @@ static bool touch_read(lv_indev_drv_t * drv, lv_indev_data_t*data) {
      * discard when callback return true
      */
     if ( touch_send_event_cb( TOUCH_UPDATE, (void*)&touch ) ) {
-        data->state = LV_INDEV_STATE_REL;
+        //data->state = LV_INDEV_STATE_REL;
     }
 
-    return( retval );
+    return;
 }

@@ -96,6 +96,8 @@ void display_setup( void ) {
             #error "no display init function implemented, please setup minimal drivers ( display/framebuffer/touch )"
         #endif
     #endif
+
+
     /**
      * setup framebuffer
      */
