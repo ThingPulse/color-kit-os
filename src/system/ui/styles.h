@@ -22,6 +22,20 @@ lv_style_t *get_style_settings_button_MAIN_DEFAULT();
 void add_style_settings_button(lv_obj_t *obj);
 void remove_style_settings_button(lv_obj_t *obj);
 
+// Style: settingsLabel
+lv_style_t *get_style_settings_label_MAIN_DEFAULT();
+void add_style_settings_label(lv_obj_t *obj);
+void remove_style_settings_label(lv_obj_t *obj);
+
+// Style: formLabel
+void add_style_form_label(lv_obj_t *obj);
+void remove_style_form_label(lv_obj_t *obj);
+
+// Style: textInput
+lv_style_t *get_style_text_input_MAIN_DEFAULT();
+void add_style_text_input(lv_obj_t *obj);
+void remove_style_text_input(lv_obj_t *obj);
+
 
 
 #ifdef __cplusplus

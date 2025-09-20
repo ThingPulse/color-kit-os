@@ -11,3 +11,7 @@
 void action_open_home_screen(lv_event_t * e) {
     lv_screen_load(objects.homescreen);
 }
+
+void action_open_wifi_settings(lv_event_t * e) {
+    lv_screen_load(objects.settings_wifi);
+}

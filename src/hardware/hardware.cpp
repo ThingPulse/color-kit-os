@@ -23,6 +23,7 @@
 #include "lvgl.h"
 
 #include "utils/fakegps.h"
+#include "system/ui/screens.h"
 #include "system/splashscreen.h"
 //#include "gui/screenshot.h"
 
@@ -287,6 +288,7 @@ void hardware_setup( void ) {
     button_setup();
     motor_setup();
     display_setup();
+    create_screens();
 
     //screenshot_setup();
     //compass_setup();

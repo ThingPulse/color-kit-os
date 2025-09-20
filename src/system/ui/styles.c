@@ -107,6 +107,76 @@ void remove_style_settings_button(lv_obj_t *obj) {
 };
 
 //
+// Style: settingsLabel
+//
+
+void init_style_settings_label_MAIN_DEFAULT(lv_style_t *style) {
+    lv_style_set_align(style, LV_ALIGN_LEFT_MID);
+};
+
+lv_style_t *get_style_settings_label_MAIN_DEFAULT() {
+    static lv_style_t *style;
+    if (!style) {
+        style = lv_malloc(sizeof(lv_style_t));
+        lv_style_init(style);
+        init_style_settings_label_MAIN_DEFAULT(style);
+    }
+    return style;
+};
+
+void add_style_settings_label(lv_obj_t *obj) {
+    (void)obj;
+    lv_obj_add_style(obj, get_style_settings_label_MAIN_DEFAULT(), LV_PART_MAIN | LV_STATE_DEFAULT);
+};
+
+void remove_style_settings_label(lv_obj_t *obj) {
+    (void)obj;
+    lv_obj_remove_style(obj, get_style_settings_label_MAIN_DEFAULT(), LV_PART_MAIN | LV_STATE_DEFAULT);
+};
+
+//
+// Style: formLabel
+//
+
+void add_style_form_label(lv_obj_t *obj) {
+    (void)obj;
+};
+
+void remove_style_form_label(lv_obj_t *obj) {
+    (void)obj;
+};
+
+//
+// Style: textInput
+//
+
+void init_style_text_input_MAIN_DEFAULT(lv_style_t *style) {
+    lv_style_set_bg_color(style, lv_color_hex(0xffffffff));
+    lv_style_set_border_color(style, lv_color_hex(0xffb5b5b5));
+    lv_style_set_text_color(style, lv_color_hex(0xff000000));
+};
+
+lv_style_t *get_style_text_input_MAIN_DEFAULT() {
+    static lv_style_t *style;
+    if (!style) {
+        style = lv_malloc(sizeof(lv_style_t));
+        lv_style_init(style);
+        init_style_text_input_MAIN_DEFAULT(style);
+    }
+    return style;
+};
+
+void add_style_text_input(lv_obj_t *obj) {
+    (void)obj;
+    lv_obj_add_style(obj, get_style_text_input_MAIN_DEFAULT(), LV_PART_MAIN | LV_STATE_DEFAULT);
+};
+
+void remove_style_text_input(lv_obj_t *obj) {
+    (void)obj;
+    lv_obj_remove_style(obj, get_style_text_input_MAIN_DEFAULT(), LV_PART_MAIN | LV_STATE_DEFAULT);
+};
+
+//
 //
 //
 
@@ -116,6 +186,9 @@ void add_style(lv_obj_t *obj, int32_t styleIndex) {
         add_style_app_button,
         add_style_app_label,
         add_style_settings_button,
+        add_style_settings_label,
+        add_style_form_label,
+        add_style_text_input,
     };
     add_style_funcs[styleIndex](obj);
 }
@@ -126,6 +199,9 @@ void remove_style(lv_obj_t *obj, int32_t styleIndex) {
         remove_style_app_button,
         remove_style_app_label,
         remove_style_settings_button,
+        remove_style_settings_label,
+        remove_style_form_label,
+        remove_style_text_input,
     };
     remove_style_funcs[styleIndex](obj);
 }

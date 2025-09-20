@@ -10,6 +10,13 @@ extern "C" {
 extern void action_open_app(lv_event_t * e);
 extern void action_open_settings(lv_event_t * e);
 extern void action_open_home_screen(lv_event_t * e);
+extern void action_open_wifi_settings(lv_event_t * e);
+extern void action_settings_wifi_screen_loaded(lv_event_t * e);
+extern void action_settings_wifi_screen_created(lv_event_t * e);
+extern void action_save_wifi_settings(lv_event_t * e);
+extern void action_open_wifi_password_screen(lv_event_t * e);
+extern void action_show_wifi_settings_keyboard(lv_event_t * e);
+extern void action_hide_wifi_settings_keyboard(lv_event_t * e);
 
 
 #ifdef __cplusplus
