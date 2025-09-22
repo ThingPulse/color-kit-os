@@ -619,6 +619,16 @@ void wifictl_start_wps( void ) {
 #endif
 }
 
+void wifictl_scan_networks() {
+    wifictl_off();
+    wifictl_on();
+    wifictl_set_event( WIFICTL_SCAN );
+    wifictl_send_event_cb( WIFICTL_DISCONNECT, (void *)"scan ..." );
+    #ifndef NATIVE_64BIT
+    WiFi.scanNetworks( true );
+    #endif
+}
+
 #ifdef NATIVE_64BIT
 void wifictl_Task( lv_timer_t * task ) {
     /*
@@ -649,9 +659,11 @@ void wifictl_Task( lv_timer_t * task ) {
         wifictl_send_event_cb( WIFICTL_CONNECT, (void *)"connect to wifi" );
         wifictl_send_event_cb( WIFICTL_CONNECT_IP, (void *)"x.x.x.x" );
         wifictl_send_event_cb( WIFICTL_SCAN_DONE, (void *)"foobar" );
-        wifictl_send_event_cb( WIFICTL_SCAN_ENTRY, (void *)"foobar" );
-        wifictl_send_event_cb( WIFICTL_SCAN_ENTRY, (void *)"fnord" );
-        wifictl_send_event_cb( WIFICTL_SCAN_ENTRY, (void *)"23" );
+        for (int i = 0; i < 4; i++) {
+            wifictl_send_event_cb( WIFICTL_SCAN_ENTRY, (void *)"foobar" );
+            wifictl_send_event_cb( WIFICTL_SCAN_ENTRY, (void *)"fnord" );
+            wifictl_send_event_cb( WIFICTL_SCAN_ENTRY, (void *)"23" );
+        }
     }
 
     wifictl_clear_event( WIFICTL_OFF_REQUEST | WIFICTL_ACTIVE | WIFICTL_CONNECT | WIFICTL_SCAN | WIFICTL_ON_REQUEST );
@@ -684,6 +696,8 @@ void wifictl_Task( void * pvParameters ) {
             log_d("request wifictl on done");
             wifictl_set_event( WIFICTL_ON );
             wifictl_clear_event( WIFICTL_OFF );
+        } else if ( wifictl_get_event( WIFICTL_ON_REQUEST ) ) {
+
         }
         wifictl_clear_event( WIFICTL_OFF_REQUEST | WIFICTL_ACTIVE | WIFICTL_CONNECT | WIFICTL_SCAN | WIFICTL_ON_REQUEST );
         vTaskSuspend( _wifictl_Task );

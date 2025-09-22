@@ -177,4 +177,11 @@
      */
     bool wifictl_get_enable_on_standby( void );
 
+    /**
+     * @brief   scan wifi networks
+     * 
+     * @return  
+     */
+    void wifictl_scan_networks();
+
 #endif // _WIFICTL_H

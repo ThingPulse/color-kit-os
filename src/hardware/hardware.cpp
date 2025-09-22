@@ -320,6 +320,7 @@ void hardware_setup( void ) {
     pmu_setup();
     bma_setup();
     wifictl_setup();
+    wifictl_set_autoon(true);
     touch_setup();
     rtcctl_setup();
     timesync_setup();

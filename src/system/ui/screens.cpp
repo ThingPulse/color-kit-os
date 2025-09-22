@@ -462,7 +462,7 @@ void create_screen_settings_wifi() {
             // ssid_button_matrix
             lv_obj_t *obj = lv_buttonmatrix_create(parent_obj);
             objects.ssid_button_matrix = obj;
-            lv_obj_set_pos(obj, 0, 65);
+            lv_obj_set_pos(obj, 0, 80);
             lv_obj_set_size(obj, LV_PCT(100), LV_PCT(85));
             static const char *map[1] = {
                 NULL,
@@ -589,7 +589,7 @@ void create_screen_settings_wifi_password() {
             lv_obj_t *obj = lv_label_create(parent_obj);
             lv_obj_set_pos(obj, 15, 44);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_obj_add_event_cb(obj, action_open_wifi_settings, LV_EVENT_PRESSED, (void *)0);
+            lv_obj_add_event_cb(obj, action_return_wifi_settings, LV_EVENT_PRESSED, (void *)0);
             lv_obj_add_flag(obj, LV_OBJ_FLAG_CLICKABLE);
             lv_obj_set_style_align(obj, LV_ALIGN_TOP_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_margin_left(obj, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -681,12 +681,13 @@ void create_screen_settings_wifi_password() {
             // wifi_settings_keyboard
             lv_obj_t *obj = lv_keyboard_create(parent_obj);
             objects.wifi_settings_keyboard = obj;
-            lv_obj_set_pos(obj, 20, 328);
-            lv_obj_set_size(obj, 320, 206);
-            lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_set_style_align(obj, LV_ALIGN_DEFAULT, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_pos(obj, 20, -8625);
+            lv_obj_set_size(obj, 320, 205);
+            lv_obj_add_event_cb(obj, action_keyboard_value_changed, LV_EVENT_VALUE_CHANGED, (void *)0);
+            add_style_keyboards(obj);
         }
     }
+    lv_keyboard_set_textarea(objects.wifi_settings_keyboard, objects.ssid_input);
     
     tick_screen_settings_wifi_password();
 }

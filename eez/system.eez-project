@@ -179,6 +179,22 @@
       "localVariables": [],
       "userProperties": [],
       "name": "hide_wifi_settings_keyboard"
+    },
+    {
+      "objID": "2d30aa64-9b9e-48c3-e7b8-937f0d39cf9f",
+      "components": [],
+      "connectionLines": [],
+      "localVariables": [],
+      "userProperties": [],
+      "name": "returnWifiSettings"
+    },
+    {
+      "objID": "de881aa4-6d92-4ad8-e484-79e847235b89",
+      "components": [],
+      "connectionLines": [],
+      "localVariables": [],
+      "userProperties": [],
+      "name": "keyboardValueChanged"
     }
   ],
   "userPages": [
@@ -1867,7 +1883,7 @@
               "objID": "64d344c6-830b-460b-ce50-569bae95dfbe",
               "type": "LVGLButtonMatrixWidget",
               "left": 0,
-              "top": 65,
+              "top": 80,
               "width": 100,
               "height": 85,
               "customInputs": [],
@@ -2112,6 +2128,7 @@
                 "conditionalStyles": [],
                 "childStyles": []
               },
+              "hiddenInEditor": false,
               "timeline": [],
               "eventHandlers": [],
               "identifier": "titleBar_3",
@@ -2270,13 +2287,14 @@
                 "conditionalStyles": [],
                 "childStyles": []
               },
+              "hiddenInEditor": false,
               "timeline": [],
               "eventHandlers": [
                 {
-                  "objID": "e479d594-f2e3-4024-d63a-96578b02159f",
+                  "objID": "6b55b856-7f64-48ab-b359-df1a41cd7152",
                   "eventName": "PRESSED",
                   "handlerType": "action",
-                  "action": "openWifiSettings",
+                  "action": "returnWifiSettings",
                   "userData": 0
                 }
               ],
@@ -2330,6 +2348,7 @@
                 "conditionalStyles": [],
                 "childStyles": []
               },
+              "hiddenInEditor": false,
               "timeline": [],
               "eventHandlers": [],
               "leftUnit": "px",
@@ -2352,6 +2371,7 @@
                     "conditionalStyles": [],
                     "childStyles": []
                   },
+                  "hiddenInEditor": false,
                   "timeline": [],
                   "eventHandlers": [],
                   "leftUnit": "px",
@@ -2401,6 +2421,7 @@
                     "conditionalStyles": [],
                     "childStyles": []
                   },
+                  "hiddenInEditor": false,
                   "timeline": [],
                   "eventHandlers": [
                     {
@@ -2471,6 +2492,7 @@
                     "conditionalStyles": [],
                     "childStyles": []
                   },
+                  "hiddenInEditor": false,
                   "timeline": [],
                   "eventHandlers": [],
                   "leftUnit": "px",
@@ -2520,6 +2542,7 @@
                     "conditionalStyles": [],
                     "childStyles": []
                   },
+                  "hiddenInEditor": false,
                   "timeline": [],
                   "eventHandlers": [
                     {
@@ -2590,6 +2613,7 @@
                     "conditionalStyles": [],
                     "childStyles": []
                   },
+                  "hiddenInEditor": false,
                   "timeline": [],
                   "eventHandlers": [
                     {
@@ -2620,6 +2644,7 @@
                         "conditionalStyles": [],
                         "childStyles": []
                       },
+                      "hiddenInEditor": false,
                       "timeline": [],
                       "eventHandlers": [],
                       "leftUnit": "px",
@@ -2711,9 +2736,9 @@
               "objID": "32a7c691-be55-420f-9a28-f96bb67e2cb3",
               "type": "LVGLKeyboardWidget",
               "left": 20,
-              "top": 328,
+              "top": -8625,
               "width": 320,
-              "height": 206,
+              "height": 205,
               "customInputs": [],
               "customOutputs": [],
               "style": {
@@ -2722,8 +2747,17 @@
                 "conditionalStyles": [],
                 "childStyles": []
               },
+              "hiddenInEditor": false,
               "timeline": [],
-              "eventHandlers": [],
+              "eventHandlers": [
+                {
+                  "objID": "c0a16564-f263-4335-9866-acfc51b7745f",
+                  "eventName": "VALUE_CHANGED",
+                  "handlerType": "action",
+                  "action": "keyboardValueChanged",
+                  "userData": 0
+                }
+              ],
               "identifier": "wifi_settings_keyboard",
               "leftUnit": "px",
               "topUnit": "px",
@@ -2731,7 +2765,7 @@
               "heightUnit": "px",
               "children": [],
               "widgetFlags": "GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
-              "hiddenFlag": true,
+              "hiddenFlag": false,
               "hiddenFlagType": "literal",
               "clickableFlag": true,
               "clickableFlagType": "literal",
@@ -2740,20 +2774,16 @@
               "scrollSnapX": "",
               "scrollSnapY": "",
               "checkedStateType": "literal",
+              "disabledState": false,
               "disabledStateType": "literal",
               "states": "",
+              "useStyle": "keyboards",
               "localStyles": {
-                "objID": "69389918-4466-42ce-8657-21ac494b40bd",
-                "definition": {
-                  "MAIN": {
-                    "DEFAULT": {
-                      "align": "DEFAULT"
-                    }
-                  }
-                }
+                "objID": "69389918-4466-42ce-8657-21ac494b40bd"
               },
               "group": "",
               "groupIndex": 0,
+              "textarea": "ssid_input",
               "mode": "TEXT_LOWER"
             }
           ],
@@ -3051,6 +3081,34 @@
               "DEFAULT": {
                 "bg_color": "#ffffff",
                 "border_color": "#b5b5b5",
+                "text_color": "#000000"
+              }
+            },
+            "CURSOR": {
+              "FOCUSED": {
+                "bg_color": "#000000",
+                "bg_opa": 255
+              }
+            }
+          }
+        }
+      },
+      {
+        "objID": "6cb5044d-69fa-4e92-fe89-7cc558fc7f85",
+        "name": "keyboards",
+        "forWidgetType": "LVGLKeyboardWidget",
+        "childStyles": [],
+        "definition": {
+          "objID": "14d79c59-63eb-4a5a-efcc-74af8d525952",
+          "definition": {
+            "MAIN": {
+              "DEFAULT": {
+                "align": "DEFAULT"
+              }
+            },
+            "ITEMS": {
+              "PRESSED": {
+                "bg_color": "#ffffff",
                 "text_color": "#000000"
               }
             }

@@ -91,7 +91,7 @@ app_button_widget_t create_app_button_widget(lv_obj_t *parent) {
 }
 
 void create_home_screen() {
-    create_screen_homescreen();
+    //create_screen_homescreen();
     lv_screen_load(objects.homescreen);
 
 }

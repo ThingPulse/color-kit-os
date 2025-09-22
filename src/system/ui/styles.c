@@ -166,14 +166,76 @@ lv_style_t *get_style_text_input_MAIN_DEFAULT() {
     return style;
 };
 
+void init_style_text_input_CURSOR_FOCUSED(lv_style_t *style) {
+    lv_style_set_bg_color(style, lv_color_hex(0xff000000));
+    lv_style_set_bg_opa(style, 255);
+};
+
+lv_style_t *get_style_text_input_CURSOR_FOCUSED() {
+    static lv_style_t *style;
+    if (!style) {
+        style = lv_malloc(sizeof(lv_style_t));
+        lv_style_init(style);
+        init_style_text_input_CURSOR_FOCUSED(style);
+    }
+    return style;
+};
+
 void add_style_text_input(lv_obj_t *obj) {
     (void)obj;
     lv_obj_add_style(obj, get_style_text_input_MAIN_DEFAULT(), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_add_style(obj, get_style_text_input_CURSOR_FOCUSED(), LV_PART_CURSOR | LV_STATE_FOCUSED);
 };
 
 void remove_style_text_input(lv_obj_t *obj) {
     (void)obj;
     lv_obj_remove_style(obj, get_style_text_input_MAIN_DEFAULT(), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_remove_style(obj, get_style_text_input_CURSOR_FOCUSED(), LV_PART_CURSOR | LV_STATE_FOCUSED);
+};
+
+//
+// Style: keyboards
+//
+
+void init_style_keyboards_MAIN_DEFAULT(lv_style_t *style) {
+    lv_style_set_align(style, LV_ALIGN_DEFAULT);
+};
+
+lv_style_t *get_style_keyboards_MAIN_DEFAULT() {
+    static lv_style_t *style;
+    if (!style) {
+        style = lv_malloc(sizeof(lv_style_t));
+        lv_style_init(style);
+        init_style_keyboards_MAIN_DEFAULT(style);
+    }
+    return style;
+};
+
+void init_style_keyboards_ITEMS_PRESSED(lv_style_t *style) {
+    lv_style_set_bg_color(style, lv_color_hex(0xffffffff));
+    lv_style_set_text_color(style, lv_color_hex(0xff000000));
+};
+
+lv_style_t *get_style_keyboards_ITEMS_PRESSED() {
+    static lv_style_t *style;
+    if (!style) {
+        style = lv_malloc(sizeof(lv_style_t));
+        lv_style_init(style);
+        init_style_keyboards_ITEMS_PRESSED(style);
+    }
+    return style;
+};
+
+void add_style_keyboards(lv_obj_t *obj) {
+    (void)obj;
+    lv_obj_add_style(obj, get_style_keyboards_MAIN_DEFAULT(), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_add_style(obj, get_style_keyboards_ITEMS_PRESSED(), LV_PART_ITEMS | LV_STATE_PRESSED);
+};
+
+void remove_style_keyboards(lv_obj_t *obj) {
+    (void)obj;
+    lv_obj_remove_style(obj, get_style_keyboards_MAIN_DEFAULT(), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_remove_style(obj, get_style_keyboards_ITEMS_PRESSED(), LV_PART_ITEMS | LV_STATE_PRESSED);
 };
 
 //
@@ -189,6 +251,7 @@ void add_style(lv_obj_t *obj, int32_t styleIndex) {
         add_style_settings_label,
         add_style_form_label,
         add_style_text_input,
+        add_style_keyboards,
     };
     add_style_funcs[styleIndex](obj);
 }
@@ -202,6 +265,7 @@ void remove_style(lv_obj_t *obj, int32_t styleIndex) {
         remove_style_settings_label,
         remove_style_form_label,
         remove_style_text_input,
+        remove_style_keyboards,
     };
     remove_style_funcs[styleIndex](obj);
 }
