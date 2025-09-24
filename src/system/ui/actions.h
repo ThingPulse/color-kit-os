@@ -19,6 +19,7 @@ extern void action_show_wifi_settings_keyboard(lv_event_t * e);
 extern void action_hide_wifi_settings_keyboard(lv_event_t * e);
 extern void action_return_wifi_settings(lv_event_t * e);
 extern void action_keyboard_value_changed(lv_event_t * e);
+extern void action_register_header_bar(lv_event_t * e);
 
 
 #ifdef __cplusplus

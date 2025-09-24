@@ -225,6 +225,7 @@ void wifictl_setup( void ) {
             wifictl_send_event_cb( WIFICTL_WPS_SUCCESS, (void *)"wps timeout" );
         }, WiFiEvent_t::SYSTEM_EVENT_STA_WPS_ER_TIMEOUT );
     #endif
+
     /*
      * Add wifictl task
      */
@@ -245,7 +246,7 @@ void wifictl_setup( void ) {
     /*
      * set default state after init
      */
-    wifictl_set_event( WIFICTL_OFF );
+    wifictl_set_event( WIFICTL_ON );
     /**
      * change here your network for first use if WPS not work
      * or setup via display not possible
@@ -619,14 +620,30 @@ void wifictl_start_wps( void ) {
 #endif
 }
 
-void wifictl_scan_networks() {
-    wifictl_off();
-    wifictl_on();
-    wifictl_set_event( WIFICTL_SCAN );
-    wifictl_send_event_cb( WIFICTL_DISCONNECT, (void *)"scan ..." );
-    #ifndef NATIVE_64BIT
-    WiFi.scanNetworks( true );
-    #endif
+void wifictl_scan_networks(void) {
+#ifndef NATIVE_64BIT
+    /*
+    * check if init
+    */
+    if ( wifi_init == false ) {
+        log_e("wifictl not initialise");
+        return;
+    }
+
+    if (wifictl_get_event(WIFICTL_ON) || wifictl_get_event(WIFICTL_CONNECT)) {
+        if (wifictl_get_event(WIFICTL_SCAN)) {
+            log_d("scan already in progress");
+            return;
+        }
+        log_d("start wifi scan");
+        wifictl_set_event( WIFICTL_SCAN );
+        wifictl_send_event_cb( WIFICTL_MSG, (void *)"scan ..." );
+        WiFi.scanNetworks( true );
+    } else {
+        log_d("wifi not active, start wifi to trigger scan");
+        wifictl_on();
+    }
+#endif
 }
 
 #ifdef NATIVE_64BIT

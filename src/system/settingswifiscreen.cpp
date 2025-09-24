@@ -76,6 +76,8 @@ bool wifi_setup_wifictl_event_cb( EventBits_t event, void *arg ) {
 }
 
 void action_settings_wifi_screen_loaded(lv_event_t * e) {
+    lv_obj_clean(objects.ssid_button_matrix);
+    add_wifi_entry("Scanning...");
     if (!isCallbackRegistered) {
         wifictl_register_cb( WIFICTL_ON | WIFICTL_OFF | WIFICTL_SCAN_DONE | WIFICTL_SCAN_ENTRY, wifi_setup_wifictl_event_cb, "wifi network scan" );
         isCallbackRegistered = true;

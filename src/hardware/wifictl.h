@@ -170,18 +170,13 @@
      * @param   enable  true if wifi an standby enabled, false if not
      */
     void wifictl_set_enable_on_standby( bool enable );
+
+    void wifictl_scan_networks(void);
     /**
      * @brief   get wifi enable on standby
      * 
      * @return  true means enabled, false means disabled
      */
     bool wifictl_get_enable_on_standby( void );
-
-    /**
-     * @brief   scan wifi networks
-     * 
-     * @return  
-     */
-    void wifictl_scan_networks();
 
 #endif // _WIFICTL_H

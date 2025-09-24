@@ -195,6 +195,14 @@
       "localVariables": [],
       "userProperties": [],
       "name": "keyboardValueChanged"
+    },
+    {
+      "objID": "046b1424-b6ce-4ed9-8e73-a16adc57737e",
+      "components": [],
+      "connectionLines": [],
+      "localVariables": [],
+      "userProperties": [],
+      "name": "registerHeaderBar"
     }
   ],
   "userPages": [
@@ -440,6 +448,9 @@
                 "DEFAULT": {
                   "radius": 0,
                   "bg_color": "#15171a"
+                },
+                "PRESSED": {
+                  "bg_color": "#000000"
                 }
               }
             }
@@ -808,7 +819,15 @@
                 "childStyles": []
               },
               "timeline": [],
-              "eventHandlers": [],
+              "eventHandlers": [
+                {
+                  "objID": "50668571-9c98-4ad2-9f33-2b30e6016690",
+                  "eventName": "CREATE",
+                  "handlerType": "action",
+                  "action": "registerHeaderBar",
+                  "userData": 0
+                }
+              ],
               "identifier": "titleBar",
               "leftUnit": "px",
               "topUnit": "px",
@@ -871,7 +890,7 @@
                 {
                   "objID": "107c8d79-3fb4-4627-ef5f-23a23004a07a",
                   "type": "LVGLLabelWidget",
-                  "left": -127,
+                  "left": -212,
                   "top": 0,
                   "width": 100,
                   "height": 16,
