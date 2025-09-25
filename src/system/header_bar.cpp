@@ -3,8 +3,10 @@
 #include "ui/screens.h"
 #include "hardware/timesync.h"
 #include "utils/io.h"
+#include "utils/logging.h"
 
-bool timesync_update_cb(EventBits_t event, void *arg) {
+bool timesync_update_cb_2(EventBits_t event, void *arg) {
+    log_i("Update time in header");
     char buf[10];
     timesync_get_current_timestring(buf, sizeof(buf));
     lv_label_set_text(objects.title_bar_time, buf);
@@ -15,5 +17,6 @@ bool timesync_update_cb(EventBits_t event, void *arg) {
 }
 
 void action_register_header_bar(lv_event_t * e) {
-    timesync_register_cb(TIME_SYNC_UPDATE, timesync_update_cb, "header_bar");
+    log_i("Registered header bar");
+    timesync_register_cb(TIME_SYNC_UPDATE, timesync_update_cb_2, "header_bar");
 }

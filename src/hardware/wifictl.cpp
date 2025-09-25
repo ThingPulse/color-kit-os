@@ -246,7 +246,7 @@ void wifictl_setup( void ) {
     /*
      * set default state after init
      */
-    wifictl_set_event( WIFICTL_ON );
+    wifictl_set_event( WIFICTL_OFF );
     /**
      * change here your network for first use if WPS not work
      * or setup via display not possible
@@ -642,6 +642,13 @@ void wifictl_scan_networks(void) {
     } else {
         log_d("wifi not active, start wifi to trigger scan");
         wifictl_on();
+    }
+#else
+    wifictl_send_event_cb( WIFICTL_SCAN_DONE, (void *)"foobar" );
+    for (int i = 0; i < 4; i++) {
+        wifictl_send_event_cb( WIFICTL_SCAN_ENTRY, (void *)"foobar" );
+        wifictl_send_event_cb( WIFICTL_SCAN_ENTRY, (void *)"fnord" );
+        wifictl_send_event_cb( WIFICTL_SCAN_ENTRY, (void *)"23" );
     }
 #endif
 }

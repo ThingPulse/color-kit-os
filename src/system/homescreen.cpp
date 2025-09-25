@@ -1,6 +1,9 @@
 #include "homescreen.h"
 #include "ui/screens.h"
 #include "ui/actions.h"
+#include "header_bar.h" 
+#include "hardware/timesync.h"
+#include "utils/io.h"
 
 #ifdef NATIVE_64BIT
     #include "utils/logging.h"
@@ -90,8 +93,20 @@ app_button_widget_t create_app_button_widget(lv_obj_t *parent) {
     return widget;
 }
 
+bool timesync_update_cb(EventBits_t event, void *arg) {
+    log_i("Update time in header");
+    char buf[10];
+    timesync_get_current_timestring(buf, sizeof(buf));
+    lv_label_set_text(objects.title_bar_time, buf);
+    //lv_label_set_text(objects.titleBarTime_1, buf);
+    //lv_label_set_text(objects.titleBarTime_2, buf);
+    //lv_label_set_text(objects.titleBarTime_3, buf);
+    return true;
+}
+
 void create_home_screen() {
     //create_screen_homescreen();
     lv_screen_load(objects.homescreen);
+    timesync_register_cb(TIME_SYNC_UPDATE, timesync_update_cb, "header_bar");
 
 }

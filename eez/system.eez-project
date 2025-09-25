@@ -447,7 +447,7 @@
               "MAIN": {
                 "DEFAULT": {
                   "radius": 0,
-                  "bg_color": "#15171a"
+                  "bg_color": "#000000"
                 },
                 "PRESSED": {
                   "bg_color": "#000000"
