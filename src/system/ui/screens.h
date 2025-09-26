@@ -28,17 +28,9 @@ extern "C" {
     lv_obj_t *title_bar;
     lv_obj_t *title_bar_time;
     lv_obj_t *title_bar_wifi;
-    lv_obj_t *title_bar_1;
-    lv_obj_t *title_bar_time_1;
-    lv_obj_t *title_bar_wifi_1;
+    lv_obj_t *settings_header_bar_container;
     lv_obj_t *obj0;
-    lv_obj_t *title_bar_2;
-    lv_obj_t *title_bar_time_2;
-    lv_obj_t *title_bar_wifi_2;
     lv_obj_t *ssid_button_matrix;
-    lv_obj_t *title_bar_3;
-    lv_obj_t *title_bar_time_3;
-    lv_obj_t *title_bar_wifi_3;
     lv_obj_t *obj1;
     lv_obj_t *obj2;
     lv_obj_t *ssid_input;
