@@ -18,7 +18,8 @@ void action_register_header_bar(lv_event_t * e) {
 
 }
 
-static bool header_bar_wifictl_event_cb( EventBits_t event, void *arg ) {    
+static bool header_bar_wifictl_event_cb( EventBits_t event, void *arg ) {   
+    log_i("Wifi update event in header bar received"); 
     switch( event ) {
         case WIFICTL_CONNECT:       
             lv_label_set_text(objects.title_bar_wifi, "WiFi: on");
@@ -35,17 +36,17 @@ static bool header_bar_wifictl_event_cb( EventBits_t event, void *arg ) {
 
 void action_home_screen_load(lv_event_t * e) {
     lv_obj_set_parent(objects.title_bar, objects.homescreen);
-    lv_obj_move_foreground(objects.title_bar)
 }
 
 void action_attach_header_bar(lv_event_t * e) {
     lv_event_code_t code = lv_event_get_code(e);
     lv_obj_t *screen = (lv_obj_t*) lv_event_get_target(e);
     lv_obj_set_parent(objects.title_bar, screen);
-    lv_obj_move_foreground(objects.title_bar);
+    lv_obj_move_to_index(objects.title_bar, 0);
 }
 
 void init_header_bar() {
     header_bar_timer = lv_timer_create(header_bar_timer_cb, 500,  (void *)NULL);
     wifictl_register_cb( WIFICTL_OFF | WIFICTL_CONNECT | WIFICTL_DISCONNECT, header_bar_wifictl_event_cb, "header bar event callback" );
+    wifictl_set_autoon(true);
 }

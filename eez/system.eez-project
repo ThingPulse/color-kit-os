@@ -1567,8 +1567,15 @@
           "timeline": [],
           "eventHandlers": [
             {
-              "objID": "c3883092-5546-4cde-c5f7-00d2ead740e3",
+              "objID": "810c581a-cd79-41c8-cd4c-eb6c0a73cde1",
               "eventName": "SCREEN_LOADED",
+              "handlerType": "action",
+              "action": "settings_wifi_screen_loaded",
+              "userData": 0
+            },
+            {
+              "objID": "c3883092-5546-4cde-c5f7-00d2ead740e3",
+              "eventName": "SCREEN_LOAD_START",
               "handlerType": "action",
               "action": "attach_header_bar",
               "userData": 0
@@ -1855,7 +1862,7 @@
           "eventHandlers": [
             {
               "objID": "ba47cea2-d7c9-4ab5-c57a-cb47aef4a221",
-              "eventName": "SCREEN_LOADED",
+              "eventName": "SCREEN_LOAD_START",
               "handlerType": "action",
               "action": "attach_header_bar",
               "userData": 0

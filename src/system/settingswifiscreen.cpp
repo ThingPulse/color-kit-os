@@ -97,7 +97,8 @@ void action_open_wifi_password_screen(lv_event_t * e) {
 }
 
 void action_save_wifi_settings(lv_event_t * e) {
-    wifictl_insert_network( lv_label_get_text( objects.ssid_input ), lv_textarea_get_text( objects.password_input ) );
+    log_i("Saving wifi settings. Ssid: %s, password: %s", lv_textarea_get_text(objects.ssid_input), lv_textarea_get_text(objects.password_input));
+    wifictl_insert_network( lv_textarea_get_text( objects.ssid_input ), lv_textarea_get_text( objects.password_input ) );
 
     lv_screen_load_anim(objects.settings, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 500, 0, false);
     //lv_screen_load(objects.settings);

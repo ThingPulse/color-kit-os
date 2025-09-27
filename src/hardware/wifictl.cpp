@@ -126,6 +126,11 @@ void wifictl_setup( void ) {
             wifictl_send_event_cb( WIFICTL_SCAN_ENTRY, (void *)WiFi.SSID(i).c_str() );
             log_d("found network entry %s with %d rssi", WiFi.SSID(i).c_str(), WiFi.RSSI(i) );
         }
+
+        for ( int entry = 0 ; entry < NETWORKLIST_ENTRYS ; entry++ ) {
+            log_i("Stored in the list ssid: %s, password: %s", wifictl_config->networklist[ entry ].ssid, wifictl_config->networklist[ entry ].password );
+        }
+
         /**
          * connect if we discover a known network, but skip the ones that were already tried
          */
@@ -136,7 +141,7 @@ void wifictl_setup( void ) {
                     WiFi.setHostname( wifictl_config->hostname );
                     WiFi.begin( wifictl_config->networklist[ entry ].ssid, wifictl_config->networklist[ entry ].password );
                     log_d("try to connect to network entry %s with %d rssi", WiFi.SSID(i).c_str(), WiFi.RSSI(i) );
-                }
+                } 
             }
         }
     #ifdef ARDUNIO_NG
@@ -460,6 +465,7 @@ bool wifictl_delete_network( const char *ssid ) {
 }
 
 bool wifictl_insert_network( const char *ssid, const char *password ) {
+    log_i("Storing ssid: %s, password: %s", ssid, password);
     bool retval = false;
     /*
     * check if init
@@ -473,15 +479,15 @@ bool wifictl_insert_network( const char *ssid, const char *password ) {
     */
     for( int entry = 0 ; entry < NETWORKLIST_ENTRYS; entry++ ) {
         if( !strcmp( ssid, wifictl_config->networklist[ entry ].ssid ) ) {
-        strncpy( wifictl_config->networklist[ entry ].password, password, sizeof( wifictl_config->networklist[ entry ].password ) );
-        wifictl_save_config();
-#ifndef NATIVE_64BIT
-        WiFi.setScanMethod( WIFI_ALL_CHANNEL_SCAN );
-        WiFi.scanNetworks( true, true, false, 2000 );
-        wifictl_set_event( WIFICTL_SCAN );
-#endif
-        retval = true;
-        return( retval );
+            strncpy( wifictl_config->networklist[ entry ].password, password, sizeof( wifictl_config->networklist[ entry ].password ) );
+            wifictl_save_config();
+    #ifndef NATIVE_64BIT
+            WiFi.setScanMethod( WIFI_ALL_CHANNEL_SCAN );
+            WiFi.scanNetworks( true, true, false, 2000 );
+            wifictl_set_event( WIFICTL_SCAN );
+    #endif
+            retval = true;
+            return( retval );
         }
     }
     /*

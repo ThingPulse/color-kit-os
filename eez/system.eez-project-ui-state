@@ -1,9 +1,9 @@
 {
   "navigation": {
-    "selectedUserPageObject": "[system.eez-project]:/userPages/4",
+    "selectedUserPageObject": "[system.eez-project]:/userPages/1",
     "selectedUserWidgetObject": "[system.eez-project]:/userWidgets/0",
     "selectedActionObject": "[system.eez-project]:/actions/9",
-    "selectedStyleObject": "[system.eez-project]:/lvglStyles/styles/5",
+    "selectedStyleObject": "[system.eez-project]:/lvglStyles/styles/6",
     "selectedThemeObject": "[system.eez-project]:/themes/0",
     "selectedBitmapObject": "[system.eez-project]:/bitmaps/3",
     "subnavigationSelectedItems": {
@@ -28,8 +28,8 @@
           },
           {
             "type": "border",
-            "selected": 0,
-            "size": 155.5,
+            "selected": 3,
+            "size": 190.5,
             "location": "right",
             "children": [
               {
@@ -123,7 +123,7 @@
             {
               "type": "row",
               "id": "#f110c1c7-2f81-4c9f-8604-013c9cb17af5",
-              "weight": 15,
+              "weight": 22.140845591066615,
               "children": [
                 {
                   "type": "tabset",
@@ -171,8 +171,7 @@
                       "enableClose": false,
                       "icon": "svg:hierarchy"
                     }
-                  ],
-                  "active": true
+                  ]
                 },
                 {
                   "type": "tabset",
@@ -195,17 +194,17 @@
             {
               "type": "tabset",
               "id": "EDITORS",
-              "weight": 49.33469387755102,
+              "weight": 42.1938482864844,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
                 {
                   "type": "tab",
                   "id": "#9fee9311-484e-4d82-a556-3bf86da0f3f5",
-                  "name": "settings_wifi_password",
+                  "name": "homescreen",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[system.eez-project]:/userPages/4",
+                    "objectPath": "[system.eez-project]:/userPages/1",
                     "permanent": false
                   },
                   "icon": "svg:page"
@@ -264,7 +263,8 @@
                       "enableClose": false,
                       "icon": "svg:properties"
                     }
-                  ]
+                  ],
+                  "active": true
                 },
                 {
                   "type": "tabset",
@@ -484,10 +484,22 @@
               "type": "tabset",
               "id": "RUNTIME-EDITORS",
               "weight": 1,
-              "selected": -1,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
-              "children": []
+              "children": [
+                {
+                  "type": "tab",
+                  "id": "#5790e045-8202-41f0-9dc4-6757f17d0859",
+                  "name": "settings",
+                  "component": "editor",
+                  "config": {
+                    "objectPath": "[system.eez-project]:/userPages/2",
+                    "permanent": false
+                  },
+                  "icon": "svg:page"
+                }
+              ],
+              "active": true
             },
             {
               "type": "row",
@@ -788,7 +800,7 @@
                 {
                   "type": "tabset",
                   "id": "#d430b87b-d12d-41fb-8dd8-f30de6f1663e",
-                  "weight": 75,
+                  "weight": 51.31428571428572,
                   "enableDrop": false,
                   "enableDrag": false,
                   "enableClose": false,
@@ -801,13 +813,12 @@
                       "component": "styles",
                       "enableClose": false
                     }
-                  ],
-                  "active": true
+                  ]
                 },
                 {
                   "type": "tabset",
                   "id": "#d2b4406c-e2f0-48f3-a999-8002f2a7f53b",
-                  "weight": 25,
+                  "weight": 48.68571428571428,
                   "enableDrop": false,
                   "enableDrag": false,
                   "enableClose": false,
@@ -820,7 +831,8 @@
                       "component": "preview",
                       "enableClose": false
                     }
-                  ]
+                  ],
+                  "active": true
                 }
               ]
             }
@@ -1057,8 +1069,8 @@
       },
       "transform": {
         "translate": {
-          "x": 28.8806818181818,
-          "y": -131.42045454545456
+          "x": -139.1193181818182,
+          "y": -251.42045454545456
         },
         "scale": 1.1
       },
@@ -1076,13 +1088,12 @@
             "0": {},
             "1": {
               "0": {},
-              "1": {
-                "$selected": true
-              }
+              "1": {}
             }
           },
           "1": {
-            "0": {}
+            "0": {},
+            "$selected": true
           }
         }
       },
@@ -1123,24 +1134,12 @@
       }
     },
     "[system.eez-project]:/lvglStyles/styles[tree-state]": {
-      "0": {
-        "$selected": true
-      },
-      "1": {
-        "$selected": true
-      },
-      "2": {
-        "$selected": true
-      },
-      "3": {
-        "$selected": true
-      },
-      "4": {
-        "$selected": true
-      },
-      "5": {
-        "$selected": true
-      },
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {},
+      "4": {},
+      "5": {},
       "6": {
         "$selected": true
       }
@@ -1201,12 +1200,13 @@
     "[system.eez-project]:/userPages/4[flow-state]": {
       "selection": {
         "0": {
+          "0": {
+            "$selected": true
+          },
           "2": {
             "4": {}
           },
-          "3": {
-            "$selected": true
-          }
+          "3": {}
         }
       },
       "transform": {
@@ -1230,7 +1230,7 @@
   "searchMatchWholeWord": false,
   "replaceEnabled": false,
   "replaceText": "",
-  "pageRuntimeFrontFace": true,
+  "pageRuntimeFrontFace": false,
   "breakpoints": {},
   "watchExpressions": [],
   "showComponentDescriptions": true,
