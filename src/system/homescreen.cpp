@@ -4,6 +4,7 @@
 #include "header_bar.h" 
 #include "hardware/timesync.h"
 #include "utils/io.h"
+#include "apps/weather/weather_app.h"
 
 #ifdef NATIVE_64BIT
     #include "utils/logging.h"
@@ -101,5 +102,6 @@ void create_home_screen() {
     //create_screen_homescreen();
     lv_screen_load(objects.homescreen);
     init_header_bar();
+    setup_weather_app();
 
 }

@@ -605,9 +605,9 @@ void create_screen_weather_main() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // labelTime
+                    // weather_label_time
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_time = obj;
+                    objects.weather_label_time = obj;
                     lv_obj_set_pos(obj, 15, 34);
                     lv_obj_set_size(obj, 290, 48);
                     lv_obj_set_style_bg_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -616,9 +616,9 @@ void create_screen_weather_main() {
                     lv_label_set_text(obj, "08:23");
                 }
                 {
-                    // labelDate
+                    // weather_label_date
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_date = obj;
+                    objects.weather_label_date = obj;
                     lv_obj_set_pos(obj, 69, 14);
                     lv_obj_set_size(obj, 182, 17);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans16_, LV_PART_MAIN | LV_STATE_DEFAULT);

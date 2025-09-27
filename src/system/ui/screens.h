@@ -39,8 +39,8 @@ extern "C" {
     lv_obj_t *password_input;
     lv_obj_t *wifi_settings_keyboard;
     lv_obj_t *time_container;
-    lv_obj_t *label_time;
-    lv_obj_t *label_date;
+    lv_obj_t *weather_label_time;
+    lv_obj_t *weather_label_date;
     lv_obj_t *today_container;
     lv_obj_t *label_wind_speed;
     lv_obj_t *label_pressure;
