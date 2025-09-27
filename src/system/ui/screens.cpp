@@ -657,9 +657,9 @@ void create_screen_weather_main() {
                     lv_label_set_text(obj, "1 m/s");
                 }
                 {
-                    // labelPressure
+                    // weather_label_pressure
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_pressure = obj;
+                    objects.weather_label_pressure = obj;
                     lv_obj_set_pos(obj, 70, 106);
                     lv_obj_set_size(obj, 182, 17);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans16_, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -667,9 +667,9 @@ void create_screen_weather_main() {
                     lv_label_set_text(obj, "955hPa");
                 }
                 {
-                    // labelHumidity
+                    // weather_label_humidity
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_humidity = obj;
+                    objects.weather_label_humidity = obj;
                     lv_obj_set_pos(obj, 69, 86);
                     lv_obj_set_size(obj, 182, 17);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans16_, LV_PART_MAIN | LV_STATE_DEFAULT);

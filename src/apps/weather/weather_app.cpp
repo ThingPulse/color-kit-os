@@ -69,11 +69,20 @@ static void update_weather_task(lv_timer_t * timer) {
             char wind_buffer[12];
             snprintf(wind_buffer, sizeof(wind_buffer), "%d m/s", weather_today.wind_speed);
 
+            char humidity_buffer[8];
+            snprintf(humidity_buffer, sizeof(humidity_buffer), "%.0f %%", weather_today.humidity);
+
+            char pressure_buffer[12];
+            snprintf(pressure_buffer, sizeof(pressure_buffer), "%.0f hPa", weather_today.pressure);
+
             //lv_label_set_text(objects.weather_label_city, weather_today.name);
             lv_label_set_text(objects.weather_label_current_temp, temp_buffer);
             lv_label_set_text(objects.weather_label_current_description, weather_today.description);
             lv_img_set_src(objects.weather_image_current_weather, resolve_owm_icon(weather_today.icon));
             lv_label_set_text(objects.weather_label_wind_speed, wind_buffer);
+            lv_label_set_text(objects.weather_label_humidity, humidity_buffer);
+            lv_label_set_text(objects.weather_label_pressure, pressure_buffer);
+
             // Angle is in 1/10 degree, OWM gives it in degrees
             lv_img_set_angle(objects.weather_image_wind_direction, (weather_today.wind_deg + 180) * 10);
         } else {
@@ -88,6 +97,6 @@ void setup_weather_app() {
     // Create a timer to update the time and date every 500ms (2 times per second)
     lv_timer_create(update_datetime_task, 500, NULL);
     // Create a timer to fetch weather data every 10 minutes
-    lv_timer_t * weather_timer = lv_timer_create(update_weather_task, 10 * 60, NULL);
+    lv_timer_t * weather_timer = lv_timer_create(update_weather_task, 10 * 60 * 1000, NULL);
     lv_timer_ready(weather_timer); // Run it once immediately
 }

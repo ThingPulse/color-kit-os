@@ -1,7 +1,7 @@
 #include "images.h"
 
 #include <string.h>
-const ext_img_desc_t images[85] = {
+const ext_img_desc_t images[69] = {
     { "logo", &img_logo },
     { "weatherApp", &img_weather_app },
     { "settings", &img_settings },
@@ -11,7 +11,6 @@ const ext_img_desc_t images[85] = {
     { "weather-clear-day-64px", &img_weather_clear_day_64px },
     { "weather-fog-64px", &img_weather_fog_64px },
     { "weather-sleet-64px", &img_weather_sleet_64px },
-    { "wind-n", &img_wind_n },
     { "cog", &img_cog },
     { "moon-phase-0", &img_moon_phase_0 },
     { "moon-phase-1", &img_moon_phase_1 },
@@ -70,21 +69,6 @@ const ext_img_desc_t images[85] = {
     { "weather-thunderstorm-64px", &img_weather_thunderstorm_64px },
     { "weather-unknown", &img_weather_unknown },
     { "weather-unknown-64px", &img_weather_unknown_64px },
-    { "wind-e", &img_wind_e },
-    { "wind-ene", &img_wind_ene },
-    { "wind-ese", &img_wind_ese },
-    { "wind-ne", &img_wind_ne },
-    { "wind-nne", &img_wind_nne },
-    { "wind-nnw", &img_wind_nnw },
-    { "wind-nw", &img_wind_nw },
-    { "wind-s", &img_wind_s },
-    { "wind-se", &img_wind_se },
-    { "wind-sse", &img_wind_sse },
-    { "wind-ssw", &img_wind_ssw },
-    { "wind-sw", &img_wind_sw },
-    { "wind-w", &img_wind_w },
-    { "wind-wnw", &img_wind_wnw },
-    { "wind-wsw", &img_wind_wsw },
     { "wind_arrow", &img_wind_arrow },
     { "wind_rose", &img_wind_rose },
 };

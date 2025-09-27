@@ -43,8 +43,8 @@ extern "C" {
     lv_obj_t *weather_label_date;
     lv_obj_t *today_container;
     lv_obj_t *weather_label_wind_speed;
-    lv_obj_t *label_pressure;
-    lv_obj_t *label_humidity;
+    lv_obj_t *weather_label_pressure;
+    lv_obj_t *weather_label_humidity;
     lv_obj_t *weather_label_current_description;
     lv_obj_t *weather_image_wind_rose;
     lv_obj_t *weather_image_wind_direction;

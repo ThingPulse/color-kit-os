@@ -127,10 +127,6 @@ void wifictl_setup( void ) {
             log_d("found network entry %s with %d rssi", WiFi.SSID(i).c_str(), WiFi.RSSI(i) );
         }
 
-        for ( int entry = 0 ; entry < NETWORKLIST_ENTRYS ; entry++ ) {
-            log_i("Stored in the list ssid: %s, password: %s", wifictl_config->networklist[ entry ].ssid, wifictl_config->networklist[ entry ].password );
-        }
-
         /**
          * connect if we discover a known network, but skip the ones that were already tried
          */

@@ -16,7 +16,6 @@ extern const lv_img_dsc_t img_weather_clear_day;
 extern const lv_img_dsc_t img_weather_clear_day_64px;
 extern const lv_img_dsc_t img_weather_fog_64px;
 extern const lv_img_dsc_t img_weather_sleet_64px;
-extern const lv_img_dsc_t img_wind_n;
 extern const lv_img_dsc_t img_cog;
 extern const lv_img_dsc_t img_moon_phase_0;
 extern const lv_img_dsc_t img_moon_phase_1;
@@ -75,21 +74,6 @@ extern const lv_img_dsc_t img_weather_thunderstorm;
 extern const lv_img_dsc_t img_weather_thunderstorm_64px;
 extern const lv_img_dsc_t img_weather_unknown;
 extern const lv_img_dsc_t img_weather_unknown_64px;
-extern const lv_img_dsc_t img_wind_e;
-extern const lv_img_dsc_t img_wind_ene;
-extern const lv_img_dsc_t img_wind_ese;
-extern const lv_img_dsc_t img_wind_ne;
-extern const lv_img_dsc_t img_wind_nne;
-extern const lv_img_dsc_t img_wind_nnw;
-extern const lv_img_dsc_t img_wind_nw;
-extern const lv_img_dsc_t img_wind_s;
-extern const lv_img_dsc_t img_wind_se;
-extern const lv_img_dsc_t img_wind_sse;
-extern const lv_img_dsc_t img_wind_ssw;
-extern const lv_img_dsc_t img_wind_sw;
-extern const lv_img_dsc_t img_wind_w;
-extern const lv_img_dsc_t img_wind_wnw;
-extern const lv_img_dsc_t img_wind_wsw;
 extern const lv_img_dsc_t img_wind_arrow;
 extern const lv_img_dsc_t img_wind_rose;
 
@@ -101,7 +85,7 @@ typedef struct _ext_img_desc_t {
 } ext_img_desc_t;
 #endif
 
-extern const ext_img_desc_t images[85];
+extern const ext_img_desc_t images[69];
 
 
 extern const lv_img_dsc_t img_undefined;
