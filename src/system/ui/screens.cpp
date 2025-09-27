@@ -647,9 +647,9 @@ void create_screen_weather_main() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // labelWindSpeed
+                    // weather_label_wind_speed
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_wind_speed = obj;
+                    objects.weather_label_wind_speed = obj;
                     lv_obj_set_pos(obj, 227, 106);
                     lv_obj_set_size(obj, 90, 17);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans16_, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -677,9 +677,9 @@ void create_screen_weather_main() {
                     lv_label_set_text(obj, "76%");
                 }
                 {
-                    // labelCurrentDescription
+                    // weather_label_current_description
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_current_description = obj;
+                    objects.weather_label_current_description = obj;
                     lv_obj_set_pos(obj, 0, 0);
                     lv_obj_set_size(obj, 320, 32);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -687,25 +687,33 @@ void create_screen_weather_main() {
                     lv_label_set_text(obj, "clear sky");
                 }
                 {
-                    // imageWind
+                    // weather_image_wind_rose
                     lv_obj_t *obj = lv_image_create(parent_obj);
-                    objects.image_wind = obj;
+                    objects.weather_image_wind_rose = obj;
                     lv_obj_set_pos(obj, 234, 25);
                     lv_obj_set_size(obj, 75, 75);
-                    lv_image_set_src(obj, &img_wind_n);
+                    lv_image_set_src(obj, &img_wind_rose);
                 }
                 {
-                    // imageCurrentWeather
+                    // weather_image_wind_direction
                     lv_obj_t *obj = lv_image_create(parent_obj);
-                    objects.image_current_weather = obj;
+                    objects.weather_image_wind_direction = obj;
+                    lv_obj_set_pos(obj, 234, 25);
+                    lv_obj_set_size(obj, 75, 75);
+                    lv_image_set_src(obj, &img_wind_arrow);
+                }
+                {
+                    // weather_image_current_weather
+                    lv_obj_t *obj = lv_image_create(parent_obj);
+                    objects.weather_image_current_weather = obj;
                     lv_obj_set_pos(obj, -4, 21);
                     lv_obj_set_size(obj, 100, 100);
                     lv_image_set_src(obj, &img_weather_clear_day);
                 }
                 {
-                    // labelCurrentTemperature
+                    // weather_label_current_temp
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_current_temperature = obj;
+                    objects.weather_label_current_temp = obj;
                     lv_obj_set_pos(obj, 0, 36);
                     lv_obj_set_size(obj, 320, 48);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans48_, LV_PART_MAIN | LV_STATE_DEFAULT);
