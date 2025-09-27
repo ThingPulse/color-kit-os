@@ -1,11 +1,17 @@
 #include "images.h"
 
 #include <string.h>
-const ext_img_desc_t images[4] = {
+const ext_img_desc_t images[10] = {
     { "logo", &img_logo },
     { "weatherApp", &img_weather_app },
     { "settings", &img_settings },
     { "weather", &img_weather },
+    { "moon-phase-15", &img_moon_phase_15 },
+    { "weather-clear-day", &img_weather_clear_day },
+    { "weather-clear-day-64px", &img_weather_clear_day_64px },
+    { "weather-fog-64px", &img_weather_fog_64px },
+    { "weather-sleet-64px", &img_weather_sleet_64px },
+    { "wind-n", &img_wind_n },
 };
 
 

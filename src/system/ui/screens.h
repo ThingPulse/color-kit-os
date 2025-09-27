@@ -19,6 +19,7 @@ extern "C" {
     lv_obj_t *settings;
     lv_obj_t *settings_wifi;
     lv_obj_t *settings_wifi_password;
+    lv_obj_t *weather_main;
     lv_obj_t *message_label;
     lv_obj_t *os_name_label;
     lv_obj_t *os_name_label_1;
@@ -37,6 +38,41 @@ extern "C" {
     lv_obj_t *obj3;
     lv_obj_t *password_input;
     lv_obj_t *wifi_settings_keyboard;
+    lv_obj_t *time_container;
+    lv_obj_t *label_time;
+    lv_obj_t *label_date;
+    lv_obj_t *today_container;
+    lv_obj_t *label_wind_speed;
+    lv_obj_t *label_pressure;
+    lv_obj_t *label_humidity;
+    lv_obj_t *label_current_description;
+    lv_obj_t *image_wind;
+    lv_obj_t *image_current_weather;
+    lv_obj_t *label_current_temperature;
+    lv_obj_t *forecast_container;
+    lv_obj_t *label_temp_day0;
+    lv_obj_t *label_day1;
+    lv_obj_t *label_day2;
+    lv_obj_t *label_day3;
+    lv_obj_t *label_day0;
+    lv_obj_t *label_temp_day1;
+    lv_obj_t *label_temp_day2;
+    lv_obj_t *label_temp_day3;
+    lv_obj_t *image_day0;
+    lv_obj_t *image_day1;
+    lv_obj_t *image_day2;
+    lv_obj_t *image_day3;
+    lv_obj_t *message_container;
+    lv_obj_t *label_error_message;
+    lv_obj_t *image_moon;
+    lv_obj_t *label_sun;
+    lv_obj_t *label_moon;
+    lv_obj_t *label_sunrise;
+    lv_obj_t *label_sunset;
+    lv_obj_t *label_moonrise;
+    lv_obj_t *label_moonset;
+    lv_obj_t *label_moon_phase;
+    lv_obj_t *last_update;
 } objects_t;
 
 extern objects_t objects;
@@ -47,6 +83,7 @@ enum ScreensEnum {
     SCREEN_ID_SETTINGS = 3,
     SCREEN_ID_SETTINGS_WIFI = 4,
     SCREEN_ID_SETTINGS_WIFI_PASSWORD = 5,
+    SCREEN_ID_WEATHER_MAIN = 6,
 };
 
 void create_screen_splashscreen();
@@ -63,6 +100,9 @@ void tick_screen_settings_wifi();
 
 void create_screen_settings_wifi_password();
 void tick_screen_settings_wifi_password();
+
+void create_screen_weather_main();
+void tick_screen_weather_main();
 
 void create_user_widget_app_button_widget(lv_obj_t *parent_obj, int startWidgetIndex);
 void tick_user_widget_app_button_widget(int startWidgetIndex);

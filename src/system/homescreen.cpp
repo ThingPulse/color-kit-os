@@ -51,6 +51,10 @@ void action_open_settings(lv_event_t * e) {
     lv_screen_load(objects.settings);
 }
 
+void action_open_weather_app(lv_event_t * e) {
+    lv_screen_load(objects.weather_main);
+}
+
 app_button_widget_t create_app_button_widget(lv_obj_t *parent) {
 
     app_button_widget_t widget;
