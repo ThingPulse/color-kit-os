@@ -3106,23 +3106,23 @@
               "heightUnit": "px",
               "children": [
                 {
-                  "objID": "0b948a65-5663-4159-c25a-bd51d4282c0f",
+                  "objID": "1eee1cc7-cfcd-4758-975a-9d85cf484026",
                   "type": "LVGLLabelWidget",
                   "left": 5,
-                  "top": 24,
+                  "top": 0,
                   "width": 69,
-                  "height": 18,
+                  "height": 24,
                   "customInputs": [],
                   "customOutputs": [],
                   "style": {
-                    "objID": "78e3b75f-f387-4ab3-abe5-832cc13a529d",
+                    "objID": "8319479f-23cc-4bc5-c0fc-783982b4614f",
                     "useStyle": "default",
                     "conditionalStyles": [],
                     "childStyles": []
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "labelTempDay0",
+                  "identifier": "weather_label_name_day_0",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -3139,19 +3139,19 @@
                   "disabledStateType": "literal",
                   "states": "",
                   "localStyles": {
-                    "objID": "cf708ce5-fc22-4485-cc17-fc3f1307a65f",
+                    "objID": "c7153d8d-cbc5-4b5c-a527-a2495fd3d844",
                     "definition": {
                       "MAIN": {
                         "DEFAULT": {
-                          "text_font": "OpenSans18_",
-                          "text_align": "CENTER"
+                          "text_align": "CENTER",
+                          "text_font": "OpenSans24_"
                         }
                       }
                     }
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "5-8°",
+                  "text": "THU",
                   "textType": "literal",
                   "longMode": "WRAP",
                   "recolor": false
@@ -3173,7 +3173,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "labelDay1",
+                  "identifier": "weather_label_name_day_1",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -3224,7 +3224,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "labelDay2",
+                  "identifier": "weather_label_name_day_2",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -3275,7 +3275,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "labelDay3",
+                  "identifier": "weather_label_name_day_3",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -3310,23 +3310,23 @@
                   "recolor": false
                 },
                 {
-                  "objID": "1eee1cc7-cfcd-4758-975a-9d85cf484026",
+                  "objID": "0b948a65-5663-4159-c25a-bd51d4282c0f",
                   "type": "LVGLLabelWidget",
                   "left": 5,
-                  "top": 0,
+                  "top": 24,
                   "width": 69,
-                  "height": 24,
+                  "height": 18,
                   "customInputs": [],
                   "customOutputs": [],
                   "style": {
-                    "objID": "8319479f-23cc-4bc5-c0fc-783982b4614f",
+                    "objID": "78e3b75f-f387-4ab3-abe5-832cc13a529d",
                     "useStyle": "default",
                     "conditionalStyles": [],
                     "childStyles": []
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "labelDay0",
+                  "identifier": "weather_label_temp_day_0",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -3343,19 +3343,19 @@
                   "disabledStateType": "literal",
                   "states": "",
                   "localStyles": {
-                    "objID": "c7153d8d-cbc5-4b5c-a527-a2495fd3d844",
+                    "objID": "cf708ce5-fc22-4485-cc17-fc3f1307a65f",
                     "definition": {
                       "MAIN": {
                         "DEFAULT": {
-                          "text_align": "CENTER",
-                          "text_font": "OpenSans24_"
+                          "text_font": "OpenSans18_",
+                          "text_align": "CENTER"
                         }
                       }
                     }
                   },
                   "group": "",
                   "groupIndex": 0,
-                  "text": "THU",
+                  "text": "5-8°",
                   "textType": "literal",
                   "longMode": "WRAP",
                   "recolor": false
@@ -3377,7 +3377,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "labelTempDay1",
+                  "identifier": "weather_label_temp_day_1",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -3428,7 +3428,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "labelTempDay2",
+                  "identifier": "weather_label_temp_day_2",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -3479,7 +3479,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "labelTempDay3",
+                  "identifier": "weather_label_temp_day_3",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -3530,7 +3530,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "imageDay0",
+                  "identifier": "weather_image_day_0",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -3576,7 +3576,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "imageDay1",
+                  "identifier": "weather_image_day_1",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -3622,7 +3622,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "imageDay2",
+                  "identifier": "weather_image_day_2",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",
@@ -3668,7 +3668,7 @@
                   },
                   "timeline": [],
                   "eventHandlers": [],
-                  "identifier": "imageDay3",
+                  "identifier": "weather_image_day_3",
                   "leftUnit": "px",
                   "topUnit": "px",
                   "widthUnit": "px",

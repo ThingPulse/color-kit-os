@@ -742,49 +742,9 @@ void create_screen_weather_main() {
             {
                 lv_obj_t *parent_obj = obj;
                 {
-                    // labelTempDay0
+                    // weather_label_name_day_0
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_temp_day0 = obj;
-                    lv_obj_set_pos(obj, 5, 24);
-                    lv_obj_set_size(obj, 69, 18);
-                    lv_obj_set_style_text_font(obj, &ui_font_open_sans18_, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text(obj, "5-8°");
-                }
-                {
-                    // labelDay1
-                    lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_day1 = obj;
-                    lv_obj_set_pos(obj, 85, 0);
-                    lv_obj_set_size(obj, 69, 24);
-                    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_text_font(obj, &ui_font_open_sans24_, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text(obj, "FRI");
-                }
-                {
-                    // labelDay2
-                    lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_day2 = obj;
-                    lv_obj_set_pos(obj, 165, 0);
-                    lv_obj_set_size(obj, 69, 24);
-                    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_text_font(obj, &ui_font_open_sans24_, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text(obj, "SAT");
-                }
-                {
-                    // labelDay3
-                    lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_day3 = obj;
-                    lv_obj_set_pos(obj, 245, 0);
-                    lv_obj_set_size(obj, 69, 24);
-                    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_text_font(obj, &ui_font_open_sans24_, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text(obj, "SUN");
-                }
-                {
-                    // labelDay0
-                    lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_day0 = obj;
+                    objects.weather_label_name_day_0 = obj;
                     lv_obj_set_pos(obj, 5, 0);
                     lv_obj_set_size(obj, 69, 24);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -792,9 +752,49 @@ void create_screen_weather_main() {
                     lv_label_set_text(obj, "THU");
                 }
                 {
-                    // labelTempDay1
+                    // weather_label_name_day_1
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_temp_day1 = obj;
+                    objects.weather_label_name_day_1 = obj;
+                    lv_obj_set_pos(obj, 85, 0);
+                    lv_obj_set_size(obj, 69, 24);
+                    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &ui_font_open_sans24_, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_label_set_text(obj, "FRI");
+                }
+                {
+                    // weather_label_name_day_2
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.weather_label_name_day_2 = obj;
+                    lv_obj_set_pos(obj, 165, 0);
+                    lv_obj_set_size(obj, 69, 24);
+                    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &ui_font_open_sans24_, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_label_set_text(obj, "SAT");
+                }
+                {
+                    // weather_label_name_day_3
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.weather_label_name_day_3 = obj;
+                    lv_obj_set_pos(obj, 245, 0);
+                    lv_obj_set_size(obj, 69, 24);
+                    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &ui_font_open_sans24_, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_label_set_text(obj, "SUN");
+                }
+                {
+                    // weather_label_temp_day_0
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.weather_label_temp_day_0 = obj;
+                    lv_obj_set_pos(obj, 5, 24);
+                    lv_obj_set_size(obj, 69, 18);
+                    lv_obj_set_style_text_font(obj, &ui_font_open_sans18_, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_label_set_text(obj, "5-8°");
+                }
+                {
+                    // weather_label_temp_day_1
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.weather_label_temp_day_1 = obj;
                     lv_obj_set_pos(obj, 85, 24);
                     lv_obj_set_size(obj, 69, 18);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans18_, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -802,9 +802,9 @@ void create_screen_weather_main() {
                     lv_label_set_text(obj, "6-9°");
                 }
                 {
-                    // labelTempDay2
+                    // weather_label_temp_day_2
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_temp_day2 = obj;
+                    objects.weather_label_temp_day_2 = obj;
                     lv_obj_set_pos(obj, 165, 24);
                     lv_obj_set_size(obj, 69, 18);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans18_, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -812,9 +812,9 @@ void create_screen_weather_main() {
                     lv_label_set_text(obj, "13-20°");
                 }
                 {
-                    // labelTempDay3
+                    // weather_label_temp_day_3
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_temp_day3 = obj;
+                    objects.weather_label_temp_day_3 = obj;
                     lv_obj_set_pos(obj, 245, 24);
                     lv_obj_set_size(obj, 69, 18);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans18_, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -822,33 +822,33 @@ void create_screen_weather_main() {
                     lv_label_set_text(obj, "15-22°");
                 }
                 {
-                    // imageDay0
+                    // weather_image_day_0
                     lv_obj_t *obj = lv_image_create(parent_obj);
-                    objects.image_day0 = obj;
+                    objects.weather_image_day_0 = obj;
                     lv_obj_set_pos(obj, 5, 39);
                     lv_obj_set_size(obj, 64, 64);
                     lv_image_set_src(obj, &img_weather_fog_64px);
                 }
                 {
-                    // imageDay1
+                    // weather_image_day_1
                     lv_obj_t *obj = lv_image_create(parent_obj);
-                    objects.image_day1 = obj;
+                    objects.weather_image_day_1 = obj;
                     lv_obj_set_pos(obj, 87, 39);
                     lv_obj_set_size(obj, 64, 64);
                     lv_image_set_src(obj, &img_weather_fog_64px);
                 }
                 {
-                    // imageDay2
+                    // weather_image_day_2
                     lv_obj_t *obj = lv_image_create(parent_obj);
-                    objects.image_day2 = obj;
+                    objects.weather_image_day_2 = obj;
                     lv_obj_set_pos(obj, 169, 39);
                     lv_obj_set_size(obj, 64, 64);
                     lv_image_set_src(obj, &img_weather_clear_day_64px);
                 }
                 {
-                    // imageDay3
+                    // weather_image_day_3
                     lv_obj_t *obj = lv_image_create(parent_obj);
-                    objects.image_day3 = obj;
+                    objects.weather_image_day_3 = obj;
                     lv_obj_set_pos(obj, 246, 39);
                     lv_obj_set_size(obj, 64, 64);
                     lv_image_set_src(obj, &img_weather_sleet_64px);

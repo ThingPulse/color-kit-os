@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include "hardware/wifictl.h"
 #include "system/ui/actions.h"
-
+#include "i18n/weather_i18n.h"
 
 #ifdef NATIVE_64BIT
     #include "utils/logging.h"
@@ -19,6 +19,15 @@
 #endif
 
 static weather_forecast_t weather_today;
+static const int NUM_FORECAST_DAYS = 4;
+static weather_forecast_t weather_forecast[NUM_FORECAST_DAYS];
+static weather_forecast_t hourly_forecast[NUM_FORECAST_DAYS];
+
+string_id_t WEEKDAYS_TEXT_KEYS[] = {STR_SUNDAY, STR_MONDAY, STR_TUESDAY, STR_WEDNESDAY, STR_THURSDAY, STR_FRIDAY, STR_SATURDAY};
+string_id_t MOON_PHASE_KEYS[] = {STR_NEW_MOON, STR_WAXING_CRESCENT, STR_FIRST_QUARTER, STR_WAXING_GIBBOUS,
+    STR_FULL_MOON, STR_WANING_GIBBOUS, STR_LAST_QUARTER, STR_WANING_CRESCENT};
+
+string_id_t MONTH_KEYS[] = {    STR_JANUARY, STR_FEBRUARY, STR_MARCH,STR_APRIL,STR_MAY,STR_JUNE,STR_JULY,STR_AUGUST,  STR_SEPTEMBER,STR_OCTOBER,STR_NOVEMBER,STR_DECEMBER};
 
 LV_IMG_DECLARE(img_moon_phase_0);
 LV_IMG_DECLARE(img_moon_phase_1);
@@ -98,6 +107,32 @@ static void update_weather(void *data) {
             .lon = "8.5417",
             .apikey = "f42c672cab129e0611ceed9f0b23ab4a" // IMPORTANT: Replace with your OpenWeatherMap API key
         };
+
+        // --- Update Forecast ---
+        if (weather_fetch_forecast( &config , &weather_forecast[ 0 ], &hourly_forecast[0] ) == 200) {
+            log_i("Forecast fetch successful.");
+
+            // Create arrays of pointers to the UI objects to update them in a loop
+            lv_obj_t* day_labels[] = { objects.weather_label_name_day_0, objects.weather_label_name_day_1, objects.weather_label_name_day_2, objects.weather_label_name_day_3 };
+            lv_obj_t* temp_labels[] = { objects.weather_label_temp_day_0, objects.weather_label_temp_day_1, objects.weather_label_temp_day_2, objects.weather_label_temp_day_3 };
+            lv_obj_t* weather_images[] = { objects.weather_image_day_0, objects.weather_image_day_1, objects.weather_image_day_2, objects.weather_image_day_3 };
+
+            char forecast_temp_buffer[10];
+            struct tm timeinfo;
+
+            for (int i = 0; i < NUM_FORECAST_DAYS; i++) {
+                if (weather_forecast[i].valide) {
+                    localtime_r(&weather_forecast[i].timestamp, &timeinfo);
+                    lv_label_set_text(day_labels[i], get_string(WEEKDAYS_TEXT_KEYS[timeinfo.tm_wday])); // Set to abbreviated day name (e.g., "Mon")
+
+                    snprintf(forecast_temp_buffer, sizeof(forecast_temp_buffer), "%.0f°/%.0f°", weather_forecast[i].temp_max, weather_forecast[i].temp_min);
+                    lv_label_set_text(temp_labels[i], forecast_temp_buffer);
+                    lv_img_set_src(weather_images[i], resolve_owm_icon(weather_forecast[i].icon));
+                } else {
+                    log_i("forcast for day %d not valid", i);
+                }
+            }
+        }
 
         if (weather_fetch_today(&config, &weather_today) == 200 && weather_today.valide) {
             log_i("Weather fetch successful. Temp: %.1f", weather_today.temp);

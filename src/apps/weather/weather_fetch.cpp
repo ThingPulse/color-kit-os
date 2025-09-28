@@ -193,6 +193,7 @@ int weather_fetch_forecast( weather_config_t *weather_config, weather_forecast_t
                     weather_forecast[i].temp_max = daily_forecast[i].max_temp;
                     weather_forecast[i].wind_speed = daily_forecast[i].max_wind_speed;
                     weather_forecast[i].timestamp = daily_forecast[i].timestamp;
+                    weather_forecast[i].valide = true;
                     strncpy( weather_forecast[i].icon, daily_forecast[i].icon_at_noon, sizeof(  weather_forecast[i].icon ) );
                 }
 
