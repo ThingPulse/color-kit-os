@@ -73,7 +73,7 @@ extern "C" {
     lv_obj_t *label_moonrise;
     lv_obj_t *label_moonset;
     lv_obj_t *label_moon_phase;
-    lv_obj_t *last_update;
+    lv_obj_t *obj4;
 } objects_t;
 
 extern objects_t objects;
