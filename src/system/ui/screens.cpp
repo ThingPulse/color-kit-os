@@ -81,9 +81,7 @@ void create_screen_homescreen() {
     lv_obj_set_pos(obj, 0, 0);
     lv_obj_set_size(obj, 320, 480);
     lv_obj_add_event_cb(obj, action_attach_header_bar, LV_EVENT_SCREEN_LOAD_START, (void *)0);
-    lv_obj_set_style_bg_grad_dir(obj, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_grad_color(obj, lv_color_hex(0xff212673), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(obj, lv_color_hex(0xff6ca7ff), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(obj, lv_color_hex(0xff4f4f4f), LV_PART_MAIN | LV_STATE_DEFAULT);
     {
         lv_obj_t *parent_obj = obj;
         {

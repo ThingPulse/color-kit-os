@@ -1022,9 +1022,7 @@
             "definition": {
               "MAIN": {
                 "DEFAULT": {
-                  "bg_grad_dir": "VER",
-                  "bg_grad_color": "#212673",
-                  "bg_color": "#6ca7ff"
+                  "bg_color": "#4f4f4f"
                 }
               }
             }
