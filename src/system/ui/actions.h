@@ -22,6 +22,7 @@ extern void action_keyboard_value_changed(lv_event_t * e);
 extern void action_register_header_bar(lv_event_t * e);
 extern void action_attach_header_bar(lv_event_t * e);
 extern void action_open_weather_app(lv_event_t * e);
+extern void action_on_weather_screen_gesture(lv_event_t * e);
 
 
 #ifdef __cplusplus

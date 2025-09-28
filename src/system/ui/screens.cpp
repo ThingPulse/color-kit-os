@@ -584,6 +584,7 @@ void create_screen_weather_main() {
     objects.weather_main = obj;
     lv_obj_set_pos(obj, 0, 0);
     lv_obj_set_size(obj, 320, 480);
+    lv_obj_add_event_cb(obj, action_on_weather_screen_gesture, LV_EVENT_GESTURE, (void *)0);
     {
         lv_obj_t *parent_obj = obj;
         {

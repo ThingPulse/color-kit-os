@@ -219,6 +219,14 @@
       "localVariables": [],
       "userProperties": [],
       "name": "openWeatherApp"
+    },
+    {
+      "objID": "a723a575-8076-44c2-9086-19c8c258337c",
+      "components": [],
+      "connectionLines": [],
+      "localVariables": [],
+      "userProperties": [],
+      "name": "on_weather_screen_gesture"
     }
   ],
   "userPages": [
@@ -2459,7 +2467,15 @@
             "childStyles": []
           },
           "timeline": [],
-          "eventHandlers": [],
+          "eventHandlers": [
+            {
+              "objID": "604c240c-58f0-40a6-e413-845865a15697",
+              "eventName": "GESTURE",
+              "handlerType": "action",
+              "action": "on_weather_screen_gesture",
+              "userData": 0
+            }
+          ],
           "leftUnit": "px",
           "topUnit": "px",
           "widthUnit": "px",
