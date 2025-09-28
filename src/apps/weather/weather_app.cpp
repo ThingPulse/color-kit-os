@@ -62,19 +62,21 @@ lv_timer_t * weather_timer;
  * @param timer Pointer to the LVGL timer that triggered the callback.
  */
 static void update_datetime_task(lv_timer_t * timer) {
-    time_t now;
-    struct tm timeinfo;
-    char time_buffer[9]; // HH:MM:SS\0
-    char date_buffer[11]; // YYYY-MM-DD\0
+    if (is_wifi_connected()) {
+        time_t now;
+        struct tm timeinfo;
+        char time_buffer[9]; // HH:MM:SS\0
+        char date_buffer[11]; // YYYY-MM-DD\0
 
-    time(&now);
-    localtime_r(&now, &timeinfo);
+        time(&now);
+        localtime_r(&now, &timeinfo);
 
-    strftime(time_buffer, sizeof(time_buffer), "%H:%M:%S", &timeinfo);
-    strftime(date_buffer, sizeof(date_buffer), "%Y-%m-%d", &timeinfo);
+        strftime(time_buffer, sizeof(time_buffer), "%H:%M:%S", &timeinfo);
+        strftime(date_buffer, sizeof(date_buffer), "%Y-%m-%d", &timeinfo);
 
-    lv_label_set_text(objects.weather_label_time, time_buffer);
-    lv_label_set_text(objects.weather_label_date, date_buffer);
+        lv_label_set_text(objects.weather_label_time, time_buffer);
+        lv_label_set_text(objects.weather_label_date, date_buffer);
+    }
 }
 
 /**
@@ -85,8 +87,7 @@ static void update_datetime_task(lv_timer_t * timer) {
  * 
  * @param timer Pointer to the LVGL timer that triggered the callback.
  */
-static void update_weather() {
-    //if (wifictl_get_event(WIFICTL_CONNECT)) {
+static void update_weather(void *data) {
         log_i("Fetching weather data...");
 
         // TODO: These settings should be made configurable
@@ -153,9 +154,7 @@ static void update_weather() {
             // Moon phase
             lv_label_set_text(objects.label_moon_phase, MOON_PHASE_NAMES[result.moon.phase.index]);
             lv_img_set_src(objects.image_moon, moon_phases[result.moon.phase.index]);
-        } else {
-            log_e("Weather fetch failed.");
-        }
+        } 
     /*} else {
         log_w("Cannot fetch weather, no WiFi connection.");
     }*/
@@ -169,10 +168,11 @@ void action_on_weather_screen_gesture(lv_event_t * e) {
     lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_active());
 
     switch(dir) {
-        case LV_DIR_TOP:    
+        case LV_DIR_TOP: 
+            lv_screen_load(objects.homescreen);
             break;
         case LV_DIR_BOTTOM:
-            update_weather();
+            lv_async_call(update_weather, (void*)NULL);
             break;
         case LV_DIR_LEFT:
             break;
@@ -183,21 +183,23 @@ void action_on_weather_screen_gesture(lv_event_t * e) {
 }
 
 static void update_weather_task(lv_timer_t * timer) {
-    //update_weather();
+    static uint32_t last_weather_update = 0;
+    if (is_wifi_connected() && millis() - last_weather_update > 1000 * 60 * 10) {
+        lv_async_call(update_weather, (void *)NULL);
+        last_weather_update = millis();
+    }
 }
 
-static bool update_weather_on_wifi_connected( EventBits_t event, void *arg ) {
-    //update_weather();
-    return( true );
-    
+bool update_weather_when_connected(EventBits_t event, void *arg) {
+    lv_async_call(update_weather, (void *)NULL);
+    return true;
 }
 
 void setup_weather_app() {
     // Create a timer to update the time and date every 500ms (2 times per second)
     lv_timer_create(update_datetime_task, 500, NULL);
     // Create a timer to fetch weather data every 10 minutes
-    weather_timer = lv_timer_create(update_weather_task, 10 * 60 * 1000, NULL);
+    weather_timer = lv_timer_create(update_weather_task, 5000, NULL);
     lv_timer_ready(weather_timer); // Run it once immediately
-
-    wifictl_register_cb( WIFICTL_CONNECT, update_weather_on_wifi_connected, "update weather on wifi connected" );
+    wifictl_register_cb( WIFICTL_CONNECT | WIFICTL_CONNECT_IP, update_weather_when_connected, "update weather" );
 }

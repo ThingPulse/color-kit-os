@@ -179,4 +179,6 @@
      */
     bool wifictl_get_enable_on_standby( void );
 
+    bool is_wifi_connected( void );
+
 #endif // _WIFICTL_H

@@ -18,17 +18,26 @@ void action_register_header_bar(lv_event_t * e) {
 
 }
 
+static void update_wifi_status_icon(void *data) {
+    bool connected = (bool)data;
+    if (connected) {
+        lv_label_set_text(objects.title_bar_wifi, LV_SYMBOL_WIFI);
+        lv_obj_set_style_text_color(objects.title_bar_wifi, lv_color_hex(0x00000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    } else {
+        lv_label_set_text(objects.title_bar_wifi, LV_SYMBOL_WIFI);
+        lv_obj_set_style_text_color(objects.title_bar_wifi, lv_color_hex(0x99999900), LV_PART_MAIN | LV_STATE_DEFAULT);
+    }
+}
+
 static bool header_bar_wifictl_event_cb( EventBits_t event, void *arg ) {   
     log_i("Wifi update event in header bar received"); 
     switch( event ) {
         case WIFICTL_CONNECT:       
-            lv_label_set_text(objects.title_bar_wifi, "WiFi: on");
+            lv_async_call(update_wifi_status_icon, (void *)true);
             break;
         case WIFICTL_DISCONNECT:
-            lv_label_set_text(objects.title_bar_wifi, "WiFi: off");
-            break;
         case WIFICTL_OFF: 
-            lv_label_set_text(objects.title_bar_wifi, "WiFi: off");
+            lv_async_call(update_wifi_status_icon, (void *)false);
             break;
     }
     return( true );

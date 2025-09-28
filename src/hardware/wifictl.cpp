@@ -655,6 +655,10 @@ void wifictl_scan_networks(void) {
 #endif
 }
 
+bool is_wifi_connected( void ) {
+    return wifictl_get_event(WIFICTL_CONNECT);
+}
+
 #ifdef NATIVE_64BIT
 void wifictl_Task( lv_timer_t * task ) {
     /*
