@@ -365,8 +365,6 @@ void create_screen_settings_wifi() {
     lv_obj_add_event_cb(obj, action_settings_wifi_screen_loaded, LV_EVENT_SCREEN_LOADED, (void *)0);
     lv_obj_add_event_cb(obj, action_attach_header_bar, LV_EVENT_SCREEN_LOAD_START, (void *)0);
     lv_obj_set_style_bg_color(obj, lv_color_hex(0xffa4a4a4), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_layout(obj, LV_LAYOUT_FLEX, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_flex_flow(obj, LV_FLEX_FLOW_ROW_WRAP, LV_PART_MAIN | LV_STATE_DEFAULT);
     {
         static lv_coord_t dsc[] = {LV_GRID_TEMPLATE_LAST};
         lv_obj_set_style_grid_row_dsc_array(obj, dsc, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -379,7 +377,7 @@ void create_screen_settings_wifi() {
         lv_obj_t *parent_obj = obj;
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 15, 44);
+            lv_obj_set_pos(obj, 11, 25);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_add_event_cb(obj, action_open_settings, LV_EVENT_PRESSED, (void *)0);
             lv_obj_add_flag(obj, LV_OBJ_FLAG_CLICKABLE);
@@ -392,7 +390,7 @@ void create_screen_settings_wifi() {
             // ssid_button_matrix
             lv_obj_t *obj = lv_buttonmatrix_create(parent_obj);
             objects.ssid_button_matrix = obj;
-            lv_obj_set_pos(obj, 0, 80);
+            lv_obj_set_pos(obj, 10, 52);
             lv_obj_set_size(obj, LV_PCT(100), LV_PCT(85));
             static const char *map[1] = {
                 NULL,
@@ -457,8 +455,6 @@ void create_screen_settings_wifi_password() {
     lv_obj_set_size(obj, 320, 480);
     lv_obj_add_event_cb(obj, action_attach_header_bar, LV_EVENT_SCREEN_LOAD_START, (void *)0);
     lv_obj_set_style_bg_color(obj, lv_color_hex(0xffa4a4a4), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_layout(obj, LV_LAYOUT_FLEX, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_flex_flow(obj, LV_FLEX_FLOW_ROW_WRAP, LV_PART_MAIN | LV_STATE_DEFAULT);
     {
         static lv_coord_t dsc[] = {LV_GRID_TEMPLATE_LAST};
         lv_obj_set_style_grid_row_dsc_array(obj, dsc, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -467,11 +463,13 @@ void create_screen_settings_wifi_password() {
         static lv_coord_t dsc[] = {LV_GRID_TEMPLATE_LAST};
         lv_obj_set_style_grid_column_dsc_array(obj, dsc, LV_PART_MAIN | LV_STATE_DEFAULT);
     }
+    lv_obj_set_style_flex_flow(obj, LV_FLEX_FLOW_ROW, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_layout(obj, LV_LAYOUT_NONE, LV_PART_MAIN | LV_STATE_DEFAULT);
     {
         lv_obj_t *parent_obj = obj;
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
-            lv_obj_set_pos(obj, 15, 44);
+            lv_obj_set_pos(obj, 15, 27);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_add_event_cb(obj, action_return_wifi_settings, LV_EVENT_PRESSED, (void *)0);
             lv_obj_add_flag(obj, LV_OBJ_FLAG_CLICKABLE);
@@ -483,7 +481,7 @@ void create_screen_settings_wifi_password() {
         {
             lv_obj_t *obj = lv_obj_create(parent_obj);
             objects.obj1 = obj;
-            lv_obj_set_pos(obj, 20, 206);
+            lv_obj_set_pos(obj, 10, 52);
             lv_obj_set_size(obj, LV_PCT(100), LV_SIZE_CONTENT);
             lv_obj_set_style_border_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_bg_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -565,7 +563,7 @@ void create_screen_settings_wifi_password() {
             // wifi_settings_keyboard
             lv_obj_t *obj = lv_keyboard_create(parent_obj);
             objects.wifi_settings_keyboard = obj;
-            lv_obj_set_pos(obj, 20, -8625);
+            lv_obj_set_pos(obj, 0, 0);
             lv_obj_set_size(obj, 320, 205);
             lv_obj_add_event_cb(obj, action_keyboard_value_changed, LV_EVENT_VALUE_CHANGED, (void *)0);
             add_style_keyboards(obj);
@@ -609,7 +607,7 @@ void create_screen_weather_main() {
                     // weather_label_time
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_time = obj;
-                    lv_obj_set_pos(obj, 15, 34);
+                    lv_obj_set_pos(obj, 15, 52);
                     lv_obj_set_size(obj, 290, 48);
                     lv_obj_set_style_bg_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -620,7 +618,7 @@ void create_screen_weather_main() {
                     // weather_label_date
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_date = obj;
-                    lv_obj_set_pos(obj, 69, 14);
+                    lv_obj_set_pos(obj, 69, 36);
                     lv_obj_set_size(obj, 182, 17);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans16_, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -651,7 +649,7 @@ void create_screen_weather_main() {
                     // weather_label_wind_speed
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_wind_speed = obj;
-                    lv_obj_set_pos(obj, 227, 106);
+                    lv_obj_set_pos(obj, 227, 118);
                     lv_obj_set_size(obj, 90, 17);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans16_, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -661,7 +659,7 @@ void create_screen_weather_main() {
                     // weather_label_pressure
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_pressure = obj;
-                    lv_obj_set_pos(obj, 70, 106);
+                    lv_obj_set_pos(obj, 70, 118);
                     lv_obj_set_size(obj, 182, 17);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans16_, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -671,7 +669,7 @@ void create_screen_weather_main() {
                     // weather_label_humidity
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_humidity = obj;
-                    lv_obj_set_pos(obj, 69, 86);
+                    lv_obj_set_pos(obj, 69, 98);
                     lv_obj_set_size(obj, 182, 17);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans16_, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -681,7 +679,7 @@ void create_screen_weather_main() {
                     // weather_label_current_description
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_current_description = obj;
-                    lv_obj_set_pos(obj, 0, 0);
+                    lv_obj_set_pos(obj, 0, 12);
                     lv_obj_set_size(obj, 320, 32);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans24_, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -691,7 +689,7 @@ void create_screen_weather_main() {
                     // weather_image_wind_rose
                     lv_obj_t *obj = lv_image_create(parent_obj);
                     objects.weather_image_wind_rose = obj;
-                    lv_obj_set_pos(obj, 234, 25);
+                    lv_obj_set_pos(obj, 234, 37);
                     lv_obj_set_size(obj, 75, 75);
                     lv_image_set_src(obj, &img_wind_rose);
                 }
@@ -699,7 +697,7 @@ void create_screen_weather_main() {
                     // weather_image_wind_direction
                     lv_obj_t *obj = lv_image_create(parent_obj);
                     objects.weather_image_wind_direction = obj;
-                    lv_obj_set_pos(obj, 234, 25);
+                    lv_obj_set_pos(obj, 234, 37);
                     lv_obj_set_size(obj, 75, 75);
                     lv_image_set_src(obj, &img_wind_arrow);
                 }
@@ -707,7 +705,7 @@ void create_screen_weather_main() {
                     // weather_image_current_weather
                     lv_obj_t *obj = lv_image_create(parent_obj);
                     objects.weather_image_current_weather = obj;
-                    lv_obj_set_pos(obj, -4, 21);
+                    lv_obj_set_pos(obj, -4, 33);
                     lv_obj_set_size(obj, 100, 100);
                     lv_image_set_src(obj, &img_weather_clear_day);
                 }
@@ -715,7 +713,7 @@ void create_screen_weather_main() {
                     // weather_label_current_temp
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_current_temp = obj;
-                    lv_obj_set_pos(obj, 0, 36);
+                    lv_obj_set_pos(obj, 0, 48);
                     lv_obj_set_size(obj, 320, 48);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans48_, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -745,7 +743,7 @@ void create_screen_weather_main() {
                     // weather_label_name_day_0
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_name_day_0 = obj;
-                    lv_obj_set_pos(obj, 5, 0);
+                    lv_obj_set_pos(obj, 5, 4);
                     lv_obj_set_size(obj, 69, 24);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans24_, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -755,7 +753,7 @@ void create_screen_weather_main() {
                     // weather_label_name_day_1
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_name_day_1 = obj;
-                    lv_obj_set_pos(obj, 85, 0);
+                    lv_obj_set_pos(obj, 85, 4);
                     lv_obj_set_size(obj, 69, 24);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans24_, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -765,7 +763,7 @@ void create_screen_weather_main() {
                     // weather_label_name_day_2
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_name_day_2 = obj;
-                    lv_obj_set_pos(obj, 165, 0);
+                    lv_obj_set_pos(obj, 165, 4);
                     lv_obj_set_size(obj, 69, 24);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans24_, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -775,7 +773,7 @@ void create_screen_weather_main() {
                     // weather_label_name_day_3
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_name_day_3 = obj;
-                    lv_obj_set_pos(obj, 245, 0);
+                    lv_obj_set_pos(obj, 245, 4);
                     lv_obj_set_size(obj, 69, 24);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans24_, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -785,7 +783,7 @@ void create_screen_weather_main() {
                     // weather_label_temp_day_0
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_temp_day_0 = obj;
-                    lv_obj_set_pos(obj, 5, 24);
+                    lv_obj_set_pos(obj, 5, 28);
                     lv_obj_set_size(obj, 69, 18);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans18_, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -795,7 +793,7 @@ void create_screen_weather_main() {
                     // weather_label_temp_day_1
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_temp_day_1 = obj;
-                    lv_obj_set_pos(obj, 85, 24);
+                    lv_obj_set_pos(obj, 85, 28);
                     lv_obj_set_size(obj, 69, 18);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans18_, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -805,7 +803,7 @@ void create_screen_weather_main() {
                     // weather_label_temp_day_2
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_temp_day_2 = obj;
-                    lv_obj_set_pos(obj, 165, 24);
+                    lv_obj_set_pos(obj, 165, 28);
                     lv_obj_set_size(obj, 69, 18);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans18_, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -815,7 +813,7 @@ void create_screen_weather_main() {
                     // weather_label_temp_day_3
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.weather_label_temp_day_3 = obj;
-                    lv_obj_set_pos(obj, 245, 24);
+                    lv_obj_set_pos(obj, 245, 28);
                     lv_obj_set_size(obj, 69, 18);
                     lv_obj_set_style_text_font(obj, &ui_font_open_sans18_, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -825,7 +823,7 @@ void create_screen_weather_main() {
                     // weather_image_day_0
                     lv_obj_t *obj = lv_image_create(parent_obj);
                     objects.weather_image_day_0 = obj;
-                    lv_obj_set_pos(obj, 5, 39);
+                    lv_obj_set_pos(obj, 5, 43);
                     lv_obj_set_size(obj, 64, 64);
                     lv_image_set_src(obj, &img_weather_fog_64px);
                 }
@@ -833,7 +831,7 @@ void create_screen_weather_main() {
                     // weather_image_day_1
                     lv_obj_t *obj = lv_image_create(parent_obj);
                     objects.weather_image_day_1 = obj;
-                    lv_obj_set_pos(obj, 87, 39);
+                    lv_obj_set_pos(obj, 87, 43);
                     lv_obj_set_size(obj, 64, 64);
                     lv_image_set_src(obj, &img_weather_fog_64px);
                 }
@@ -841,7 +839,7 @@ void create_screen_weather_main() {
                     // weather_image_day_2
                     lv_obj_t *obj = lv_image_create(parent_obj);
                     objects.weather_image_day_2 = obj;
-                    lv_obj_set_pos(obj, 169, 39);
+                    lv_obj_set_pos(obj, 169, 43);
                     lv_obj_set_size(obj, 64, 64);
                     lv_image_set_src(obj, &img_weather_clear_day_64px);
                 }
@@ -849,7 +847,7 @@ void create_screen_weather_main() {
                     // weather_image_day_3
                     lv_obj_t *obj = lv_image_create(parent_obj);
                     objects.weather_image_day_3 = obj;
-                    lv_obj_set_pos(obj, 246, 39);
+                    lv_obj_set_pos(obj, 246, 43);
                     lv_obj_set_size(obj, 64, 64);
                     lv_image_set_src(obj, &img_weather_sleet_64px);
                 }
@@ -889,7 +887,7 @@ void create_screen_weather_main() {
             // imageMoon
             lv_obj_t *obj = lv_image_create(parent_obj);
             objects.image_moon = obj;
-            lv_obj_set_pos(obj, 115, 353);
+            lv_obj_set_pos(obj, 115, 357);
             lv_obj_set_size(obj, 75, 75);
             lv_image_set_src(obj, &img_moon_phase_15);
         }
@@ -897,7 +895,7 @@ void create_screen_weather_main() {
             // labelSun
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.label_sun = obj;
-            lv_obj_set_pos(obj, 18, 357);
+            lv_obj_set_pos(obj, 18, 361);
             lv_obj_set_size(obj, 69, 24);
             lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_font(obj, &ui_font_open_sans24_, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -907,7 +905,7 @@ void create_screen_weather_main() {
             // labelMoon
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.label_moon = obj;
-            lv_obj_set_pos(obj, 228, 359);
+            lv_obj_set_pos(obj, 228, 363);
             lv_obj_set_size(obj, 69, 24);
             lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_font(obj, &ui_font_open_sans24_, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -917,7 +915,7 @@ void create_screen_weather_main() {
             // labelSunrise
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.label_sunrise = obj;
-            lv_obj_set_pos(obj, 18, 382);
+            lv_obj_set_pos(obj, 18, 386);
             lv_obj_set_size(obj, 69, 18);
             lv_obj_set_style_text_font(obj, &ui_font_open_sans18_, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -927,7 +925,7 @@ void create_screen_weather_main() {
             // labelSunset
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.label_sunset = obj;
-            lv_obj_set_pos(obj, 18, 401);
+            lv_obj_set_pos(obj, 18, 405);
             lv_obj_set_size(obj, 69, 18);
             lv_obj_set_style_text_font(obj, &ui_font_open_sans18_, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -937,7 +935,7 @@ void create_screen_weather_main() {
             // labelMoonrise
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.label_moonrise = obj;
-            lv_obj_set_pos(obj, 228, 384);
+            lv_obj_set_pos(obj, 228, 388);
             lv_obj_set_size(obj, 69, 18);
             lv_obj_set_style_text_font(obj, &ui_font_open_sans18_, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -947,7 +945,7 @@ void create_screen_weather_main() {
             // labelMoonset
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.label_moonset = obj;
-            lv_obj_set_pos(obj, 228, 402);
+            lv_obj_set_pos(obj, 228, 406);
             lv_obj_set_size(obj, 69, 18);
             lv_obj_set_style_text_font(obj, &ui_font_open_sans18_, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
