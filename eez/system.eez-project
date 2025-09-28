@@ -877,7 +877,7 @@
                 {
                   "objID": "180f8197-bac1-44ba-b879-d86cee77df61",
                   "type": "LVGLLabelWidget",
-                  "left": -10,
+                  "left": -263,
                   "top": 0,
                   "width": 50,
                   "height": 16,
@@ -915,7 +915,7 @@
                           "text_color": "#000000",
                           "text_opa": 255,
                           "align": "RIGHT_MID",
-                          "text_align": "RIGHT"
+                          "text_align": "LEFT"
                         }
                       }
                     }
@@ -930,9 +930,9 @@
                 {
                   "objID": "107c8d79-3fb4-4627-ef5f-23a23004a07a",
                   "type": "LVGLLabelWidget",
-                  "left": -212,
+                  "left": -9,
                   "top": 0,
-                  "width": 100,
+                  "width": 41,
                   "height": 16,
                   "customInputs": [],
                   "customOutputs": [],
@@ -968,7 +968,7 @@
                           "text_color": "#999999",
                           "text_opa": 255,
                           "align": "RIGHT_MID",
-                          "text_align": "LEFT"
+                          "text_align": "RIGHT"
                         }
                       }
                     }

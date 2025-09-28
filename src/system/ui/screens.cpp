@@ -193,24 +193,24 @@ void create_screen_homescreen() {
                     // titleBarTime
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.title_bar_time = obj;
-                    lv_obj_set_pos(obj, -10, 0);
+                    lv_obj_set_pos(obj, -263, 0);
                     lv_obj_set_size(obj, 50, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xff000000), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_opa(obj, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_align(obj, LV_ALIGN_RIGHT_MID, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text(obj, "23:55");
                 }
                 {
                     // titleBarWifi
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.title_bar_wifi = obj;
-                    lv_obj_set_pos(obj, -212, 0);
-                    lv_obj_set_size(obj, 100, LV_SIZE_CONTENT);
+                    lv_obj_set_pos(obj, -9, 0);
+                    lv_obj_set_size(obj, 41, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xff999999), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_opa(obj, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_align(obj, LV_ALIGN_RIGHT_MID, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text(obj, "");
                 }
             }
