@@ -71,7 +71,7 @@ lv_timer_t * weather_timer;
  * @param timer Pointer to the LVGL timer that triggered the callback.
  */
 static void update_datetime_task(lv_timer_t * timer) {
-    if (is_wifi_connected()) {
+    //if (is_wifi_connected()) {
         time_t now;
         struct tm timeinfo;
         char time_buffer[9]; // HH:MM:SS\0
@@ -85,7 +85,7 @@ static void update_datetime_task(lv_timer_t * timer) {
 
         lv_label_set_text(objects.weather_label_time, time_buffer);
         lv_label_set_text(objects.weather_label_date, date_buffer);
-    }
+    //}
 }
 
 /**
@@ -237,4 +237,9 @@ void setup_weather_app() {
     weather_timer = lv_timer_create(update_weather_task, 5000, NULL);
     lv_timer_ready(weather_timer); // Run it once immediately
     wifictl_register_cb( WIFICTL_CONNECT | WIFICTL_CONNECT_IP, update_weather_when_connected, "update weather" );
+}
+
+
+void action_open_weather_settings(lv_event_t * e) {
+    lv_screen_load(objects.weather_settings);
 }

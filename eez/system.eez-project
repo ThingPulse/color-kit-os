@@ -4283,6 +4283,64 @@
               "group": "",
               "groupIndex": 0,
               "points": ""
+            },
+            {
+              "objID": "29493981-3c9e-461c-b9b9-8c5ef71a516d",
+              "type": "LVGLImgbuttonWidget",
+              "left": 286,
+              "top": 36,
+              "width": 19,
+              "height": 19,
+              "customInputs": [],
+              "customOutputs": [],
+              "style": {
+                "objID": "96c7c0e0-29b2-4c23-f4f6-4f21606118b4",
+                "useStyle": "default",
+                "conditionalStyles": [],
+                "childStyles": []
+              },
+              "timeline": [],
+              "eventHandlers": [
+                {
+                  "objID": "bebcdaad-b3a3-4ca5-c90d-b42ca7941043",
+                  "eventName": "PRESSED",
+                  "handlerType": "action",
+                  "action": "open_weather_settings",
+                  "userData": 0
+                }
+              ],
+              "leftUnit": "px",
+              "topUnit": "px",
+              "widthUnit": "content",
+              "heightUnit": "px",
+              "children": [],
+              "widgetFlags": "CLICK_FOCUSABLE|GESTURE_BUBBLE|PRESS_LOCK|SCROLLABLE|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_WITH_ARROW|SNAPPABLE",
+              "hiddenFlagType": "literal",
+              "clickableFlag": true,
+              "clickableFlagType": "literal",
+              "flagScrollbarMode": "",
+              "flagScrollDirection": "",
+              "scrollSnapX": "",
+              "scrollSnapY": "",
+              "checkedStateType": "literal",
+              "disabledStateType": "literal",
+              "states": "",
+              "localStyles": {
+                "objID": "aa0400ea-5855-4f7b-f20f-f7e573374d3c",
+                "definition": {
+                  "MAIN": {
+                    "DEFAULT": {
+                      "margin_top": 20,
+                      "margin_bottom": 20,
+                      "margin_left": 20,
+                      "margin_right": 20
+                    }
+                  }
+                }
+              },
+              "group": "",
+              "groupIndex": 0,
+              "imageReleased": "cog"
             }
           ],
           "widgetFlags": "CLICKABLE|PRESS_LOCK|CLICK_FOCUSABLE|GESTURE_BUBBLE|SNAPPABLE|SCROLLABLE|SCROLL_ELASTIC|SCROLL_MOMENTUM|SCROLL_CHAIN_HOR|SCROLL_CHAIN_VER",

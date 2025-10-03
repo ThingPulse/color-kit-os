@@ -968,6 +968,17 @@ void create_screen_weather_main() {
             lv_obj_set_style_border_width(obj, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_radius(obj, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
         }
+        {
+            lv_obj_t *obj = lv_imagebutton_create(parent_obj);
+            lv_obj_set_pos(obj, 286, 36);
+            lv_obj_set_size(obj, LV_SIZE_CONTENT, 19);
+            lv_imagebutton_set_src(obj, LV_IMAGEBUTTON_STATE_RELEASED, NULL, &img_cog, NULL);
+            lv_obj_add_event_cb(obj, action_open_weather_settings, LV_EVENT_PRESSED, (void *)0);
+            lv_obj_set_style_margin_top(obj, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_margin_bottom(obj, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_margin_left(obj, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_margin_right(obj, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
+        }
     }
     
     tick_screen_weather_main();
